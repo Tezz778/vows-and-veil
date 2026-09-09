@@ -1,45 +1,27 @@
 {
-  "name": "RehearsalDinner",
+  "name": "RehearsalToast",
   "type": "object",
   "properties": {
     "wedding_id": {
       "type": "string"
     },
-    "venue_name": {
+    "speaker_name": {
       "type": "string"
     },
-    "venue_location": {
+    "role": {
       "type": "string"
     },
-    "dinner_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "arrival_time": {
-      "type": "string"
-    },
-    "end_time": {
-      "type": "string"
-    },
-    "dinner_time": {
-      "type": "string"
-    },
-    "toasts_time": {
-      "type": "string"
-    },
-    "guest_count": {
+    "speaking_order": {
       "type": "number",
       "default": 0
-    },
-    "menu_notes": {
-      "type": "string"
     },
     "notes": {
       "type": "string"
     }
   },
   "required": [
-    "wedding_id"
+    "wedding_id",
+    "speaker_name"
   ],
   "rls": {
     "read": {

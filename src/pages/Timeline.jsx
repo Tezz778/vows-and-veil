@@ -14,11 +14,13 @@ import { Plus, Trash2, Clock, Camera, Video, Users, Pencil, Sparkles, Loader2 } 
 const DEFAULT_DAYS = {
   single_day: [{ n: 1, label: 'Wedding Day' }],
   multiday: [
+    { n: 0, label: 'Rehearsal Dinner' },
     { n: 1, label: 'Welcome Dinner' },
     { n: 2, label: 'Wedding Day' },
     { n: 3, label: 'Next-Day Brunch' },
   ],
   destination: [
+    { n: 0, label: 'Rehearsal Dinner' },
     { n: 1, label: 'Arrival & Welcome' },
     { n: 2, label: 'Rehearsal' },
     { n: 3, label: 'Wedding Day' },

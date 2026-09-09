@@ -67,6 +67,22 @@
     "attending_rehearsal": {
       "type": "boolean",
       "default": false
+    },
+    "rehearsal_invited": {
+      "type": "boolean",
+      "default": false
+    },
+    "rehearsal_rsvp": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "yes",
+        "no"
+      ],
+      "default": "pending"
+    },
+    "rehearsal_table": {
+      "type": "string"
     }
   },
   "required": [
