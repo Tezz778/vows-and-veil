@@ -8,24 +8,21 @@ export default async function(req) {
     const body = await req.json().catch(() => ({}));
     const guestCount = Number(body.guest_count) || 100;
     const ceremonyTime = String(body.ceremony_time || '16:00');
-    const venue = String(body.venue || '').slice(0, 200);
-    const weddingType = String(body.wedding_type || 'single_day').replace(/_/g, ' ');
-    const photographer = String(body.photographer_status || 'photographer');
+    const venueType = String(body.venue_type || 'indoor');
+    const weddingType = String(body.wedding_type || 'single_day');
+    const photoStatus = String(body.photographer_status || 'neither');
 
-    const prompt = `You are an expert wedding day timeline planner. Design a complete, realistic run-of-show for a ${weddingType} wedding.
+    const prompt = `You are an expert wedding-day timeline planner. Build a realistic, well-paced
+run-of-show for a ${weddingType.replace('_', '-')} wedding at an ${venueType} venue with ${guestCount} guests.
+The ceremony starts at ${ceremonyTime}. Photo/video coverage: ${photoStatus}.
 
-Guest count: ${guestCount}
-Ceremony start time: ${ceremonyTime}
-Venue: ${venue || 'a single venue hosting both ceremony and reception'}
-Photo / video coverage: ${photographer}
+Produce an ordered list of day-of moments from getting ready through send-off. For each moment
+give a start_time (24h HH:MM), a duration in minutes, a short title, and a one-line note with
+practical detail (buffer reasoning, who's involved, location). Pace realistically for the guest
+count and coverage type — larger guest counts and dual photo+video need more buffer. Keep it to
+about 10-14 moments. All on day_number 1.
 
-Produce a chronological day-of timeline from getting ready through the send-off. For each item provide:
-- title (short, e.g. "First Look", "Ceremony", "Cocktail Hour", "Golden Hour Portraits", "Reception Start", "Toasts", "First Dance", "Send-Off")
-- start_time in 24-hour HH:MM
-- duration_minutes (realistic, with buffers for transitions and group photos)
-- notes (one line: who/where/why)
-
-Account for the guest count (larger groups need more buffer for transitions and group photos), the ceremony start time, and the photo coverage. Include golden-hour portraits at an appropriate time. Return JSON only.`;
+Return JSON matching the schema.`;
 
     const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt,
@@ -40,9 +37,10 @@ Account for the guest count (larger groups need more buffer for transitions and 
                 title: { type: 'string' },
                 start_time: { type: 'string' },
                 duration_minutes: { type: 'number' },
-                notes: { type: 'string' }
+                notes: { type: 'string' },
+                day_number: { type: 'number' }
               },
-              required: ['title', 'start_time', 'duration_minutes', 'notes']
+              required: ['title', 'start_time', 'duration_minutes']
             }
           }
         },
@@ -50,7 +48,7 @@ Account for the guest count (larger groups need more buffer for transitions and 
       }
     });
 
-    return Response.json({ events: result?.events || [] });
+    return Response.json({ events: (result && result.events) || [] });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

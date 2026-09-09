@@ -19,25 +19,15 @@ const FEATURE_LABELS = {
   guests: 'Guest list & seating chart',
   rehearsal: 'Rehearsal dinner planner',
   reminders: 'Countdown & reminders',
-  travel: 'Guest travel & room blocks',
-  itinerary: 'Weekend itinerary builder',
+  travel: 'Guest travel & itinerary tools',
 };
 
 const TIER_RANK = { single_day: 0, multiday: 1, destination: 2 };
 
 const TIERS = [
-  {
-    key: 'destination', icon: Crown, badge: 'Full Package',
-    features: TIER_FEATURES.destination,
-  },
-  {
-    key: 'multiday', icon: Gem, badge: 'Most Popular',
-    features: TIER_FEATURES.multiday,
-  },
-  {
-    key: 'single_day', icon: Sparkles, badge: 'Starter',
-    features: TIER_FEATURES.single_day,
-  },
+  { key: 'destination', icon: Crown, badge: 'Full Package', features: TIER_FEATURES.destination },
+  { key: 'multiday', icon: Gem, badge: 'Most Popular', features: TIER_FEATURES.multiday },
+  { key: 'single_day', icon: Sparkles, badge: 'Starter', features: TIER_FEATURES.single_day },
 ];
 
 export default function Pricing() {

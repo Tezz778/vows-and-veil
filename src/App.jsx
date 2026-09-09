@@ -24,8 +24,7 @@ import Vendors from '@/pages/Vendors';
 import MoodBoard from '@/pages/MoodBoard';
 import Rehearsal from '@/pages/Rehearsal';
 import Speeches from '@/pages/Speeches';
-import Travel from '@/pages/Travel';
-import Itinerary from '@/pages/Itinerary';
+import TimelineOptimizer from '@/pages/TimelineOptimizer';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -34,7 +33,6 @@ import ResetPassword from '@/pages/ResetPassword';
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -43,18 +41,15 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -79,8 +74,7 @@ const AuthenticatedApp = () => {
           <Route path="/moodboard" element={<MoodBoard />} />
           <Route path="/rehearsal" element={<Rehearsal />} />
           <Route path="/speeches" element={<Speeches />} />
-          <Route path="/travel" element={<Travel />} />
-          <Route path="/itinerary" element={<Itinerary />} />
+          <Route path="/optimizer" element={<TimelineOptimizer />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
@@ -90,7 +84,6 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

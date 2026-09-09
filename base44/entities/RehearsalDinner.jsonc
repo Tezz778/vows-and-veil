@@ -11,11 +11,24 @@
     "venue_location": {
       "type": "string"
     },
-    "date": {
+    "dinner_date": {
       "type": "string",
       "format": "date"
     },
-    "time": {
+    "arrival_time": {
+      "type": "string"
+    },
+    "dinner_time": {
+      "type": "string"
+    },
+    "toasts_time": {
+      "type": "string"
+    },
+    "guest_count": {
+      "type": "number",
+      "default": 0
+    },
+    "menu_notes": {
       "type": "string"
     },
     "notes": {

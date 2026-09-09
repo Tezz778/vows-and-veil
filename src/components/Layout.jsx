@@ -4,22 +4,22 @@ import { base44 } from '@/api/base44Client';
 import { hasFeature, TIER_LABELS, daysUntil, formatDate } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
-  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe, Briefcase, Palette, Utensils, Mic, Plane, CalendarDays
+  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
+  Briefcase, Palette, UtensilsCrossed, Mic, Wand2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const NAV = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/', feature: null },
   { label: 'Timeline', icon: Calendar, path: '/timeline', feature: 'timeline' },
+  { label: 'Timeline Optimizer', icon: Wand2, path: '/optimizer', feature: 'optimizer' },
   { label: 'Vows', icon: Heart, path: '/vows', feature: 'vows' },
   { label: 'Speeches', icon: Mic, path: '/speeches', feature: 'speeches' },
   { label: 'Moment Ideas', icon: Sparkles, path: '/ideas', feature: 'ideas' },
   { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
   { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
+  { label: 'Rehearsal Dinner', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
   { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
-  { label: 'Rehearsal Dinner', icon: Utensils, path: '/rehearsal', feature: 'rehearsal' },
-  { label: 'Travel & Stays', icon: Plane, path: '/travel', feature: 'travel' },
-  { label: 'Weekend Itinerary', icon: CalendarDays, path: '/itinerary', feature: 'itinerary' },
   { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
   { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
   { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },
@@ -71,7 +71,6 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
       <aside
         className={`fixed lg:sticky top-0 z-40 h-screen w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -140,7 +139,6 @@ export default function Layout() {
         <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
 
-      {/* Main */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="lg:hidden sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between">
           <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2">

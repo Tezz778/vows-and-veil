@@ -12,18 +12,16 @@
       "type": "string",
       "enum": [
         "venue",
+        "catering",
         "photography",
         "videography",
-        "catering",
-        "bar",
         "florist",
         "music",
-        "officiant",
-        "beauty",
         "stationery",
-        "rentals",
-        "transportation",
-        "planner",
+        "beauty",
+        "attire",
+        "transport",
+        "officiant",
         "other"
       ]
     },
@@ -38,7 +36,7 @@
       "enum": [
         "not_contacted",
         "contacted",
-        "contracted",
+        "contract_signed",
         "deposit_paid",
         "confirmed",
         "cancelled"
@@ -57,15 +55,19 @@
       "type": "boolean",
       "default": false
     },
-    "balance_due_date": {
-      "type": "string",
-      "format": "date"
+    "balance_due": {
+      "type": "number",
+      "default": 0
     },
     "payment_schedule": {
       "type": "string"
     },
     "contract_notes": {
       "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
     }
   },
   "required": [
