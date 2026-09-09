@@ -1,0 +1,51 @@
+{
+  "name": "Accommodation",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "room_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "block_name": {
+      "type": "string"
+    },
+    "rooms_reserved": {
+      "type": "number",
+      "default": 0
+    },
+    "cutoff_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "contact_info": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

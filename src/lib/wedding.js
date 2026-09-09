@@ -2,8 +2,8 @@ import { base44 } from '@/api/base44Client';
 
 export const TIER_FEATURES = {
   single_day: ['timeline', 'vows', 'ideas', 'budget', 'reminders', 'vendors', 'moodboard', 'speeches', 'optimizer'],
-  multiday: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'vendors', 'moodboard', 'speeches', 'optimizer', 'rehearsal'],
-  destination: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'travel', 'vendors', 'moodboard', 'speeches', 'optimizer', 'rehearsal']
+  multiday: ['timeline', 'vows', 'ideas', 'budget', 'reminders', 'vendors', 'moodboard', 'speeches', 'optimizer', 'shotlist', 'guests', 'rehearsal'],
+  destination: ['timeline', 'vows', 'ideas', 'budget', 'reminders', 'vendors', 'moodboard', 'speeches', 'optimizer', 'shotlist', 'guests', 'rehearsal', 'travel', 'itinerary']
 };
 
 export const TIER_LABELS = {
@@ -14,14 +14,14 @@ export const TIER_LABELS = {
 
 export const TIER_PRICES = {
   single_day: 99,
-  multiday: 197,
-  destination: 347
+  multiday: 199,
+  destination: 399
 };
 
 export const TIER_DESCRIPTIONS = {
-  single_day: 'Everything you need for a single-day celebration.',
-  multiday: 'Full planning suite for multiday weekends.',
-  destination: 'Complete package with travel & itinerary tools.'
+  single_day: 'The essentials for one beautiful day — timeline, vows, budget, and vendor tracking.',
+  multiday: 'Adds guests, seating, shot list, and rehearsal dinner tools for a full weekend.',
+  destination: 'Everything, plus guest travel, room blocks, and a shareable weekend itinerary.'
 };
 
 export function hasFeature(tier, feature) {

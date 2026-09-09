@@ -6,7 +6,7 @@ import PageHeader from '@/components/PageHeader';
 import BudgetChart from '@/components/BudgetChart';
 import {
   Calendar, Heart, Sparkles, Users, DollarSign, Camera, Bell,
-  ArrowRight, Check, Clock, Briefcase, Palette, Utensils, Mic
+  ArrowRight, Check, Clock, Briefcase, Palette, Utensils, Mic, Plane, CalendarDays
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -40,6 +40,8 @@ export default function Dashboard() {
     { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
     { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
     { label: 'Rehearsal', icon: Utensils, path: '/rehearsal', feature: 'rehearsal' },
+    { label: 'Travel & Stays', icon: Plane, path: '/travel', feature: 'travel' },
+    { label: 'Weekend Itinerary', icon: CalendarDays, path: '/itinerary', feature: 'itinerary' },
     { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
     { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
     { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },

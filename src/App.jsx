@@ -24,6 +24,8 @@ import Vendors from '@/pages/Vendors';
 import MoodBoard from '@/pages/MoodBoard';
 import Rehearsal from '@/pages/Rehearsal';
 import Speeches from '@/pages/Speeches';
+import Travel from '@/pages/Travel';
+import Itinerary from '@/pages/Itinerary';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -77,6 +79,8 @@ const AuthenticatedApp = () => {
           <Route path="/moodboard" element={<MoodBoard />} />
           <Route path="/rehearsal" element={<Rehearsal />} />
           <Route path="/speeches" element={<Speeches />} />
+          <Route path="/travel" element={<Travel />} />
+          <Route path="/itinerary" element={<Itinerary />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

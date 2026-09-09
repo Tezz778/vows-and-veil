@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { hasFeature, TIER_LABELS, daysUntil, formatDate } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
-  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe, Briefcase, Palette, Utensils, Mic
+  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe, Briefcase, Palette, Utensils, Mic, Plane, CalendarDays
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -18,6 +18,8 @@ const NAV = [
   { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
   { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
   { label: 'Rehearsal Dinner', icon: Utensils, path: '/rehearsal', feature: 'rehearsal' },
+  { label: 'Travel & Stays', icon: Plane, path: '/travel', feature: 'travel' },
+  { label: 'Weekend Itinerary', icon: CalendarDays, path: '/itinerary', feature: 'itinerary' },
   { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
   { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
   { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },

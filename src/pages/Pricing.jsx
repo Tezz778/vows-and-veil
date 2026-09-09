@@ -19,7 +19,8 @@ const FEATURE_LABELS = {
   guests: 'Guest list & seating chart',
   rehearsal: 'Rehearsal dinner planner',
   reminders: 'Countdown & reminders',
-  travel: 'Guest travel & itinerary tools',
+  travel: 'Guest travel & room blocks',
+  itinerary: 'Weekend itinerary builder',
 };
 
 const TIER_RANK = { single_day: 0, multiday: 1, destination: 2 };
