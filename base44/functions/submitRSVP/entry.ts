@@ -16,7 +16,7 @@ export default async function(req) {
     if (!w) return Response.json({ error: 'Wedding not found' }, { status: 404 });
 
     const plus_ones = Math.max(0, Math.min(10, Number(body.plus_ones) || 0));
-    const guest = await base44.asServiceRole.entities.Guest.create({
+    const payload = {
       wedding_id: w.id,
       name: name.slice(0, 120),
       rsvp_status,
@@ -28,9 +28,22 @@ export default async function(req) {
       meal_choice: String(body.meal_choice || '').trim().slice(0, 80),
       meal_notes: String(body.meal_notes || '').trim().slice(0, 300),
       invitation_status: 'rsvp_received'
-    });
+    };
 
-    return Response.json({ ok: true, guest_id: guest.id });
+    // Sync with existing guest by case-insensitive name match
+    const existing = await base44.asServiceRole.entities.Guest.filter({ wedding_id: w.id }, 'name', 500);
+    const match = existing && existing.find(
+      (g) => (g.name || '').trim().toLowerCase() === name.toLowerCase()
+    );
+
+    let guest;
+    if (match) {
+      guest = await base44.asServiceRole.entities.Guest.update(match.id, payload);
+    } else {
+      guest = await base44.asServiceRole.entities.Guest.create(payload);
+    }
+
+    return Response.json({ ok: true, guest_id: guest.id, synced: !!match });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
