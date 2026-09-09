@@ -82,6 +82,9 @@
     },
     "site_sections": {
       "type": "object"
+    },
+    "site_meal_options": {
+      "type": "string"
     }
   },
   "required": [

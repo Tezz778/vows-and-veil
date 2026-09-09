@@ -8,6 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Heart, MapPin, Calendar, Check, Loader2 } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 
+const DEFAULT_MEAL_OPTIONS = ['Beef', 'Chicken', 'Fish', 'Vegetarian', 'Vegan'];
+
+function parseMealOptions(raw) {
+  if (!raw || typeof raw !== 'string') return DEFAULT_MEAL_OPTIONS;
+  const opts = raw.split('\n').map((s) => s.trim()).filter(Boolean);
+  return opts.length ? opts : DEFAULT_MEAL_OPTIONS;
+}
+
 export default function WeddingSite() {
   const { slug } = useParams();
   const [wedding, setWedding] = useState(null);
@@ -141,7 +149,7 @@ export default function WeddingSite() {
 
       {/* RSVP */}
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <RSVPForm slug={slug} isDestination={wedding.wedding_type === 'destination'} />
+        <RSVPForm slug={slug} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
       </section>
 
       <footer className="text-center pb-10 text-xs text-muted-foreground/70">
@@ -197,7 +205,7 @@ function Detail({ label, value }) {
   );
 }
 
-function RSVPForm({ slug, isDestination }) {
+function RSVPForm({ slug, isDestination, mealOptions }) {
   const [name, setName] = useState('');
   const [rsvp, setRsvp] = useState('');
   const [plus, setPlus] = useState(0);
@@ -205,6 +213,8 @@ function RSVPForm({ slug, isDestination }) {
   const [travel, setTravel] = useState(false);
   const [accom, setAccom] = useState('');
   const [arrival, setArrival] = useState('');
+  const [meal, setMeal] = useState('');
+  const [mealNotes, setMealNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
@@ -218,6 +228,7 @@ function RSVPForm({ slug, isDestination }) {
         slug, name: name.trim(), rsvp_status: rsvp,
         plus_ones: Number(plus) || 0, contact: contact.trim(),
         travel_needed: travel, accommodation: accom.trim(), arrival_date: arrival || null,
+        meal_choice: meal, meal_notes: mealNotes.trim(),
       });
       const data = res?.data ?? res;
       if (data?.error) setError(data.error);
@@ -279,6 +290,23 @@ function RSVPForm({ slug, isDestination }) {
                 <Label htmlFor="rsvp-contact">Contact (optional)</Label>
                 <Input id="rsvp-contact" value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" placeholder="Email or phone" />
               </div>
+            </div>
+
+            {/* Meal choice */}
+            <div>
+              <Label>Meal choice</Label>
+              <div className="grid grid-cols-2 gap-2 mt-1.5">
+                {(mealOptions || DEFAULT_MEAL_OPTIONS).map((opt) => (
+                  <button key={opt} type="button" onClick={() => setMeal(opt)}
+                    className={`h-10 rounded-lg border text-sm font-medium transition-colors text-left px-3 ${meal === opt ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-accent'}`}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="rsvp-meal-notes">Dietary notes (optional)</Label>
+              <Input id="rsvp-meal-notes" value={mealNotes} onChange={(e) => setMealNotes(e.target.value)} className="mt-1.5" placeholder="Allergies, restrictions, etc." />
             </div>
 
             {isDestination && (

@@ -78,6 +78,15 @@ export default function Guests() {
     pending: guests.filter((g) => g.rsvp_status === 'pending').length,
   };
 
+  const mealCounts = Object.entries(
+    guests.reduce((acc, g) => {
+      if (g.rsvp_status === 'yes' && g.meal_choice) {
+        acc[g.meal_choice] = (acc[g.meal_choice] || 0) + 1;
+      }
+      return acc;
+    }, {})
+  ).map(([choice, count]) => ({ choice, count }));
+
   const invStats = {
     not_sent: guests.filter((g) => (g.invitation_status || 'not_sent') === 'not_sent').length,
     save_the_date: guests.filter((g) => g.invitation_status === 'save_the_date').length,
@@ -117,6 +126,21 @@ export default function Guests() {
         <Stat label="Declined" value={rsvpStats.no} tone="rose" />
         <Stat label="Pending" value={rsvpStats.pending} />
       </div>
+
+      {/* Meal tracker */}
+      {mealCounts.length > 0 && (
+        <div className="elegant-card p-5 mb-8">
+          <h3 className="serif-heading text-lg text-foreground mb-4">Meal choices</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {mealCounts.map(({ choice, count }) => (
+              <div key={choice} className="rounded-xl border border-border/70 bg-secondary/30 p-3 text-center">
+                <p className="serif-heading text-2xl text-foreground">{count}</p>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mt-0.5">{choice}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Invitation tracker */}
       <div className="elegant-card p-5 mb-8">
@@ -160,6 +184,7 @@ export default function Guests() {
                             className="bg-card border border-border rounded-lg p-2.5 flex items-center gap-2 text-sm">
                             <GripVertical className="w-3.5 h-3.5 text-muted-foreground/40" />
                             <span className="flex-1 truncate font-medium">{g.name}</span>
+                            {g.meal_choice && <span className="text-[10px] text-muted-foreground hidden sm:inline truncate max-w-[80px]">{g.meal_choice}</span>}
                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${RSVP_COLORS[g.rsvp_status]}`}>{g.rsvp_status}</span>
                           </div>
                         )}
@@ -291,6 +316,7 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
   const [arrival, setArrival] = useState('');
   const [departure, setDeparture] = useState('');
   const [accom, setAccom] = useState('');
+  const [meal, setMeal] = useState('');
   const [invStatus, setInvStatus] = useState('not_sent');
   const [invMethod, setInvMethod] = useState('digital');
   const [invDate, setInvDate] = useState('');
@@ -304,6 +330,7 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
       setTravel(editing?.travel_needed || false); setArrival(editing?.arrival_date || '');
       setDeparture(editing?.departure_date || '');
       setAccom(editing?.accommodation || '');
+      setMeal(editing?.meal_choice || '');
       setInvStatus(editing?.invitation_status || 'not_sent');
       setInvMethod(editing?.invite_method || 'digital');
       setInvDate(editing?.invite_sent_date || '');
@@ -318,7 +345,7 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
       const payload = {
         wedding_id: wedding.id, name: name.trim(), rsvp_status: rsvp, contact: contact.trim(),
         plus_ones: Number(plus) || 0, travel_needed: travel, arrival_date: arrival || null, departure_date: departure || null, accommodation: accom.trim(),
-        invitation_status: invStatus, invite_method: invMethod,
+        meal_choice: meal.trim(), invitation_status: invStatus, invite_method: invMethod,
         invite_sent_date: invDate || null, follow_up_sent: followUp,
       };
       if (editing) await base44.entities.Guest.update(editing.id, payload);
@@ -345,6 +372,10 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
             <div><Label htmlFor="po">Plus ones</Label><Input id="po" type="number" min="0" value={plus} onChange={(e) => setPlus(e.target.value)} className="mt-1.5" /></div>
           </div>
           <div><Label htmlFor="ct">Contact</Label><Input id="ct" placeholder="Email or phone" value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" /></div>
+          <div>
+            <Label htmlFor="gm">Meal choice</Label>
+            <Input id="gm" placeholder="e.g. Chicken, Vegetarian…" value={meal} onChange={(e) => setMeal(e.target.value)} className="mt-1.5" />
+          </div>
 
           {/* Invitation tracker */}
           <div className="rounded-xl border border-border p-3 space-y-3 bg-secondary/30">

@@ -27,6 +27,12 @@
       "type": "number",
       "default": 0
     },
+    "meal_choice": {
+      "type": "string"
+    },
+    "meal_notes": {
+      "type": "string"
+    },
     "travel_needed": {
       "type": "boolean",
       "default": false

@@ -25,6 +25,8 @@ export default async function(req) {
       travel_needed: !!body.travel_needed,
       accommodation: String(body.accommodation || '').trim().slice(0, 300),
       arrival_date: body.arrival_date || null,
+      meal_choice: String(body.meal_choice || '').trim().slice(0, 80),
+      meal_notes: String(body.meal_notes || '').trim().slice(0, 300),
       invitation_status: 'rsvp_received'
     });
 
