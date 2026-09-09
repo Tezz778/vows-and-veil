@@ -20,6 +20,10 @@ import Reminders from '@/pages/Reminders';
 import Pricing from '@/pages/Pricing';
 import WeddingWebsite from '@/pages/WeddingWebsite';
 import WeddingSite from '@/pages/WeddingSite';
+import Vendors from '@/pages/Vendors';
+import MoodBoard from '@/pages/MoodBoard';
+import Rehearsal from '@/pages/Rehearsal';
+import Speeches from '@/pages/Speeches';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -69,6 +73,10 @@ const AuthenticatedApp = () => {
           <Route path="/reminders" element={<Reminders />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/website" element={<WeddingWebsite />} />
+          <Route path="/vendors" element={<Vendors />} />
+          <Route path="/moodboard" element={<MoodBoard />} />
+          <Route path="/rehearsal" element={<Rehearsal />} />
+          <Route path="/speeches" element={<Speeches />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

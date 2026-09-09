@@ -8,11 +8,16 @@ import { Check, Sparkles, Crown, Gem } from 'lucide-react';
 
 const FEATURE_LABELS = {
   timeline: 'Timeline builder',
+  optimizer: 'AI timeline optimizer',
   vows: 'Vow writing companion',
+  speeches: 'Speech & toast generator',
   ideas: 'Moment idea generator',
+  moodboard: 'Mood board',
   budget: 'Budget tracker',
+  vendors: 'Vendor directory & contracts',
   shotlist: 'Shot list & vendor sharing',
   guests: 'Guest list & seating chart',
+  rehearsal: 'Rehearsal dinner planner',
   reminders: 'Countdown & reminders',
   travel: 'Guest travel & itinerary tools',
 };

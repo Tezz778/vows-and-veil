@@ -6,7 +6,7 @@ import PageHeader from '@/components/PageHeader';
 import BudgetChart from '@/components/BudgetChart';
 import {
   Calendar, Heart, Sparkles, Users, DollarSign, Camera, Bell,
-  ArrowRight, Check, Clock
+  ArrowRight, Check, Clock, Briefcase, Palette, UtensilsCrossed, Mic, Wand2
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -34,10 +34,15 @@ export default function Dashboard() {
 
   const cards = [
     { label: 'Timeline', icon: Calendar, path: '/timeline', feature: 'timeline', count: timelineCount },
+    { label: 'Optimizer', icon: Wand2, path: '/optimizer', feature: 'optimizer' },
     { label: 'Vows', icon: Heart, path: '/vows', feature: 'vows' },
+    { label: 'Speeches', icon: Mic, path: '/speeches', feature: 'speeches' },
     { label: 'Moment Ideas', icon: Sparkles, path: '/ideas', feature: 'ideas' },
+    { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
     { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
+    { label: 'Rehearsal', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
     { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
+    { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
     { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },
     { label: 'Reminders', icon: Bell, path: '/reminders', feature: 'reminders', count: reminders.length },
   ].filter((c) => hasFeature(tier, c.feature));

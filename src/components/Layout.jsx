@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { hasFeature, TIER_LABELS, daysUntil, formatDate } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
-  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe
+  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe, Briefcase, Palette, Utensils, Mic
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -12,10 +12,14 @@ const NAV = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/', feature: null },
   { label: 'Timeline', icon: Calendar, path: '/timeline', feature: 'timeline' },
   { label: 'Vows', icon: Heart, path: '/vows', feature: 'vows' },
+  { label: 'Speeches', icon: Mic, path: '/speeches', feature: 'speeches' },
   { label: 'Moment Ideas', icon: Sparkles, path: '/ideas', feature: 'ideas' },
+  { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
   { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
   { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
+  { label: 'Rehearsal Dinner', icon: Utensils, path: '/rehearsal', feature: 'rehearsal' },
   { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
+  { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
   { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },
   { label: 'Reminders', icon: Bell, path: '/reminders', feature: 'reminders' },
   { label: 'Plan & Tiers', icon: Gem, path: '/pricing', feature: null },

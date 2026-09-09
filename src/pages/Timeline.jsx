@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Trash2, Clock, Camera, Video, Users, Pencil } from 'lucide-react';
+import { Plus, Trash2, Clock, Camera, Video, Users, Pencil, Sparkles, Loader2 } from 'lucide-react';
 
 const DEFAULT_DAYS = {
   single_day: [{ n: 1, label: 'Wedding Day' }],
@@ -33,6 +33,7 @@ export default function Timeline() {
   const [activeDay, setActiveDay] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [optOpen, setOptOpen] = useState(false);
 
   const isMultiday = wedding?.wedding_type !== 'single_day';
   const days = DEFAULT_DAYS[wedding?.wedding_type] || DEFAULT_DAYS.single_day;
@@ -75,9 +76,14 @@ export default function Timeline() {
       <PageHeader eyebrow="The Schedule" title="Timeline Builder"
         subtitle="Arrange your day-of moments into a clear, paced schedule."
       >
-        <Button onClick={openAdd} className="bg-primary hover:bg-primary/90">
-          <Plus className="w-4 h-4 mr-1" /> Add event
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setOptOpen(true)} variant="outline">
+            <Sparkles className="w-4 h-4 mr-1" /> Optimize
+          </Button>
+          <Button onClick={openAdd} className="bg-primary hover:bg-primary/90">
+            <Plus className="w-4 h-4 mr-1" /> Add event
+          </Button>
+        </div>
       </PageHeader>
 
       {/* Pacing note */}
@@ -156,6 +162,11 @@ export default function Timeline() {
         wedding={wedding} dayNumber={activeDay} dayLabel={days.find((d) => d.n === activeDay)?.label || ''}
         editing={editing} onSaved={load}
       />
+      <OptimizeDialog
+        open={optOpen} onOpenChange={setOptOpen}
+        wedding={wedding} dayNumber={activeDay} dayLabel={days.find((d) => d.n === activeDay)?.label || ''}
+        onApplied={load}
+      />
     </div>
   );
 }
@@ -232,6 +243,103 @@ function EventDialog({ open, onOpenChange, wedding, dayNumber, dayLabel, editing
           <Button onClick={save} disabled={saving || !title.trim() || !startTime} className="bg-primary hover:bg-primary/90">
             {saving ? 'Saving…' : 'Save event'}
           </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function OptimizeDialog({ open, onOpenChange, wedding, dayNumber, dayLabel, onApplied }) {
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [applying, setApplying] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (open) { setSuggestions([]); setError(''); }
+  }, [open]);
+
+  const generate = async () => {
+    setLoading(true); setError('');
+    try {
+      const res = await base44.functions.invoke('optimizeTimeline', {
+        guest_count: wedding.guest_count || 0,
+        ceremony_time: '16:00',
+        venue: wedding.venue_name || '',
+        wedding_type: wedding.wedding_type || 'single_day',
+        photographer_status: wedding.photographer_status || 'photographer',
+      });
+      setSuggestions(res?.data?.events || []);
+    } catch (e) { setError('Could not generate: ' + (e.message || 'error')); }
+    finally { setLoading(false); }
+  };
+
+  const applyAll = async () => {
+    if (!suggestions.length) return;
+    setApplying(true);
+    try {
+      const records = suggestions.map((s, i) => ({
+        wedding_id: wedding.id,
+        day_number: Number(dayNumber),
+        day_label: dayLabel,
+        title: s.title,
+        start_time: s.start_time,
+        duration_minutes: Number(s.duration_minutes) || 30,
+        notes: s.notes || '',
+        order: Date.now() + i,
+      }));
+      await base44.entities.TimelineEvent.bulkCreate(records);
+      onOpenChange(false);
+      onApplied();
+    } catch (e) { setError('Could not apply: ' + (e.message || 'error')); }
+    finally { setApplying(false); }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="serif-heading text-2xl flex items-center gap-2"><Sparkles className="w-5 h-5 text-primary" /> Timeline optimizer</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground -mt-2">
+          We'll suggest a paced run-of-show from your guest count, ceremony time, and photo coverage.
+        </p>
+        <div className="grid grid-cols-3 gap-3 text-sm py-1">
+          <div><p className="text-xs text-muted-foreground uppercase tracking-wider">Guests</p><p className="font-medium">{wedding.guest_count || '—'}</p></div>
+          <div><p className="text-xs text-muted-foreground uppercase tracking-wider">Venue</p><p className="font-medium truncate">{wedding.venue_name || '—'}</p></div>
+          <div><p className="text-xs text-muted-foreground uppercase tracking-wider">Coverage</p><p className="font-medium capitalize">{(wedding.photographer_status || '—').replace('_', ' ')}</p></div>
+        </div>
+
+        {suggestions.length > 0 && (
+          <div className="max-h-[40vh] overflow-y-auto space-y-2 pr-1">
+            {suggestions.map((s, i) => (
+              <div key={i} className="flex items-start gap-3 rounded-xl border border-border/70 p-3">
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-medium text-primary">{s.start_time}</p>
+                  <p className="text-xs text-muted-foreground">{s.duration_minutes}m</p>
+                </div>
+                <div>
+                  <p className="font-medium text-foreground text-sm">{s.title}</p>
+                  <p className="text-xs text-muted-foreground">{s.notes}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+          {suggestions.length === 0 ? (
+            <Button onClick={generate} disabled={loading} className="bg-primary hover:bg-primary/90">
+              {loading ? <><Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> Generating…</> : <><Sparkles className="w-4 h-4 mr-1.5" /> Suggest run-of-show</>}
+            </Button>
+          ) : (
+            <Button onClick={applyAll} disabled={applying} className="bg-primary hover:bg-primary/90">
+              {applying ? 'Adding…' : `Add ${suggestions.length} events to Day ${dayNumber}`}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
