@@ -182,7 +182,8 @@ export default function Guests() {
                       <div key={g.id} className="elegant-card p-3 text-sm">
                         <p className="font-medium text-foreground">{g.name}</p>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-muted-foreground">
-                          {g.arrival_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {g.arrival_date}</span>}
+                          {g.arrival_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Arrives {g.arrival_date}</span>}
+                          {g.departure_date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Departs {g.departure_date}</span>}
                           {g.accommodation && <span className="flex items-center gap-1"><Home className="w-3 h-3" /> {g.accommodation}</span>}
                         </div>
                       </div>
@@ -288,6 +289,7 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
   const [plus, setPlus] = useState(0);
   const [travel, setTravel] = useState(false);
   const [arrival, setArrival] = useState('');
+  const [departure, setDeparture] = useState('');
   const [accom, setAccom] = useState('');
   const [invStatus, setInvStatus] = useState('not_sent');
   const [invMethod, setInvMethod] = useState('digital');
@@ -300,6 +302,7 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
       setName(editing?.name || ''); setRsvp(editing?.rsvp_status || 'pending');
       setContact(editing?.contact || ''); setPlus(editing?.plus_ones || 0);
       setTravel(editing?.travel_needed || false); setArrival(editing?.arrival_date || '');
+      setDeparture(editing?.departure_date || '');
       setAccom(editing?.accommodation || '');
       setInvStatus(editing?.invitation_status || 'not_sent');
       setInvMethod(editing?.invite_method || 'digital');
@@ -314,7 +317,7 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
     try {
       const payload = {
         wedding_id: wedding.id, name: name.trim(), rsvp_status: rsvp, contact: contact.trim(),
-        plus_ones: Number(plus) || 0, travel_needed: travel, arrival_date: arrival || null, accommodation: accom.trim(),
+        plus_ones: Number(plus) || 0, travel_needed: travel, arrival_date: arrival || null, departure_date: departure || null, accommodation: accom.trim(),
         invitation_status: invStatus, invite_method: invMethod,
         invite_sent_date: invDate || null, follow_up_sent: followUp,
       };
@@ -382,9 +385,10 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
                 Traveling / needs accommodation
               </label>
               {travel && (
-                <div className="grid grid-cols-1 gap-3">
-                  <div><Label htmlFor="ar">Arrival date</Label><Input id="ar" type="date" value={arrival} onChange={(e) => setArrival(e.target.value)} className="mt-1.5" /></div>
-                  <div><Label htmlFor="ac">Accommodation</Label><Input id="ac" placeholder="Hotel / address" value={accom} onChange={(e) => setAccom(e.target.value)} className="mt-1.5" /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label htmlFor="ar">Arrival</Label><Input id="ar" type="date" value={arrival} onChange={(e) => setArrival(e.target.value)} className="mt-1.5" /></div>
+                  <div><Label htmlFor="dp">Departure</Label><Input id="dp" type="date" value={departure} onChange={(e) => setDeparture(e.target.value)} className="mt-1.5" /></div>
+                  <div className="col-span-2"><Label htmlFor="ac">Accommodation</Label><Input id="ac" placeholder="Hotel / address" value={accom} onChange={(e) => setAccom(e.target.value)} className="mt-1.5" /></div>
                 </div>
               )}
             </div>

@@ -9,23 +9,53 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const NAV = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/', feature: null },
-  { label: 'Timeline', icon: Calendar, path: '/timeline', feature: 'timeline' },
-  { label: 'Timeline Optimizer', icon: Wand2, path: '/optimizer', feature: 'optimizer' },
-  { label: 'Vows', icon: Heart, path: '/vows', feature: 'vows' },
-  { label: 'Speeches', icon: Mic, path: '/speeches', feature: 'speeches' },
-  { label: 'Moment Ideas', icon: Sparkles, path: '/ideas', feature: 'ideas' },
-  { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
-  { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
-  { label: 'Rehearsal Dinner', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
-  { label: 'Travel Suite', icon: Plane, path: '/travel', feature: 'travel' },
-  { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
-  { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
-  { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
-  { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },
-  { label: 'Reminders', icon: Bell, path: '/reminders', feature: 'reminders' },
-  { label: 'Plan & Tiers', icon: Gem, path: '/pricing', feature: null },
+const NAV_SECTIONS = [
+  {
+    label: null,
+    items: [
+      { label: 'Dashboard', icon: LayoutDashboard, path: '/', feature: null },
+    ],
+  },
+  {
+    label: 'Schedule',
+    items: [
+      { label: 'Timeline', icon: Calendar, path: '/timeline', feature: 'timeline' },
+      { label: 'Timeline Optimizer', icon: Wand2, path: '/optimizer', feature: 'optimizer' },
+    ],
+  },
+  {
+    label: 'Words & Moments',
+    items: [
+      { label: 'Vows', icon: Heart, path: '/vows', feature: 'vows' },
+      { label: 'Speeches', icon: Mic, path: '/speeches', feature: 'speeches' },
+      { label: 'Moment Ideas', icon: Sparkles, path: '/ideas', feature: 'ideas' },
+      { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
+    ],
+  },
+  {
+    label: 'Guests & Travel',
+    items: [
+      { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
+      { label: 'Rehearsal Dinner', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
+      { label: 'Travel Suite', icon: Plane, path: '/travel', feature: 'travel' },
+      { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
+    ],
+  },
+  {
+    label: 'Budget & Details',
+    items: [
+      { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
+      { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },
+      { label: 'Shot List', icon: Camera, path: '/shotlist', feature: 'shotlist' },
+      { label: 'Reminders', icon: Bell, path: '/reminders', feature: 'reminders' },
+    ],
+  },
+  {
+    label: null,
+    items: [
+      { label: 'Plan & Tiers', icon: Gem, path: '/pricing', feature: null },
+    ],
+  },
 ];
 
 export default function Layout() {
@@ -105,28 +135,35 @@ export default function Layout() {
         )}
 
         <nav className="flex-1 px-4 overflow-y-auto">
-          {NAV.map((item) => {
-            const locked = item.feature && !hasFeature(tier, item.feature);
-            const active = location.pathname === item.path;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                to={locked ? '/pricing' : item.path}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors ${
-                  active
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : locked
-                    ? 'text-muted-foreground/70 hover:bg-accent/50'
-                    : 'text-sidebar-foreground hover:bg-accent'
-                }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className="flex-1">{item.label}</span>
-                {locked && <Lock className="w-3.5 h-3.5 opacity-70" />}
-              </Link>
-            );
-          })}
+          {NAV_SECTIONS.map((section, si) => (
+            <div key={si} className={si > 0 ? 'mt-5' : ''}>
+              {section.label && (
+                <p className="px-3 mb-1.5 text-[10px] font-medium tracking-[0.18em] uppercase text-muted-foreground/70">{section.label}</p>
+              )}
+              {section.items.map((item) => {
+                const locked = item.feature && !hasFeature(tier, item.feature);
+                const active = location.pathname === item.path;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={locked ? '/pricing' : item.path}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors ${
+                      active
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : locked
+                        ? 'text-muted-foreground/70 hover:bg-accent/50'
+                        : 'text-sidebar-foreground hover:bg-accent'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="flex-1">{item.label}</span>
+                    {locked && <Lock className="w-3.5 h-3.5 opacity-70" />}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-sidebar-border">

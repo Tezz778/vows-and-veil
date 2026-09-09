@@ -97,6 +97,7 @@ export default function HotelsFlights({ weddingId }) {
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Guest</th>
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Needs travel</th>
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Arrival</th>
+                    <th className="text-left font-medium text-muted-foreground px-5 py-3">Departure</th>
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Accommodation</th>
                   </tr></thead>
                   <tbody>
@@ -107,6 +108,7 @@ export default function HotelsFlights({ weddingId }) {
                           ? <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">Yes</span>
                           : <span className="text-[11px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">Local</span>}</td>
                         <td className="px-5 py-3 text-muted-foreground">{g.arrival_date ? formatDate(g.arrival_date) : '—'}</td>
+                        <td className="px-5 py-3 text-muted-foreground">{g.departure_date ? formatDate(g.departure_date) : '—'}</td>
                         <td className="px-5 py-3 text-muted-foreground">{g.accommodation || '—'}</td>
                       </tr>
                     ))}

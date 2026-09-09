@@ -38,6 +38,10 @@
       "type": "string",
       "format": "date"
     },
+    "departure_date": {
+      "type": "string",
+      "format": "date"
+    },
     "invitation_status": {
       "type": "string",
       "enum": [
