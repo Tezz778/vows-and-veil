@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import PageHeader from '@/components/PageHeader';
-import FeatureGate from '@/components/FeatureGate';
-import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,63 +7,48 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Plus, Trash2, Pencil, MapPin, Clock } from 'lucide-react';
 
-export default function Itinerary() {
-  const { wedding, tier } = useOutletContext();
+export default function GuestItinerary({ weddingId }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
   const load = async () => {
-    if (!wedding) return;
+    if (!weddingId) return;
     setLoading(true);
     try {
-      const list = await base44.entities.ItineraryItem.filter({ wedding_id: wedding.id }, 'order', 100);
+      const list = await base44.entities.ItineraryItem.filter({ wedding_id: weddingId }, 'order', 100);
       setItems(list || []);
     } catch {} finally { setLoading(false); }
   };
 
-  useEffect(() => { load(); }, [wedding]);
+  useEffect(() => { load(); }, [weddingId]);
 
-  if (!wedding) return null;
-  if (!hasFeature(tier, 'itinerary')) return <FeatureGate tierLabel="Destination" />;
+  const openAdd = () => { setEditing(null); setDialogOpen(true); };
+  const openEdit = (it) => { setEditing(it); setDialogOpen(true); };
 
   const days = Array.from(new Set(items.map((i) => i.day_label || 'Day 1').filter(Boolean)));
   const grouped = days.map((d) => ({
     day: d,
     date: items.find((i) => (i.day_label || 'Day 1') === d)?.date || '',
-    entries: items
-      .filter((i) => (i.day_label || 'Day 1') === d)
-      .sort((a, b) => (a.time || '').localeCompare(b.time || '')),
+    entries: items.filter((i) => (i.day_label || 'Day 1') === d).sort((a, b) => (a.time || '').localeCompare(b.time || '')),
   }));
-
-  const openAdd = () => { setEditing(null); setDialogOpen(true); };
-  const openEdit = (it) => { setEditing(it); setDialogOpen(true); };
 
   return (
     <div>
-      <PageHeader eyebrow="The Weekend" title="Weekend Itinerary"
-        subtitle="Build the guest-facing schedule for your destination weekend — welcome drinks, ceremony, reception, and the morning-after brunch."
-      >
-        <Button onClick={openAdd} className="bg-primary hover:bg-primary/90">
-          <Plus className="w-4 h-4 mr-1" /> Add event
-        </Button>
-      </PageHeader>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-foreground">{items.length}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Events</p></div>
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-foreground">{days.length}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Days</p></div>
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-foreground">{items.filter((i) => i.location).length}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">With venue</p></div>
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="serif-heading text-xl text-foreground">Guest Itinerary</h2>
+        <Button size="sm" onClick={openAdd} className="bg-primary hover:bg-primary/90"><Plus className="w-4 h-4 mr-1" /> Add event</Button>
       </div>
+      <p className="text-sm text-muted-foreground mb-5">The shareable weekend schedule — arrival windows, transportation, and key locations like venue, hotel, and rehearsal dinner spot.</p>
 
       {loading ? (
-        <div className="text-center py-16 text-muted-foreground">Loading itinerary…</div>
+        <div className="text-center py-12 text-muted-foreground">Loading…</div>
       ) : items.length === 0 ? (
-        <div className="elegant-card p-12 text-center">
-          <MapPin className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
-          <p className="serif-heading text-xl text-foreground">No events yet</p>
-          <p className="text-sm text-muted-foreground mt-1 mb-5">Sketch out the full weekend so guests know where to be and when.</p>
-          <Button onClick={openAdd} className="bg-primary hover:bg-primary/90"><Plus className="w-4 h-4 mr-1" /> Add the first event</Button>
+        <div className="elegant-card p-10 text-center">
+          <MapPin className="w-9 h-9 text-muted-foreground/30 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground mb-4">Sketch out the full weekend so guests know where to be and when.</p>
+          <Button size="sm" onClick={openAdd} className="bg-primary hover:bg-primary/90"><Plus className="w-4 h-4 mr-1" /> Add the first event</Button>
         </div>
       ) : (
         <div className="space-y-8">
@@ -105,13 +86,12 @@ export default function Itinerary() {
           ))}
         </div>
       )}
-
-      <ItineraryDialog open={dialogOpen} onOpenChange={setDialogOpen} wedding={wedding} editing={editing} onSaved={load} />
+      <ItineraryDialog open={dialogOpen} onOpenChange={setDialogOpen} weddingId={weddingId} editing={editing} onSaved={load} />
     </div>
   );
 }
 
-function ItineraryDialog({ open, onOpenChange, wedding, editing, onSaved }) {
+function ItineraryDialog({ open, onOpenChange, weddingId, editing, onSaved }) {
   const [dayLabel, setDayLabel] = useState('Day 1');
   const [date, setDate] = useState('');
   const [title, setTitle] = useState('');
@@ -125,7 +105,7 @@ function ItineraryDialog({ open, onOpenChange, wedding, editing, onSaved }) {
   useEffect(() => {
     if (open) {
       setDayLabel(editing?.day_label || 'Day 1');
-      setDate(editing?.date || (wedding?.wedding_date || ''));
+      setDate(editing?.date || '');
       setTitle(editing?.title || '');
       setTime(editing?.time || '');
       setLocation(editing?.location || '');
@@ -133,18 +113,15 @@ function ItineraryDialog({ open, onOpenChange, wedding, editing, onSaved }) {
       setDress(editing?.dress_code || '');
       setOrder(editing?.order ?? 0);
     }
-  }, [open, editing, wedding]);
+  }, [open, editing]);
 
   const save = async () => {
     if (!title.trim()) return;
     setSaving(true);
     try {
-      const payload = {
-        wedding_id: wedding.id, day_label: dayLabel.trim() || 'Day 1',
-        date: date || null, title: title.trim(), time: time.trim(),
-        location: location.trim(), description: description.trim(),
-        dress_code: dress.trim(), order: Number(order) || 0,
-      };
+      const payload = { wedding_id: weddingId, day_label: dayLabel.trim() || 'Day 1',
+        date: date || null, title: title.trim(), time: time.trim(), location: location.trim(),
+        description: description.trim(), dress_code: dress.trim(), order: Number(order) || 0 };
       if (editing) await base44.entities.ItineraryItem.update(editing.id, payload);
       else await base44.entities.ItineraryItem.create(payload);
       onOpenChange(false); onSaved();

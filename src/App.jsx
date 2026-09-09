@@ -25,6 +25,7 @@ import MoodBoard from '@/pages/MoodBoard';
 import Rehearsal from '@/pages/Rehearsal';
 import Speeches from '@/pages/Speeches';
 import TimelineOptimizer from '@/pages/TimelineOptimizer';
+import TravelSuite from '@/pages/TravelSuite';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -75,6 +76,7 @@ const AuthenticatedApp = () => {
           <Route path="/rehearsal" element={<Rehearsal />} />
           <Route path="/speeches" element={<Speeches />} />
           <Route path="/optimizer" element={<TimelineOptimizer />} />
+          <Route path="/travel" element={<TravelSuite />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

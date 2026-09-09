@@ -5,7 +5,7 @@ import { hasFeature, TIER_LABELS, daysUntil, formatDate } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
   Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
-  Briefcase, Palette, UtensilsCrossed, Mic, Wand2
+  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -19,6 +19,7 @@ const NAV = [
   { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
   { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
   { label: 'Rehearsal Dinner', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
+  { label: 'Travel Suite', icon: Plane, path: '/travel', feature: 'travel' },
   { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
   { label: 'Budget', icon: DollarSign, path: '/budget', feature: 'budget' },
   { label: 'Vendors', icon: Briefcase, path: '/vendors', feature: 'vendors' },

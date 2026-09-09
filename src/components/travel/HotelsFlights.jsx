@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import PageHeader from '@/components/PageHeader';
-import FeatureGate from '@/components/FeatureGate';
-import { hasFeature, formatDate } from '@/lib/wedding';
+import { formatDate } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Trash2, Pencil, Plane, Hotel, MapPin } from 'lucide-react';
+import { Plus, Trash2, Pencil, Hotel, Plane, MapPin } from 'lucide-react';
 
-export default function Travel() {
-  const { wedding, tier } = useOutletContext();
+export default function HotelsFlights({ weddingId }) {
   const [accs, setAccs] = useState([]);
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,62 +16,51 @@ export default function Travel() {
   const [editing, setEditing] = useState(null);
 
   const load = async () => {
-    if (!wedding) return;
+    if (!weddingId) return;
     setLoading(true);
     try {
       const [a, g] = await Promise.all([
-        base44.entities.Accommodation.filter({ wedding_id: wedding.id }),
-        base44.entities.Guest.filter({ wedding_id: wedding.id }),
+        base44.entities.Accommodation.filter({ wedding_id: weddingId }),
+        base44.entities.Guest.filter({ wedding_id: weddingId }),
       ]);
-      setAccs(a || []);
-      setGuests(g || []);
+      setAccs(a || []); setGuests(g || []);
     } catch {} finally { setLoading(false); }
   };
 
-  useEffect(() => { load(); }, [wedding]);
-
-  if (!wedding) return null;
-  if (!hasFeature(tier, 'travel')) return <FeatureGate tierLabel="Destination" />;
+  useEffect(() => { load(); }, [weddingId]);
 
   const roomsReserved = accs.reduce((s, a) => s + (Number(a.rooms_reserved) || 0), 0);
   const needTravel = guests.filter((g) => g.travel_needed);
-  const withAccommodation = guests.filter((g) => g.accommodation);
+  const withAcc = guests.filter((g) => g.accommodation);
 
   const openAdd = () => { setEditing(null); setDialogOpen(true); };
   const openEdit = (a) => { setEditing(a); setDialogOpen(true); };
 
   return (
     <div>
-      <PageHeader eyebrow="Getting There" title="Guest Travel & Stays"
-        subtitle="Coordinate room blocks, track who needs travel help, and keep arrivals and accommodations organized for your destination celebration."
-      >
-        <Button onClick={openAdd} className="bg-primary hover:bg-primary/90">
-          <Plus className="w-4 h-4 mr-1" /> Add accommodation
-        </Button>
-      </PageHeader>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-foreground">{accs.length}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Room blocks</p></div>
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-foreground">{roomsReserved}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Rooms held</p></div>
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-primary">{needTravel.length}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Need travel</p></div>
-        <div className="elegant-card p-4"><p className="serif-heading text-2xl text-emerald-600">{withAccommodation.length}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">Housed</p></div>
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="serif-heading text-xl text-foreground">Hotels & Flights</h2>
+        <Button size="sm" onClick={openAdd} className="bg-primary hover:bg-primary/90"><Plus className="w-4 h-4 mr-1" /> Add room block</Button>
       </div>
 
-      {/* Accommodations */}
-      <section className="mb-10">
-        <h2 className="serif-heading text-xl text-foreground mb-4">Accommodations & room blocks</h2>
-        {loading ? (
-          <div className="text-center py-12 text-muted-foreground">Loading accommodations…</div>
-        ) : accs.length === 0 ? (
-          <div className="elegant-card p-12 text-center">
-            <Hotel className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
-            <p className="serif-heading text-xl text-foreground">No accommodations yet</p>
-            <p className="text-sm text-muted-foreground mt-1 mb-5">Add hotel room blocks so guests know where to book before the cutoff.</p>
-            <Button onClick={openAdd} className="bg-primary hover:bg-primary/90"><Plus className="w-4 h-4 mr-1" /> Add a room block</Button>
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
-            {accs.map((a) => (
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <Stat value={accs.length} label="Room blocks" />
+        <Stat value={roomsReserved} label="Rooms held" />
+        <Stat value={needTravel.length} label="Need travel" className="text-primary" />
+        <Stat value={withAcc.length} label="Housed" className="text-emerald-600" />
+      </div>
+
+      {loading ? (
+        <div className="text-center py-12 text-muted-foreground">Loading…</div>
+      ) : (
+        <>
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            {accs.length === 0 ? (
+              <div className="elegant-card p-10 text-center sm:col-span-2">
+                <Hotel className="w-9 h-9 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Add hotel room blocks so guests know where to book before the cutoff.</p>
+              </div>
+            ) : accs.map((a) => (
               <div key={a.id} className="elegant-card p-5 group">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -97,55 +82,54 @@ export default function Travel() {
               </div>
             ))}
           </div>
-        )}
-      </section>
 
-      {/* Guest travel summary */}
-      <section>
-        <h2 className="serif-heading text-xl text-foreground mb-4">Guest travel overview</h2>
-        <div className="elegant-card overflow-hidden">
+          <h3 className="serif-heading text-lg text-foreground mb-3">Guest travel overview</h3>
           {guests.length === 0 ? (
-            <div className="p-10 text-center">
-              <Plane className="w-9 h-9 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">Add guests first to track their travel and stays here.</p>
+            <div className="elegant-card p-8 text-center">
+              <Plane className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">Add guests first to track their travel and stays.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-accent/40">
+            <div className="elegant-card overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="border-b border-border bg-accent/40">
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Guest</th>
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Needs travel</th>
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Arrival</th>
                     <th className="text-left font-medium text-muted-foreground px-5 py-3">Accommodation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {guests.map((g) => (
-                    <tr key={g.id} className="border-b border-border/50 last:border-0">
-                      <td className="px-5 py-3 font-medium text-foreground">{g.name}</td>
-                      <td className="px-5 py-3">
-                        {g.travel_needed
+                  </tr></thead>
+                  <tbody>
+                    {guests.map((g) => (
+                      <tr key={g.id} className="border-b border-border/50 last:border-0">
+                        <td className="px-5 py-3 font-medium text-foreground">{g.name}</td>
+                        <td className="px-5 py-3">{g.travel_needed
                           ? <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">Yes</span>
-                          : <span className="text-[11px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">Local</span>}
-                      </td>
-                      <td className="px-5 py-3 text-muted-foreground">{g.arrival_date ? formatDate(g.arrival_date) : '—'}</td>
-                      <td className="px-5 py-3 text-muted-foreground">{g.accommodation || '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          : <span className="text-[11px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">Local</span>}</td>
+                        <td className="px-5 py-3 text-muted-foreground">{g.arrival_date ? formatDate(g.arrival_date) : '—'}</td>
+                        <td className="px-5 py-3 text-muted-foreground">{g.accommodation || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
-        </div>
-      </section>
+        </>
+      )}
 
-      <AccommodationDialog open={dialogOpen} onOpenChange={setDialogOpen} wedding={wedding} editing={editing} onSaved={load} />
+      <AccommodationDialog open={dialogOpen} onOpenChange={setDialogOpen} weddingId={weddingId} editing={editing} onSaved={load} />
     </div>
   );
 }
 
-function AccommodationDialog({ open, onOpenChange, wedding, editing, onSaved }) {
+function Stat({ value, label, className }) {
+  return (
+    <div className="elegant-card p-4"><p className={`serif-heading text-2xl ${className || 'text-foreground'}`}>{value}</p><p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{label}</p></div>
+  );
+}
+
+function AccommodationDialog({ open, onOpenChange, weddingId, editing, onSaved }) {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [roomRate, setRoomRate] = useState(0);
@@ -170,7 +154,7 @@ function AccommodationDialog({ open, onOpenChange, wedding, editing, onSaved }) 
     setSaving(true);
     try {
       const payload = {
-        wedding_id: wedding.id, name: name.trim(), location: location.trim(),
+        wedding_id: weddingId, name: name.trim(), location: location.trim(),
         room_rate: Number(roomRate) || 0, block_name: blockName.trim(),
         rooms_reserved: Number(rooms) || 0, cutoff_date: cutoff || null,
         contact_info: contact.trim(), notes: notes.trim(),

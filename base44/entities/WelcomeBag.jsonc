@@ -1,0 +1,45 @@
+{
+  "name": "WelcomeBag",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "guest_name": {
+      "type": "string"
+    },
+    "room_number": {
+      "type": "string"
+    },
+    "contents": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "delivered"
+      ],
+      "default": "not_started"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "guest_name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
