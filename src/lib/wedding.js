@@ -13,9 +13,9 @@ export const TIER_LABELS = {
 };
 
 export const TIER_PRICES = {
-  single_day: 99,
-  multiday: 197,
-  destination: 347
+  single_day: 199,
+  multiday: 299,
+  destination: 399
 };
 
 export const TIER_DESCRIPTIONS = {
