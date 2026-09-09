@@ -1,0 +1,31 @@
+{
+  "name": "SeatingTable",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "capacity": {
+      "type": "number",
+      "default": 8
+    }
+  },
+  "required": [
+    "wedding_id",
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

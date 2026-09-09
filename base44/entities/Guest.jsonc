@@ -1,0 +1,57 @@
+{
+  "name": "Guest",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "table_name": {
+      "type": "string"
+    },
+    "rsvp_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "yes",
+        "no"
+      ],
+      "default": "pending"
+    },
+    "contact": {
+      "type": "string"
+    },
+    "plus_ones": {
+      "type": "number",
+      "default": 0
+    },
+    "travel_needed": {
+      "type": "boolean",
+      "default": false
+    },
+    "accommodation": {
+      "type": "string"
+    },
+    "arrival_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

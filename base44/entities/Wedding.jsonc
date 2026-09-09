@@ -1,0 +1,81 @@
+{
+  "name": "Wedding",
+  "type": "object",
+  "properties": {
+    "couple_names": {
+      "type": "string"
+    },
+    "wedding_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "venue_name": {
+      "type": "string"
+    },
+    "venue_location": {
+      "type": "string"
+    },
+    "wedding_type": {
+      "type": "string",
+      "enum": [
+        "single_day",
+        "multiday",
+        "destination"
+      ]
+    },
+    "has_planner": {
+      "type": "boolean",
+      "default": false
+    },
+    "planner_contact": {
+      "type": "string"
+    },
+    "photographer_status": {
+      "type": "string",
+      "enum": [
+        "photographer",
+        "videographer",
+        "both",
+        "neither"
+      ]
+    },
+    "guest_count": {
+      "type": "number",
+      "default": 0
+    },
+    "budget_range": {
+      "type": "string"
+    },
+    "selected_tier": {
+      "type": "string",
+      "enum": [
+        "single_day",
+        "multiday",
+        "destination"
+      ]
+    },
+    "access_expires_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "style_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "couple_names",
+    "wedding_date",
+    "wedding_type"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "BudgetItem",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "vendor_name": {
+      "type": "string"
+    },
+    "estimated_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "actual_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "paid_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

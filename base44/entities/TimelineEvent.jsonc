@@ -1,0 +1,49 @@
+{
+  "name": "TimelineEvent",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "day_number": {
+      "type": "number",
+      "default": 1
+    },
+    "day_label": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 30
+    },
+    "notes": {
+      "type": "string"
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "wedding_id",
+    "title",
+    "start_time"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
