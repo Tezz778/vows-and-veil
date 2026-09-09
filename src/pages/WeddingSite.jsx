@@ -72,6 +72,12 @@ export default function WeddingSite() {
             <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {formatDate(wedding.wedding_date)}</span>
             {wedding.venue_name && <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {wedding.venue_name}{wedding.venue_location ? `, ${wedding.venue_location}` : ''}</span>}
           </div>
+          {wedding.site_message && (
+            <p className={`mt-6 text-lg font-display italic leading-relaxed max-w-xl mx-auto ${wedding.site_hero_image ? 'text-white/95' : 'text-foreground/80'}`}>
+              {wedding.site_message}
+            </p>
+          )}
+          <HeroCountdown weddingDate={wedding.wedding_date} hasImage={!!wedding.site_hero_image} />
         </div>
       </header>
 
@@ -83,13 +89,13 @@ export default function WeddingSite() {
             <Detail label="The Venue" value={wedding.venue_name || 'To be announced'} />
             <Detail label="Location" value={wedding.venue_location || 'To be announced'} />
           </div>
-          {(wedding.site_message || wedding.style_notes) && (
-            <div className="soft-divider my-8" />
-          )}
-          {(wedding.site_message || wedding.style_notes) && (
-            <p className="text-center text-lg font-display text-foreground/80 italic leading-relaxed max-w-xl mx-auto">
-              {wedding.site_message || wedding.style_notes}
-            </p>
+          {wedding.style_notes && (
+            <>
+              <div className="soft-divider my-8" />
+              <p className="text-center text-lg font-display text-foreground/80 italic leading-relaxed max-w-xl mx-auto">
+                {wedding.style_notes}
+              </p>
+            </>
           )}
         </div>
       </section>
@@ -141,6 +147,43 @@ export default function WeddingSite() {
       <footer className="text-center pb-10 text-xs text-muted-foreground/70">
         Made with <Heart className="w-3 h-3 inline text-primary" /> on Vows & Veil
       </footer>
+    </div>
+  );
+}
+
+function getRemaining(dateStr) {
+  if (!dateStr) return null;
+  const target = new Date(dateStr + 'T00:00:00');
+  if (isNaN(target)) return null;
+  const total = target - new Date();
+  if (total <= 0) return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+  return {
+    total,
+    days: Math.floor(total / 86400000),
+    hours: Math.floor((total % 86400000) / 3600000),
+    minutes: Math.floor((total % 3600000) / 60000),
+    seconds: Math.floor((total % 60000) / 1000),
+  };
+}
+
+function HeroCountdown({ weddingDate, hasImage }) {
+  const [remaining, setRemaining] = useState(getRemaining(weddingDate));
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(getRemaining(weddingDate)), 1000);
+    return () => clearInterval(id);
+  }, [weddingDate]);
+  if (!remaining || remaining.total <= 0) return null;
+  const numTone = hasImage ? 'text-white' : 'text-primary';
+  const labelTone = hasImage ? 'text-white/80' : 'text-muted-foreground';
+  const units = [['Days', remaining.days], ['Hours', remaining.hours], ['Minutes', remaining.minutes], ['Seconds', remaining.seconds]];
+  return (
+    <div className="mt-8 flex items-center justify-center gap-4 sm:gap-6">
+      {units.map(([label, val]) => (
+        <div key={label} className="text-center">
+          <p className={`serif-heading text-3xl sm:text-4xl leading-none ${numTone}`}>{String(val).padStart(2, '0')}</p>
+          <p className={`text-[10px] tracking-[0.2em] uppercase mt-1 ${labelTone}`}>{label}</p>
+        </div>
+      ))}
     </div>
   );
 }

@@ -7,7 +7,6 @@ import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Globe, Copy, Check, RefreshCw, ExternalLink, Users } from 'lucide-react';
 import SiteCustomizer from '@/components/site/SiteCustomizer';
 
@@ -20,14 +19,9 @@ function randomSlug(couple) {
 
 export default function WeddingWebsite() {
   const { wedding, setWedding, tier } = useOutletContext();
-  const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rsvpCount, setRsvpCount] = useState(0);
-
-  useEffect(() => {
-    if (wedding) setMessage(wedding.site_message || '');
-  }, [wedding]);
 
   useEffect(() => {
     if (!wedding) return;
@@ -53,15 +47,6 @@ export default function WeddingWebsite() {
       await base44.entities.Wedding.update(wedding.id, { site_slug: newSlug });
       setWedding({ ...wedding, site_slug: newSlug });
     } catch (e) { alert('Could not generate link: ' + (e.message || 'error')); }
-    finally { setSaving(false); }
-  };
-
-  const saveMessage = async () => {
-    setSaving(true);
-    try {
-      await base44.entities.Wedding.update(wedding.id, { site_message: message.trim() });
-      setWedding({ ...wedding, site_message: message.trim() });
-    } catch (e) { alert('Could not save: ' + (e.message || 'error')); }
     finally { setSaving(false); }
   };
 
@@ -117,19 +102,6 @@ export default function WeddingWebsite() {
                 className="mt-3 text-xs text-muted-foreground hover:text-primary inline-flex items-center gap-1">
                 <RefreshCw className="w-3 h-3" /> {saving ? 'Regenerating…' : 'Regenerate link'}
               </button>
-            </div>
-
-            {/* Welcome message */}
-            <div className="elegant-card p-6">
-              <h3 className="serif-heading text-xl text-foreground mb-1">Welcome message</h3>
-              <p className="text-sm text-muted-foreground mb-4">A short note guests see on your site. Leave blank to use your style notes.</p>
-              <Textarea rows={4} value={message} onChange={(e) => setMessage(e.target.value)}
-                placeholder="e.g. We're so excited to celebrate this day with the people we love most…" />
-              <div className="mt-3 flex justify-end">
-                <Button onClick={saveMessage} disabled={saving} className="bg-primary hover:bg-primary/90">
-                  {saving ? 'Saving…' : 'Save message'}
-                </Button>
-              </div>
             </div>
 
             <SiteCustomizer wedding={wedding} setWedding={setWedding} />
