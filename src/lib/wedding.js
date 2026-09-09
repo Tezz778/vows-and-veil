@@ -1,7 +1,7 @@
 import { base44 } from '@/api/base44Client';
 
 export const TIER_FEATURES = {
-  single_day: ['timeline', 'vows', 'ideas', 'budget', 'reminders', 'vendors', 'moodboard', 'speeches', 'optimizer'],
+  single_day: ['timeline', 'ideas', 'budget', 'reminders', 'vendors', 'moodboard', 'optimizer'],
   multiday: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'vendors', 'moodboard', 'speeches', 'optimizer', 'rehearsal'],
   destination: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'travel', 'vendors', 'moodboard', 'speeches', 'optimizer', 'rehearsal']
 };
@@ -13,7 +13,7 @@ export const TIER_LABELS = {
 };
 
 export const TIER_PRICES = {
-  single_day: 199,
+  single_day: 99,
   multiday: 299,
   destination: 399
 };

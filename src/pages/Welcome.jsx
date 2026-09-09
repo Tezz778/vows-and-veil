@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar, Heart, Users, DollarSign, Sparkles, Plane, ArrowRight, Check } from 'lucide-react';
 
 const TIERS = [
-  { name: 'Single Day', price: 199, tagline: 'For one perfect day', features: ['Timeline builder', 'Vow writing companion', 'Moment idea generator', 'Budget tracker', 'Guest list & seating', 'Countdown & reminders'] },
+  { name: 'Single Day', price: 99, tagline: 'For one perfect day', features: ['Timeline builder', 'Moment idea generator', 'Budget tracker', 'Guest list & seating', 'Countdown & reminders'] },
   { name: 'Multiday', price: 299, tagline: 'For a full weekend', features: ['Everything in Single Day', 'Speech generator', 'Mood board', 'Vendor directory', 'Rehearsal dinner planner', 'Timeline optimizer'] },
   { name: 'Destination', price: 399, tagline: 'For a far-from-home celebration', features: ['Everything in Multiday', 'Destination Travel Suite', 'Hotel & flight tracker', 'Guest itinerary page', 'Packing & document checklist', 'Weather & backup plan'] },
 ];
