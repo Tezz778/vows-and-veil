@@ -1,0 +1,87 @@
+{
+  "name": "Vendor",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "venue",
+        "photography",
+        "videography",
+        "catering",
+        "bar",
+        "florist",
+        "music",
+        "officiant",
+        "beauty",
+        "stationery",
+        "rentals",
+        "transportation",
+        "planner",
+        "other"
+      ]
+    },
+    "contact_name": {
+      "type": "string"
+    },
+    "contact_info": {
+      "type": "string"
+    },
+    "booking_status": {
+      "type": "string",
+      "enum": [
+        "not_contacted",
+        "contacted",
+        "contracted",
+        "deposit_paid",
+        "confirmed",
+        "cancelled"
+      ],
+      "default": "not_contacted"
+    },
+    "total_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_paid": {
+      "type": "boolean",
+      "default": false
+    },
+    "balance_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "payment_schedule": {
+      "type": "string"
+    },
+    "contract_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "name",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

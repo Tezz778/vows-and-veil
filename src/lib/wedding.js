@@ -1,9 +1,9 @@
 import { base44 } from '@/api/base44Client';
 
 export const TIER_FEATURES = {
-  single_day: ['timeline', 'vows', 'ideas', 'budget', 'reminders'],
-  multiday: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders'],
-  destination: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'travel']
+  single_day: ['timeline', 'vows', 'ideas', 'budget', 'reminders', 'vendors'],
+  multiday: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'vendors', 'moodboard', 'rehearsal', 'speeches'],
+  destination: ['timeline', 'vows', 'ideas', 'budget', 'shotlist', 'guests', 'reminders', 'travel', 'vendors', 'moodboard', 'rehearsal', 'speeches']
 };
 
 export const TIER_LABELS = {

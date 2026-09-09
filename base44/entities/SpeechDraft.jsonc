@@ -1,0 +1,63 @@
+{
+  "name": "SpeechDraft",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "best_man",
+        "maid_of_honor",
+        "father_of_bride",
+        "mother_of_bride",
+        "father_of_groom",
+        "mother_of_groom",
+        "bride",
+        "groom",
+        "other"
+      ]
+    },
+    "speaker_name": {
+      "type": "string"
+    },
+    "couple_names": {
+      "type": "string"
+    },
+    "relationship": {
+      "type": "string"
+    },
+    "tone": {
+      "type": "string",
+      "enum": [
+        "heartfelt",
+        "funny",
+        "formal",
+        "sentimental"
+      ],
+      "default": "heartfelt"
+    },
+    "prompts": {
+      "type": "object"
+    },
+    "draft_text": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "role"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

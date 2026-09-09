@@ -1,0 +1,48 @@
+{
+  "name": "MoodBoard",
+  "type": "object",
+  "properties": {
+    "wedding_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "color_palette": {
+      "type": "string"
+    },
+    "style_notes": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "decor",
+        "attire",
+        "florals",
+        "venue",
+        "stationery",
+        "other"
+      ],
+      "default": "decor"
+    }
+  },
+  "required": [
+    "wedding_id",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
