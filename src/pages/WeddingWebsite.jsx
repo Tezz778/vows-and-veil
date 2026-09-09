@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Globe, Copy, Check, RefreshCw, ExternalLink, Users } from 'lucide-react';
+import SiteCustomizer from '@/components/site/SiteCustomizer';
 
 function randomSlug(couple) {
   const base = (couple || 'our-wedding')
@@ -130,6 +131,8 @@ export default function WeddingWebsite() {
                 </Button>
               </div>
             </div>
+
+            <SiteCustomizer wedding={wedding} setWedding={setWedding} />
           </div>
 
           {/* RSVP summary */}

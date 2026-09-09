@@ -18,7 +18,11 @@ export default async function(req) {
       venue_location: w.venue_location,
       style_notes: w.style_notes,
       site_message: w.site_message,
-      wedding_type: w.wedding_type
+      wedding_type: w.wedding_type,
+      site_hero_image: w.site_hero_image,
+      site_story: w.site_story,
+      site_photos: w.site_photos,
+      site_sections: w.site_sections
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

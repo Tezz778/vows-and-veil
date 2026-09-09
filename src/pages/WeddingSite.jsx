@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Heart, MapPin, Calendar, Check, Loader2 } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 
 export default function WeddingSite() {
   const { slug } = useParams();
@@ -48,15 +49,26 @@ export default function WeddingSite() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <header className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-accent/60 via-background to-background" />
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-primary/5 blur-3xl" />
+      <header className="relative overflow-hidden min-h-[60vh] flex items-center justify-center">
+        {wedding.site_hero_image ? (
+          <>
+            <div className="absolute inset-0">
+              <img src={wedding.site_hero_image} alt="" className="w-full h-full object-cover" />
+            </div>
+            <div className="absolute inset-0 bg-black/45" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-b from-accent/60 via-background to-background" />
+            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-primary/5 blur-3xl" />
+          </>
+        )}
         <div className="relative max-w-3xl mx-auto px-6 pt-24 pb-20 text-center">
-          <p className="text-[11px] tracking-[0.35em] uppercase text-muted-foreground mb-5">We're getting married</p>
-          <h1 className="serif-heading text-5xl sm:text-7xl text-primary leading-tight mb-6">
+          <p className={`text-[11px] tracking-[0.35em] uppercase mb-5 ${wedding.site_hero_image ? 'text-white/85' : 'text-muted-foreground'}`}>We're getting married</p>
+          <h1 className={`serif-heading text-5xl sm:text-7xl leading-tight mb-6 ${wedding.site_hero_image ? 'text-white' : 'text-primary'}`}>
             {wedding.couple_names || 'Our Wedding'}
           </h1>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-muted-foreground">
+          <div className={`flex flex-wrap items-center justify-center gap-x-6 gap-y-2 ${wedding.site_hero_image ? 'text-white/90' : 'text-muted-foreground'}`}>
             <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {formatDate(wedding.wedding_date)}</span>
             {wedding.venue_name && <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {wedding.venue_name}{wedding.venue_location ? `, ${wedding.venue_location}` : ''}</span>}
           </div>
@@ -81,6 +93,45 @@ export default function WeddingSite() {
           )}
         </div>
       </section>
+
+      {/* Our Story */}
+      {wedding.site_story && (
+        <section className="max-w-2xl mx-auto px-6 pb-16">
+          <div className="text-center">
+            <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground mb-3">Our Story</p>
+            <p className="text-lg font-display text-foreground/85 leading-relaxed whitespace-pre-line">{wedding.site_story}</p>
+          </div>
+        </section>
+      )}
+
+      {/* Gallery */}
+      {Array.isArray(wedding.site_photos) && wedding.site_photos.length > 0 && (
+        <section className="max-w-4xl mx-auto px-6 pb-16">
+          <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground mb-6 text-center">Moments</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+            {wedding.site_photos.map((p, i) => (
+              <figure key={i} className="rounded-xl overflow-hidden">
+                <div className="aspect-square">
+                  <Image src={p.url} alt={p.caption || ''} fittingType="fill" className="w-full h-full" />
+                </div>
+                {p.caption && <figcaption className="text-xs text-muted-foreground text-center mt-2">{p.caption}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Custom sections */}
+      {Array.isArray(wedding.site_sections) && wedding.site_sections.map((s, i) => (
+        (s.title || s.body) ? (
+          <section key={i} className="max-w-2xl mx-auto px-6 pb-16">
+            <div className="elegant-card p-8 sm:p-10">
+              {s.title && <h2 className="serif-heading text-2xl text-foreground text-center mb-4">{s.title}</h2>}
+              {s.body && <p className="text-foreground/80 leading-relaxed whitespace-pre-line text-center">{s.body}</p>}
+            </div>
+          </section>
+        ) : null
+      ))}
 
       {/* RSVP */}
       <section className="max-w-3xl mx-auto px-6 pb-24">

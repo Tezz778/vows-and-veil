@@ -54,6 +54,10 @@
         "destination"
       ]
     },
+    "has_paid": {
+      "type": "boolean",
+      "default": false
+    },
     "access_expires_date": {
       "type": "string",
       "format": "date"
@@ -66,6 +70,18 @@
     },
     "site_message": {
       "type": "string"
+    },
+    "site_hero_image": {
+      "type": "string"
+    },
+    "site_story": {
+      "type": "string"
+    },
+    "site_photos": {
+      "type": "object"
+    },
+    "site_sections": {
+      "type": "object"
     }
   },
   "required": [
