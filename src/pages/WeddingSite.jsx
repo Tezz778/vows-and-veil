@@ -1,0 +1,221 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { formatDate } from '@/lib/wedding';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Heart, MapPin, Calendar, Check, Loader2 } from 'lucide-react';
+
+export default function WeddingSite() {
+  const { slug } = useParams();
+  const [wedding, setWedding] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('getWeddingSite', { slug });
+        const data = res?.data ?? res;
+        if (data?.error) { setNotFound(true); }
+        else { setWedding(data); }
+      } catch {
+        setNotFound(true);
+      } finally { setLoading(false); }
+    })();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  if (notFound || !wedding) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-6 text-center">
+        <div>
+          <Heart className="w-10 h-10 text-primary/40 mx-auto mb-4" />
+          <h1 className="serif-heading text-3xl text-foreground mb-2">Wedding not found</h1>
+          <p className="text-muted-foreground">This wedding site isn't available yet.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Hero */}
+      <header className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/60 via-background to-background" />
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-primary/5 blur-3xl" />
+        <div className="relative max-w-3xl mx-auto px-6 pt-24 pb-20 text-center">
+          <p className="text-[11px] tracking-[0.35em] uppercase text-muted-foreground mb-5">We're getting married</p>
+          <h1 className="serif-heading text-5xl sm:text-7xl text-primary leading-tight mb-6">
+            {wedding.couple_names || 'Our Wedding'}
+          </h1>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-muted-foreground">
+            <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> {formatDate(wedding.wedding_date)}</span>
+            {wedding.venue_name && <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {wedding.venue_name}{wedding.venue_location ? `, ${wedding.venue_location}` : ''}</span>}
+          </div>
+        </div>
+      </header>
+
+      {/* Details */}
+      <section className="max-w-3xl mx-auto px-6 pb-10">
+        <div className="elegant-card p-8 sm:p-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+            <Detail label="The Date" value={formatDate(wedding.wedding_date)} />
+            <Detail label="The Venue" value={wedding.venue_name || 'To be announced'} />
+            <Detail label="Location" value={wedding.venue_location || 'To be announced'} />
+          </div>
+          {(wedding.site_message || wedding.style_notes) && (
+            <div className="soft-divider my-8" />
+          )}
+          {(wedding.site_message || wedding.style_notes) && (
+            <p className="text-center text-lg font-display text-foreground/80 italic leading-relaxed max-w-xl mx-auto">
+              {wedding.site_message || wedding.style_notes}
+            </p>
+          )}
+        </div>
+      </section>
+
+      {/* RSVP */}
+      <section className="max-w-3xl mx-auto px-6 pb-24">
+        <RSVPForm slug={slug} isDestination={wedding.wedding_type === 'destination'} />
+      </section>
+
+      <footer className="text-center pb-10 text-xs text-muted-foreground/70">
+        Made with <Heart className="w-3 h-3 inline text-primary" /> on Vows & Veil
+      </footer>
+    </div>
+  );
+}
+
+function Detail({ label, value }) {
+  return (
+    <div>
+      <p className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-1.5">{label}</p>
+      <p className="serif-heading text-lg text-foreground">{value}</p>
+    </div>
+  );
+}
+
+function RSVPForm({ slug, isDestination }) {
+  const [name, setName] = useState('');
+  const [rsvp, setRsvp] = useState('');
+  const [plus, setPlus] = useState(0);
+  const [contact, setContact] = useState('');
+  const [travel, setTravel] = useState(false);
+  const [accom, setAccom] = useState('');
+  const [arrival, setArrival] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async () => {
+    if (!name.trim()) { setError('Please enter your name'); return; }
+    if (!rsvp) { setError('Please let us know if you can make it'); return; }
+    setSubmitting(true); setError('');
+    try {
+      const res = await base44.functions.invoke('submitRSVP', {
+        slug, name: name.trim(), rsvp_status: rsvp,
+        plus_ones: Number(plus) || 0, contact: contact.trim(),
+        travel_needed: travel, accommodation: accom.trim(), arrival_date: arrival || null,
+      });
+      const data = res?.data ?? res;
+      if (data?.error) setError(data.error);
+      else setDone(true);
+    } catch (e) {
+      setError(e.message || 'Something went wrong. Please try again.');
+    } finally { setSubmitting(false); }
+  };
+
+  if (done) {
+    return (
+      <div className="elegant-card p-10 text-center">
+        <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+          <Check className="w-7 h-7 text-primary" />
+        </div>
+        <h2 className="serif-heading text-3xl text-foreground mb-2">Thank you!</h2>
+        <p className="text-muted-foreground max-w-md mx-auto">
+          {rsvp === 'yes'
+            ? "We can't wait to celebrate with you. We've received your RSVP."
+            : "We'll miss you, but thank you for letting us know."}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="elegant-card p-8 sm:p-10">
+      <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground text-center mb-2">Will you join us?</p>
+      <h2 className="serif-heading text-3xl text-foreground text-center mb-6">RSVP</h2>
+
+      <div className="space-y-5 max-w-md mx-auto">
+        <div>
+          <Label htmlFor="rsvp-name">Your name</Label>
+          <Input id="rsvp-name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" placeholder="Full name" />
+        </div>
+
+        <div>
+          <Label>Can you make it?</Label>
+          <div className="grid grid-cols-2 gap-3 mt-1.5">
+            <button type="button" onClick={() => setRsvp('yes')}
+              className={`h-11 rounded-lg border text-sm font-medium transition-colors ${rsvp === 'yes' ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-accent'}`}>
+              Joyfully accepts
+            </button>
+            <button type="button" onClick={() => setRsvp('no')}
+              className={`h-11 rounded-lg border text-sm font-medium transition-colors ${rsvp === 'no' ? 'bg-primary text-primary-foreground border-primary' : 'border-input hover:bg-accent'}`}>
+              Regretfully declines
+            </button>
+          </div>
+        </div>
+
+        {rsvp === 'yes' && (
+          <>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="rsvp-plus">Plus ones</Label>
+                <Input id="rsvp-plus" type="number" min="0" max="5" value={plus} onChange={(e) => setPlus(e.target.value)} className="mt-1.5" />
+              </div>
+              <div>
+                <Label htmlFor="rsvp-contact">Contact (optional)</Label>
+                <Input id="rsvp-contact" value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" placeholder="Email or phone" />
+              </div>
+            </div>
+
+            {isDestination && (
+              <div className="rounded-xl border border-border p-4 space-y-3 bg-secondary/30">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={travel} onChange={(e) => setTravel(e.target.checked)} className="w-4 h-4 accent-[hsl(var(--primary))]" />
+                  I'll be traveling to the wedding
+                </label>
+                {travel && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="rsvp-arrival">Arrival date</Label>
+                      <Input id="rsvp-arrival" type="date" value={arrival} onChange={(e) => setArrival(e.target.value)} className="mt-1.5" />
+                    </div>
+                    <div>
+                      <Label htmlFor="rsvp-accom">Accommodation</Label>
+                      <Input id="rsvp-accom" value={accom} onChange={(e) => setAccom(e.target.value)} className="mt-1.5" placeholder="Hotel / address" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
+        {error && <p className="text-sm text-destructive text-center">{error}</p>}
+
+        <Button onClick={submit} disabled={submitting} className="w-full h-11 bg-primary hover:bg-primary/90 text-base">
+          {submitting ? 'Sending…' : 'Send RSVP'}
+        </Button>
+      </div>
+    </div>
+  );
+}

@@ -60,6 +60,12 @@
     },
     "style_notes": {
       "type": "string"
+    },
+    "site_slug": {
+      "type": "string"
+    },
+    "site_message": {
+      "type": "string"
     }
   },
   "required": [

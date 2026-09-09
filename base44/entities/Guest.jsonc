@@ -37,6 +37,32 @@
     "arrival_date": {
       "type": "string",
       "format": "date"
+    },
+    "invitation_status": {
+      "type": "string",
+      "enum": [
+        "not_sent",
+        "save_the_date",
+        "invite_sent",
+        "rsvp_received"
+      ],
+      "default": "not_sent"
+    },
+    "invite_method": {
+      "type": "string",
+      "enum": [
+        "digital",
+        "mail"
+      ],
+      "default": "digital"
+    },
+    "invite_sent_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "follow_up_sent": {
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [

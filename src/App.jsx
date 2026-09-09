@@ -18,6 +18,8 @@ import Budget from '@/pages/Budget';
 import ShotList from '@/pages/ShotList';
 import Reminders from '@/pages/Reminders';
 import Pricing from '@/pages/Pricing';
+import WeddingWebsite from '@/pages/WeddingWebsite';
+import WeddingSite from '@/pages/WeddingSite';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -53,6 +55,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/site/:slug" element={<WeddingSite />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/onboarding" element={<Onboarding />} />
         <Route element={<Layout />}>
@@ -65,6 +68,7 @@ const AuthenticatedApp = () => {
           <Route path="/shotlist" element={<ShotList />} />
           <Route path="/reminders" element={<Reminders />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/website" element={<WeddingWebsite />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

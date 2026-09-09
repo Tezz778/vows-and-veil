@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
-  Plus, Trash2, Users, Pencil, Plane, Home, Calendar, GripVertical
+  Plus, Trash2, Users, Pencil, Plane, Home, Calendar, GripVertical, Mail
 } from 'lucide-react';
 
 const RSVP_COLORS = {
@@ -78,6 +78,25 @@ export default function Guests() {
     pending: guests.filter((g) => g.rsvp_status === 'pending').length,
   };
 
+  const invStats = {
+    not_sent: guests.filter((g) => (g.invitation_status || 'not_sent') === 'not_sent').length,
+    save_the_date: guests.filter((g) => g.invitation_status === 'save_the_date').length,
+    invite_sent: guests.filter((g) => g.invitation_status === 'invite_sent').length,
+    rsvp_received: guests.filter((g) => g.invitation_status === 'rsvp_received').length,
+  };
+
+  const markAllSaveTheDate = async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const updates = guests
+      .filter((g) => (g.invitation_status || 'not_sent') === 'not_sent')
+      .map((g) => ({ id: g.id, invitation_status: 'save_the_date', invite_sent_date: today }));
+    if (!updates.length) return;
+    try {
+      await base44.entities.Guest.bulkUpdate(updates);
+      load();
+    } catch {}
+  };
+
   return (
     <div>
       <PageHeader eyebrow="Your people" title="Guests & Seating"
@@ -97,6 +116,24 @@ export default function Guests() {
         <Stat label="Confirmed" value={rsvpStats.yes} tone="emerald" />
         <Stat label="Declined" value={rsvpStats.no} tone="rose" />
         <Stat label="Pending" value={rsvpStats.pending} />
+      </div>
+
+      {/* Invitation tracker */}
+      <div className="elegant-card p-5 mb-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h3 className="serif-heading text-lg text-foreground">Invitations</h3>
+          {invStats.not_sent > 0 && (
+            <Button variant="outline" size="sm" onClick={markAllSaveTheDate}>
+              <Mail className="w-3.5 h-3.5 mr-1.5" /> Mark all save-the-dates sent
+            </Button>
+          )}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <InvStat label="Not sent" value={invStats.not_sent} tone="muted" />
+          <InvStat label="Save-the-date" value={invStats.save_the_date} tone="amber" />
+          <InvStat label="Invite sent" value={invStats.invite_sent} tone="blue" />
+          <InvStat label="RSVP received" value={invStats.rsvp_received} tone="emerald" />
+        </div>
       </div>
 
       {loading ? (
@@ -228,6 +265,22 @@ function Stat({ label, value, tone }) {
   );
 }
 
+const INV_TONES = {
+  muted: 'text-muted-foreground',
+  amber: 'text-amber-600',
+  blue: 'text-sky-600',
+  emerald: 'text-emerald-600',
+};
+
+function InvStat({ label, value, tone }) {
+  return (
+    <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 text-center">
+      <p className={`serif-heading text-2xl ${INV_TONES[tone] || 'text-foreground'}`}>{value}</p>
+      <p className="text-[11px] text-muted-foreground uppercase tracking-wider mt-0.5">{label}</p>
+    </div>
+  );
+}
+
 function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSaved }) {
   const [name, setName] = useState('');
   const [rsvp, setRsvp] = useState('pending');
@@ -236,6 +289,10 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
   const [travel, setTravel] = useState(false);
   const [arrival, setArrival] = useState('');
   const [accom, setAccom] = useState('');
+  const [invStatus, setInvStatus] = useState('not_sent');
+  const [invMethod, setInvMethod] = useState('digital');
+  const [invDate, setInvDate] = useState('');
+  const [followUp, setFollowUp] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -244,6 +301,10 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
       setContact(editing?.contact || ''); setPlus(editing?.plus_ones || 0);
       setTravel(editing?.travel_needed || false); setArrival(editing?.arrival_date || '');
       setAccom(editing?.accommodation || '');
+      setInvStatus(editing?.invitation_status || 'not_sent');
+      setInvMethod(editing?.invite_method || 'digital');
+      setInvDate(editing?.invite_sent_date || '');
+      setFollowUp(editing?.follow_up_sent || false);
     }
   }, [open, editing]);
 
@@ -254,6 +315,8 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
       const payload = {
         wedding_id: wedding.id, name: name.trim(), rsvp_status: rsvp, contact: contact.trim(),
         plus_ones: Number(plus) || 0, travel_needed: travel, arrival_date: arrival || null, accommodation: accom.trim(),
+        invitation_status: invStatus, invite_method: invMethod,
+        invite_sent_date: invDate || null, follow_up_sent: followUp,
       };
       if (editing) await base44.entities.Guest.update(editing.id, payload);
       else await base44.entities.Guest.create(payload);
@@ -279,6 +342,38 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
             <div><Label htmlFor="po">Plus ones</Label><Input id="po" type="number" min="0" value={plus} onChange={(e) => setPlus(e.target.value)} className="mt-1.5" /></div>
           </div>
           <div><Label htmlFor="ct">Contact</Label><Input id="ct" placeholder="Email or phone" value={contact} onChange={(e) => setContact(e.target.value)} className="mt-1.5" /></div>
+
+          {/* Invitation tracker */}
+          <div className="rounded-xl border border-border p-3 space-y-3 bg-secondary/30">
+            <p className="text-xs font-medium text-foreground uppercase tracking-wider">Invitation</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="ist">Status</Label>
+                <select id="ist" value={invStatus} onChange={(e) => setInvStatus(e.target.value)}
+                  className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
+                  <option value="not_sent">Not sent</option>
+                  <option value="save_the_date">Save-the-date sent</option>
+                  <option value="invite_sent">Invite sent</option>
+                  <option value="rsvp_received">RSVP received</option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="im">Method</Label>
+                <select id="im" value={invMethod} onChange={(e) => setInvMethod(e.target.value)}
+                  className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
+                  <option value="digital">Digital</option>
+                  <option value="mail">Mailed</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div><Label htmlFor="idate">Sent date</Label><Input id="idate" type="date" value={invDate} onChange={(e) => setInvDate(e.target.value)} className="mt-1.5" /></div>
+              <label className="flex items-center gap-2 text-sm cursor-pointer self-end pb-2.5">
+                <input type="checkbox" checked={followUp} onChange={(e) => setFollowUp(e.target.checked)} className="w-4 h-4 accent-[hsl(var(--primary))]" />
+                Follow-up sent
+              </label>
+            </div>
+          </div>
 
           {isDestination && (
             <div className="rounded-xl border border-border p-3 space-y-3 bg-secondary/30">
