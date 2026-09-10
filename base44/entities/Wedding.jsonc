@@ -78,10 +78,35 @@
       "type": "string"
     },
     "site_photos": {
-      "type": "object"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      }
     },
     "site_sections": {
-      "type": "object"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      }
     },
     "site_meal_options": {
       "type": "string"
