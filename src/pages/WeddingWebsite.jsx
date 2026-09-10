@@ -105,8 +105,8 @@ export default function WeddingWebsite() {
               </button>
             </div>
 
-            <MealOptionsEditor wedding={wedding} setWedding={setWedding} />
             <SiteCustomizer wedding={wedding} setWedding={setWedding} />
+            <MealOptionsEditor wedding={wedding} setWedding={setWedding} />
           </div>
 
           {/* RSVP summary */}
