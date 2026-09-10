@@ -137,9 +137,16 @@ export default function WeddingSite() {
 
       {/* Custom sections */}
       {Array.isArray(wedding.site_sections) && wedding.site_sections.map((s, i) => (
-        (s.title || s.body) ? (
+        (s.title || s.body || s.image) ? (
           <section key={i} className="max-w-2xl mx-auto px-6 pb-16">
             <div className="elegant-card p-8 sm:p-10">
+              {s.image && (
+                <div className="rounded-xl overflow-hidden mb-6 -mx-2 sm:-mx-4">
+                  <div className="aspect-[16/9]">
+                    <Image src={s.image} alt={s.title || ''} fittingType="fill" className="w-full h-full" />
+                  </div>
+                </div>
+              )}
               {s.title && <h2 className="serif-heading text-2xl text-foreground text-center mb-4">{s.title}</h2>}
               {s.body && <p className="text-foreground/80 leading-relaxed whitespace-pre-line text-center">{s.body}</p>}
             </div>
