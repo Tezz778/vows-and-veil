@@ -6,8 +6,8 @@ import FeatureGate from '@/components/FeatureGate';
 import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+
+
 import { Globe, Copy, Check, RefreshCw, ExternalLink, Users } from 'lucide-react';
 import SiteCustomizer from '@/components/site/SiteCustomizer';
 
@@ -106,7 +106,6 @@ export default function WeddingWebsite() {
             </div>
 
             <SiteCustomizer wedding={wedding} setWedding={setWedding} />
-            <MealOptionsEditor wedding={wedding} setWedding={setWedding} />
           </div>
 
           {/* RSVP summary */}
@@ -126,39 +125,6 @@ export default function WeddingWebsite() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function MealOptionsEditor({ wedding, setWedding }) {
-  const [options, setOptions] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (wedding) setOptions(wedding.site_meal_options || '');
-  }, [wedding]);
-
-  const save = async () => {
-    setSaving(true);
-    try {
-      await base44.entities.Wedding.update(wedding.id, { site_meal_options: options.trim() || null });
-      setWedding({ ...wedding, site_meal_options: options.trim() || null });
-    } catch (e) { alert('Could not save: ' + (e.message || 'error')); }
-    finally { setSaving(false); }
-  };
-
-  return (
-    <div className="elegant-card p-6">
-      <h3 className="serif-heading text-xl text-foreground mb-1">Meal options</h3>
-      <p className="text-sm text-muted-foreground mb-4">List the meal choices guests can pick from when they RSVP. Enter one per line.</p>
-      <Textarea rows={5} value={options} onChange={(e) => setOptions(e.target.value)}
-        placeholder={'Beef\nChicken\nFish\nVegetarian\nVegan'} />
-      <p className="text-xs text-muted-foreground mt-1.5">Leave blank to use defaults (Beef, Chicken, Fish, Vegetarian, Vegan).</p>
-      <div className="mt-3 flex justify-end">
-        <Button onClick={save} disabled={saving} className="bg-primary hover:bg-primary/90">
-          {saving ? 'Saving…' : 'Save meal options'}
-        </Button>
-      </div>
     </div>
   );
 }
