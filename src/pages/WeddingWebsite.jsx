@@ -126,7 +126,6 @@ export default function WeddingWebsite() {
           </div>
         </div>
       )}
-      <MealOptionsEditor wedding={wedding} setWedding={setWedding} />
     </div>
   );
 }
