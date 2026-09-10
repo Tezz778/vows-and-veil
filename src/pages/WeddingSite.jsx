@@ -5,7 +5,7 @@ import { formatDate } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Heart, MapPin, Calendar, Check, Loader2 } from 'lucide-react';
+import { Heart, MapPin, Calendar, Check, Loader2, ExternalLink } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 
 const DEFAULT_MEAL_OPTIONS = ['Beef', 'Chicken', 'Fish', 'Vegetarian', 'Vegan'];
@@ -153,6 +153,33 @@ export default function WeddingSite() {
           </section>
         ) : null
       ))}
+
+      {/* Registry */}
+      {Array.isArray(wedding.site_registry) && wedding.site_registry.some((r) => r.store_name || r.url) && (
+        <section className="max-w-2xl mx-auto px-6 pb-16">
+          <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground mb-6 text-center">Registry</p>
+          <div className="elegant-card p-8 sm:p-10">
+            <div className="grid gap-3">
+              {wedding.site_registry.map((r, i) => (
+                (r.store_name || r.url) ? (
+                  <div key={i} className="flex items-center justify-between gap-4 py-3 border-b border-border last:border-0">
+                    <div>
+                      <p className="serif-heading text-lg text-foreground">{r.store_name || 'Registry'}</p>
+                      {r.description && <p className="text-sm text-muted-foreground mt-0.5">{r.description}</p>}
+                    </div>
+                    {r.url && (
+                      <a href={r.url} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline shrink-0">
+                        Visit <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+                ) : null
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* RSVP */}
       <section className="max-w-3xl mx-auto px-6 pb-24">

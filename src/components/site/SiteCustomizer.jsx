@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import SiteHeroEditor from './SiteHeroEditor';
 import SiteGalleryEditor from './SiteGalleryEditor';
 import SiteSectionsEditor from './SiteSectionsEditor';
+import SiteRegistryEditor from './SiteRegistryEditor';
 
 export default function SiteCustomizer({ wedding, setWedding }) {
   const [story, setStory] = useState(wedding.site_story || '');
@@ -37,6 +38,7 @@ export default function SiteCustomizer({ wedding, setWedding }) {
 
       <SiteGalleryEditor wedding={wedding} setWedding={setWedding} />
       <SiteSectionsEditor wedding={wedding} setWedding={setWedding} />
+      <SiteRegistryEditor wedding={wedding} setWedding={setWedding} />
     </div>
   );
 }

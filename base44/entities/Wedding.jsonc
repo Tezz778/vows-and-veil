@@ -108,6 +108,23 @@
         }
       }
     },
+    "site_registry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "store_name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "site_meal_options": {
       "type": "string"
     }
