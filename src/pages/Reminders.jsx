@@ -91,7 +91,7 @@ export default function Reminders() {
                           {it.due_date ? `${new Date(it.due_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${u.label}` : 'No date'}
                         </p>
                       </div>
-                      <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
+                      <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -110,7 +110,7 @@ export default function Reminders() {
                       <Check className="w-3 h-3" />
                     </button>
                     <span className="flex-1 text-sm line-through text-muted-foreground">{it.title}</span>
-                    <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
+                    <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>

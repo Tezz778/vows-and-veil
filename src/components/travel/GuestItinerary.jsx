@@ -74,7 +74,7 @@ export default function GuestItinerary({ weddingId }) {
                         {it.description && <p className="text-sm text-muted-foreground mt-2">{it.description}</p>}
                         {it.dress_code && <p className="text-xs text-muted-foreground mt-2"><span className="uppercase tracking-wider">Dress:</span> {it.dress_code}</p>}
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEdit(it)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
                         <button onClick={() => base44.entities.ItineraryItem.delete(it.id).then(load)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>

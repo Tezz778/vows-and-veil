@@ -143,7 +143,7 @@ export default function Timeline() {
                       <h3 className="serif-heading text-lg text-foreground mt-1">{ev.title}</h3>
                       {ev.notes && <p className="text-sm text-muted-foreground mt-1">{ev.notes}</p>}
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       <button onClick={() => openEdit(ev)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>

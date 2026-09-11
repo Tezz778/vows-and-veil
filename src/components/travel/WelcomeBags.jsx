@@ -63,7 +63,7 @@ export default function WelcomeBags({ weddingId }) {
                   <h4 className="serif-heading text-lg text-foreground">{it.guest_name}</h4>
                   {it.room_number && <p className="text-sm text-muted-foreground">Room {it.room_number}</p>}
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <button onClick={() => { setEditing(it); setDialogOpen(true); }} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
                   <button onClick={() => remove(it)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>

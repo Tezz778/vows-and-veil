@@ -73,7 +73,37 @@ export default function Budget() {
           </Button>
         </div>
       ) : (
-        <div className="elegant-card overflow-hidden">
+        <>
+        {/* Mobile cards */}
+        <div className="sm:hidden space-y-3">
+          {items.map((it) => {
+            const fullyPaid = (Number(it.actual_amount) || 0) > 0 && (Number(it.paid_amount) || 0) >= (Number(it.actual_amount) || 0);
+            return (
+              <div key={it.id} className="elegant-card p-4">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground">{it.category}</span>
+                      {fullyPaid && <span className="text-emerald-600"><Check className="w-3.5 h-3.5" /></span>}
+                    </div>
+                    {it.vendor_name && <p className="text-xs text-muted-foreground mt-0.5">{it.vendor_name}</p>}
+                  </div>
+                  <div className="flex gap-1">
+                    <button onClick={() => { setEditing(it); setDialog(true); }} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => remove(it.id)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div><p className="text-muted-foreground uppercase tracking-wider">Est.</p><p className="font-medium text-foreground mt-0.5">${(Number(it.estimated_amount) || 0).toLocaleString()}</p></div>
+                  <div><p className="text-muted-foreground uppercase tracking-wider">Actual</p><p className="font-medium text-foreground mt-0.5">${(Number(it.actual_amount) || 0).toLocaleString()}</p></div>
+                  <div><p className="text-muted-foreground uppercase tracking-wider">Paid</p><p className="font-medium text-emerald-700 mt-0.5">${(Number(it.paid_amount) || 0).toLocaleString()}</p></div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {/* Desktop table */}
+        <div className="elegant-card overflow-hidden hidden sm:block">
           <table className="w-full text-sm">
             <thead className="bg-secondary/50 text-muted-foreground">
               <tr>
@@ -102,7 +132,7 @@ export default function Budget() {
                     <td className="px-4 py-3 text-right">${(Number(it.actual_amount) || 0).toLocaleString()}</td>
                     <td className="px-4 py-3 text-right text-emerald-700">${(Number(it.paid_amount) || 0).toLocaleString()}</td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                         <button onClick={() => { setEditing(it); setDialog(true); }} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
                         <button onClick={() => remove(it.id)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
@@ -113,6 +143,7 @@ export default function Budget() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       <ItemDialog open={dialog} onOpenChange={setDialog} wedding={wedding} editing={editing} onSaved={() => { setDialog(false); load(); }} />

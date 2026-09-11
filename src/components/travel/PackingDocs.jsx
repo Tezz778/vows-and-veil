@@ -103,7 +103,7 @@ export default function PackingDocs({ weddingId }) {
                         {it.notes && <p className="text-xs text-muted-foreground mt-0.5">{it.notes}</p>}
                       </div>
                     </label>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                       <button onClick={() => { setEditing(it); setDialogOpen(true); }} className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
                       <button onClick={() => remove(it)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>

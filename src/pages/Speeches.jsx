@@ -78,7 +78,7 @@ export default function Speeches() {
                     <h3 className="serif-heading text-lg text-foreground">{s.speaker_name}</h3>
                     <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{roleLabel}{s.relationship ? ` · ${s.relationship}` : ''}</p>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
                     <button onClick={() => base44.entities.Speech.delete(s.id).then(load)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
