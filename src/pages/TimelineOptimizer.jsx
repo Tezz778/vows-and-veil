@@ -28,20 +28,14 @@ export default function TimelineOptimizer() {
     setGenerating(true);
     setImported(false);
     try {
-      const res = await fetch('/api/functions/optimizeTimeline', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          guest_count: Number(guestCount) || 100,
-          ceremony_time: ceremonyTime,
-          venue_type: venueType,
-          wedding_type: wedding.wedding_type,
-          photographer_status: wedding.photographer_status,
-        }),
+      const res = await base44.functions.invoke('optimizeTimeline', {
+        guest_count: Number(guestCount) || 100,
+        ceremony_time: ceremonyTime,
+        venue_type: venueType,
+        wedding_type: wedding.wedding_type,
+        photographer_status: wedding.photographer_status,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed');
-      setEvents(data.events || []);
+      setEvents(res?.data?.events || res?.events || []);
     } catch (e) {
       alert('Could not generate: ' + (e.message || 'error'));
     } finally { setGenerating(false); }
