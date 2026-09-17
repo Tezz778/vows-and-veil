@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Trash2, Pencil, Sparkles, Mic } from 'lucide-react';
+import { Plus, Trash2, Pencil, Sparkles, Mic, Link2, Copy, Check, Ban } from 'lucide-react';
 
 const ROLES = [
   { value: 'best_man', label: 'Best Man' },
@@ -33,6 +33,7 @@ export default function Speeches() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
   const load = async () => {
     if (!wedding) return;
@@ -50,6 +51,27 @@ export default function Speeches() {
 
   const openAdd = () => { setEditing(null); setDialogOpen(true); };
   const openEdit = (s) => { setEditing(s); setDialogOpen(true); };
+
+  const generateShareLink = async (s) => {
+    const gen = () => (crypto.randomUUID?.() || Math.random().toString(36).slice(2)) + (crypto.randomUUID?.() || Math.random().toString(36).slice(2));
+    try {
+      await base44.entities.Speech.update(s.id, { share_token: gen(), share_enabled: true, share_status: 'not_started' });
+      load();
+    } catch (e) { alert('Could not create link: ' + (e.message || 'error')); }
+  };
+
+  const revokeShareLink = async (s) => {
+    try {
+      await base44.entities.Speech.update(s.id, { share_enabled: false });
+      load();
+    } catch (e) { alert('Could not revoke: ' + (e.message || 'error')); }
+  };
+
+  const copyLink = (s) => {
+    navigator.clipboard?.writeText(`${window.location.origin}/speech/${s.share_token}`);
+    setCopiedId(s.id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   return (
     <div>
@@ -91,6 +113,32 @@ export default function Speeches() {
                 ) : (
                   <p className="text-sm text-muted-foreground/60 mt-3 italic">No draft yet — open to generate.</p>
                 )}
+                <div className="mt-4 pt-3 border-t border-border/60 flex items-center gap-2 flex-wrap">
+                  {s.share_enabled ? (
+                    <>
+                      <span className={`text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-full ${
+                        (s.share_status || 'not_started') === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                        (s.share_status || 'not_started') === 'in_progress' ? 'bg-amber-100 text-amber-700' :
+                        'bg-secondary text-muted-foreground'
+                      }`}>
+                        {(s.share_status || 'not_started').replace('_', ' ')}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate max-w-[140px] sm:max-w-[200px]">/speech/{s.share_token?.slice(0, 12)}…</span>
+                      <div className="flex items-center gap-1 ml-auto">
+                        <button onClick={() => copyLink(s)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground" title="Copy link">
+                          {copiedId === s.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                        <button onClick={() => revokeShareLink(s)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive" title="Revoke link">
+                          <Ban className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <button onClick={() => generateShareLink(s)} className="ml-auto text-xs text-primary hover:text-primary/80 flex items-center gap-1.5">
+                      <Link2 className="w-3.5 h-3.5" /> Share with speaker
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}

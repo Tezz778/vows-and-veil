@@ -25,6 +25,7 @@ import MoodBoard from '@/pages/MoodBoard';
 import WeddingDetails from '@/pages/WeddingDetails';
 import Rehearsal from '@/pages/Rehearsal';
 import Speeches from '@/pages/Speeches';
+import SpeechWrite from '@/pages/SpeechWrite';
 import TimelineOptimizer from '@/pages/TimelineOptimizer';
 import TravelSuite from '@/pages/TravelSuite';
 import GmailCompose from '@/pages/GmailCompose';
@@ -64,6 +65,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/site/:slug" element={<WeddingSite />} />
+      <Route path="/speech/:token" element={<SpeechWrite />} />
       <Route path="/ThankYou" element={<ThankYou />} />
       <Route path="/landing" element={<Landing />} />
       <Route path="/about" element={<About />} />

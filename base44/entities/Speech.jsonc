@@ -28,6 +28,22 @@
     },
     "draft_text": {
       "type": "string"
+    },
+    "share_token": {
+      "type": "string"
+    },
+    "share_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "share_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started"
     }
   },
   "required": [
