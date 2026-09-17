@@ -5,7 +5,7 @@ import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl, isFreeTier } 
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
   Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
-  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon
+  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon, Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -40,6 +40,7 @@ const NAV_SECTIONS = [
       { label: 'Rehearsal Dinner', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
       { label: 'Travel Suite', icon: Plane, path: '/travel', feature: 'travel' },
       { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
+      { label: 'Email Guests', icon: Mail, path: '/email', feature: null },
     ],
   },
   {
