@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { daysUntil, formatDate, hasFeature, TIER_LABELS } from '@/lib/wedding';
 import PageHeader from '@/components/PageHeader';
 import BudgetChart from '@/components/BudgetChart';
+import VendorDirectory from '@/components/VendorDirectory';
 import {
   Calendar, Heart, Sparkles, Users, DollarSign, Camera, Bell,
   ArrowRight, Check, Clock, Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane
@@ -144,6 +145,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {hasFeature(tier, 'vendors') && <VendorDirectory />}
 
       {hasFeature(tier, 'budget') && <BudgetChart wedding={wedding} />}
     </div>

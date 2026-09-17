@@ -15,6 +15,9 @@
     "done": {
       "type": "boolean",
       "default": false
+    },
+    "vendor_name": {
+      "type": "string"
     }
   },
   "required": [

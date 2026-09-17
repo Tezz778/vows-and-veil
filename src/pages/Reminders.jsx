@@ -13,6 +13,7 @@ import { Plus, Trash2, Bell, Check, Clock, AlertCircle } from 'lucide-react';
 export default function Reminders() {
   const { wedding, tier } = useOutletContext();
   const [items, setItems] = useState([]);
+  const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
 
@@ -20,8 +21,12 @@ export default function Reminders() {
     if (!wedding) return;
     setLoading(true);
     try {
-      const list = await base44.entities.ReminderTask.filter({ wedding_id: wedding.id }, 'due_date', 200);
+      const [list, vList] = await Promise.all([
+        base44.entities.ReminderTask.filter({ wedding_id: wedding.id }, 'due_date', 200),
+        base44.entities.Vendor.filter({ wedding_id: wedding.id }, '-created_date', 200),
+      ]);
       setItems(list || []);
+      setVendors(vList || []);
     } catch {} finally { setLoading(false); }
   };
   useEffect(() => { load(); }, [wedding]);
@@ -121,22 +126,23 @@ export default function Reminders() {
         </div>
       )}
 
-      <ReminderDialog open={dialog} onOpenChange={setDialog} wedding={wedding} onSaved={() => { setDialog(false); load(); }} />
+      <ReminderDialog open={dialog} onOpenChange={setDialog} wedding={wedding} vendors={vendors} onSaved={() => { setDialog(false); load(); }} />
     </div>
   );
 }
 
-function ReminderDialog({ open, onOpenChange, wedding, onSaved }) {
+function ReminderDialog({ open, onOpenChange, wedding, vendors, onSaved }) {
   const [title, setTitle] = useState('');
   const [due, setDue] = useState('');
+  const [vendorName, setVendorName] = useState('');
   const [saving, setSaving] = useState(false);
-  useEffect(() => { if (open) { setTitle(''); setDue(''); } }, [open]);
+  useEffect(() => { if (open) { setTitle(''); setDue(''); setVendorName(''); } }, [open]);
 
   const save = async () => {
     if (!title.trim()) return;
     setSaving(true);
     try {
-      await base44.entities.ReminderTask.create({ wedding_id: wedding.id, title: title.trim(), due_date: due || null, done: false });
+      await base44.entities.ReminderTask.create({ wedding_id: wedding.id, title: title.trim(), due_date: due || null, done: false, vendor_name: vendorName || null });
       onSaved();
     } catch (e) { alert('Could not save: ' + (e.message || 'error')); }
     finally { setSaving(false); }
@@ -149,6 +155,15 @@ function ReminderDialog({ open, onOpenChange, wedding, onSaved }) {
         <div className="space-y-4 py-2">
           <div><Label htmlFor="t">Task</Label><Input id="t" placeholder="e.g. Finalize ceremony playlist" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" /></div>
           <div><Label htmlFor="d">Due date</Label><Input id="d" type="date" value={due} onChange={(e) => setDue(e.target.value)} className="mt-1.5" /></div>
+          {vendors.length > 0 && (
+            <div>
+              <Label htmlFor="v">Link to vendor (optional)</Label>
+              <select id="v" value={vendorName} onChange={(e) => setVendorName(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
+                <option value="">— None —</option>
+                {vendors.map((v) => <option key={v.id} value={v.name}>{v.name}</option>)}
+              </select>
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
