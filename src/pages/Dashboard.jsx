@@ -57,12 +57,12 @@ export default function Dashboard() {
       />
 
       {/* Countdown hero */}
-      <div className="elegant-card p-8 sm:p-12 mb-8 relative overflow-hidden">
+      <div className="elegant-card p-6 sm:p-12 mb-6 sm:mb-8 relative overflow-hidden">
         <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-accent/40 blur-2xl" />
         <div className="relative">
           <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground mb-3">Counting down to forever</p>
-          <div className="flex items-end gap-4">
-            <span className="serif-heading text-6xl sm:text-7xl text-primary leading-none">
+          <div className="flex items-end gap-3 sm:gap-4">
+            <span className="serif-heading text-5xl sm:text-7xl text-primary leading-none">
               {dLeft !== null ? (dLeft < 0 ? 0 : dLeft) : '—'}
             </span>
             <span className="text-lg text-muted-foreground mb-2">{dLeft !== null && dLeft >= 0 ? 'days to go' : dLeft < 0 ? 'days since' : ''}</span>
@@ -80,12 +80,12 @@ export default function Dashboard() {
         {/* Feature cards */}
         <div className="lg:col-span-2">
           <h2 className="serif-heading text-xl text-foreground mb-4">Your planning tools</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             {cards.map((c) => {
               const Icon = c.icon;
               return (
                 <Link key={c.path} to={c.path}
-                  className="elegant-card p-5 hover:shadow-md transition-shadow group">
+                  className="elegant-card p-4 sm:p-5 hover:shadow-md transition-shadow group">
                   <Icon className="w-5 h-5 text-primary mb-3" />
                   <p className="text-sm font-medium text-foreground">{c.label}</p>
                   {c.count !== undefined && (

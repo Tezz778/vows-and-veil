@@ -71,7 +71,7 @@ export default function WeddingSite() {
             <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[40rem] h-[40rem] rounded-full bg-primary/5 blur-3xl" />
           </>
         )}
-        <div className="relative max-w-3xl mx-auto px-6 pt-24 pb-20 text-center">
+        <div className="relative max-w-3xl mx-auto px-6 pt-20 pb-16 sm:pt-24 sm:pb-20 text-center">
           <p className={`text-[11px] tracking-[0.35em] uppercase mb-5 ${wedding.site_hero_image ? 'text-white/85' : 'text-muted-foreground'}`}>We're getting married</p>
           <h1 className={`serif-heading text-5xl sm:text-7xl leading-tight mb-6 ${wedding.site_hero_image ? 'text-white' : 'text-primary'}`}>
             {wedding.couple_names || 'Our Wedding'}
@@ -91,7 +91,7 @@ export default function WeddingSite() {
 
       {/* Details */}
       <section className="max-w-3xl mx-auto px-6 pb-10">
-        <div className="elegant-card p-8 sm:p-10">
+        <div className="elegant-card p-6 sm:p-10">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
             <Detail label="The Date" value={formatDate(wedding.wedding_date)} />
             <Detail label="The Venue" value={wedding.venue_name || 'To be announced'} />
@@ -139,8 +139,8 @@ export default function WeddingSite() {
       {Array.isArray(wedding.site_sections) && wedding.site_sections.map((s, i) => (
         (s.title || s.body || s.image) ? (
           <section key={i} className="max-w-2xl mx-auto px-6 pb-16">
-            <div className="elegant-card p-8 sm:p-10">
-              {s.image && (
+            <div className="elegant-card p-6 sm:p-10">
+               {s.image && (
                 <div className="rounded-xl overflow-hidden mb-6 -mx-2 sm:-mx-4">
                   <div className="aspect-[16/9]">
                     <Image src={s.image} alt={s.title || ''} fittingType="fill" className="w-full h-full" />
@@ -158,11 +158,11 @@ export default function WeddingSite() {
       {Array.isArray(wedding.site_registry) && wedding.site_registry.some((r) => r.store_name || r.url) && (
         <section className="max-w-2xl mx-auto px-6 pb-16">
           <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground mb-6 text-center">Registry</p>
-          <div className="elegant-card p-8 sm:p-10">
+          <div className="elegant-card p-6 sm:p-10">
             <div className="grid gap-3">
               {wedding.site_registry.map((r, i) => (
                 (r.store_name || r.url) ? (
-                  <div key={i} className="flex items-center justify-between gap-4 py-3 border-b border-border last:border-0">
+                  <div key={i} className="flex items-center justify-between gap-3 py-3 border-b border-border last:border-0">
                     <div>
                       <p className="serif-heading text-lg text-foreground">{r.store_name || 'Registry'}</p>
                       {r.description && <p className="text-sm text-muted-foreground mt-0.5">{r.description}</p>}
@@ -219,7 +219,7 @@ function HeroCountdown({ weddingDate, hasImage }) {
   const labelTone = hasImage ? 'text-white/80' : 'text-muted-foreground';
   const units = [['Days', remaining.days], ['Hours', remaining.hours], ['Minutes', remaining.minutes], ['Seconds', remaining.seconds]];
   return (
-    <div className="mt-8 flex items-center justify-center gap-4 sm:gap-6">
+    <div className="mt-8 flex items-center justify-center gap-3 sm:gap-6">
       {units.map(([label, val]) => (
         <div key={label} className="text-center">
           <p className={`serif-heading text-3xl sm:text-4xl leading-none ${numTone}`}>{String(val).padStart(2, '0')}</p>
@@ -274,7 +274,7 @@ function RSVPForm({ slug, isDestination, mealOptions }) {
 
   if (done) {
     return (
-      <div className="elegant-card p-10 text-center">
+      <div className="elegant-card p-6 sm:p-10 text-center">
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
           <Check className="w-7 h-7 text-primary" />
         </div>
@@ -289,7 +289,7 @@ function RSVPForm({ slug, isDestination, mealOptions }) {
   }
 
   return (
-    <div className="elegant-card p-8 sm:p-10">
+    <div className="elegant-card p-6 sm:p-10">
       <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground text-center mb-2">Will you join us?</p>
       <h2 className="serif-heading text-3xl text-foreground text-center mb-6">RSVP</h2>
 
