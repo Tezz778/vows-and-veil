@@ -3,10 +3,11 @@ import { secrets } from 'base44:runtime';
 import Stripe from 'npm:stripe@17.7.0';
 
 // Server-side price map — never trust the client. Amounts in cents (Stripe's unit).
-const TIER_PRICES = {
+const PRODUCTS = {
   single_day: { name: "Everbind — Single Day Tier", amount: 9900 },
   multiday: { name: "Everbind — Multiday Tier", amount: 29900 },
   destination: { name: "Everbind — Destination Tier", amount: 39900 },
+  budget_upgrade: { name: "Everbind — Budget Boost Add-on", amount: 1900 },
 };
 
 export default async function(req: Request): Promise<Response> {
@@ -40,9 +41,9 @@ export default async function(req: Request): Promise<Response> {
 
     const body = await req.json().catch(() => ({}));
     const productId = String(body.productId ?? "");
-    const tier = TIER_PRICES[productId];
-    if (!tier) {
-      return Response.json({ error: "Unknown tier" }, { status: 400 });
+    const product = PRODUCTS[productId];
+    if (!product) {
+      return Response.json({ error: "Unknown product" }, { status: 400 });
     }
 
     const stripe = new Stripe(stripeKey);
@@ -52,13 +53,13 @@ export default async function(req: Request): Promise<Response> {
       line_items: [{
         price_data: {
           currency: "usd",
-          unit_amount: tier.amount,
-          product_data: { name: tier.name },
+          unit_amount: product.amount,
+          product_data: { name: product.name },
         },
         quantity: 1,
       }],
       success_url: `${appUrl}/ThankYou`,
-      cancel_url: `${appUrl}/pricing`,
+      cancel_url: `${appUrl}/budget`,
       client_reference_id: productId,
       ...(appUser?.email ? { customer_email: appUser.email } : {}),
     });
@@ -71,9 +72,9 @@ export default async function(req: Request): Promise<Response> {
       appUserId: appUser?.id ?? null,
       buyerEmail: appUser?.email ?? null,
       productId,
-      productName: tier.name,
+      productName: product.name,
       quantity: 1,
-      amount: (tier.amount / 100).toFixed(2),
+      amount: (product.amount / 100).toFixed(2),
       currency: "USD",
     });
 

@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Trash2, Pencil, DollarSign, Check } from 'lucide-react';
+import { Plus, Trash2, Pencil, DollarSign, Check, Sparkles, Zap } from 'lucide-react';
 
 const CATEGORIES = ['Venue', 'Catering', 'Photography', 'Videography', 'Florals', 'Attire', 'Music', 'Stationery', 'Transport', 'Other'];
+const BUDGET_UPGRADE_PRICE = 19;
 
 export default function Budget() {
   const { wedding, tier } = useOutletContext();
@@ -18,6 +19,7 @@ export default function Budget() {
   const [loading, setLoading] = useState(true);
   const [dialog, setDialog] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [upgrading, setUpgrading] = useState(false);
 
   const load = async () => {
     if (!wedding) return;
@@ -38,6 +40,23 @@ export default function Budget() {
 
   if (!wedding) return null;
   if (!hasFeature(tier, 'budget')) return <FeatureGate tierLabel="Multiday" />;
+
+  const purchaseUpgrade = async () => {
+    setUpgrading(true);
+    try {
+      const res = await base44.functions.invoke('create-stripe-checkout', { productId: 'budget_upgrade' });
+      const redirectUrl = res?.data?.redirectUrl;
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        alert('Could not start checkout. Please try again.');
+        setUpgrading(false);
+      }
+    } catch (e) {
+      alert('Could not start checkout: ' + (e.message || 'error'));
+      setUpgrading(false);
+    }
+  };
 
   const remove = async (id) => {
     await base44.entities.BudgetItem.delete(id);
@@ -60,6 +79,34 @@ export default function Budget() {
         <Stat label="Paid" value={totals.paid} tone="emerald" />
         <Stat label="Owed" value={totals.owed} tone="rose" />
       </div>
+
+      {!wedding.budget_upgraded && (
+        <div className="elegant-card p-5 mb-8 bg-gradient-to-r from-accent/50 to-secondary/30 border-primary/20">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="serif-heading text-lg text-foreground flex items-center gap-2">
+                Budget Boost <Sparkles className="w-4 h-4 text-primary" />
+              </p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Unlock AI-powered budget insights, payment schedule tracking, and variance analysis to keep your spending on track.
+              </p>
+            </div>
+            <Button onClick={purchaseUpgrade} disabled={upgrading} className="bg-primary hover:bg-primary/90 shrink-0">
+              {upgrading ? 'Redirecting…' : `Boost — $${BUDGET_UPGRADE_PRICE}`}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {wedding.budget_upgraded && (
+        <div className="elegant-card p-3 mb-8 bg-emerald-50 border-emerald-200 flex items-center gap-2 justify-center">
+          <Check className="w-4 h-4 text-emerald-600" />
+          <p className="text-sm text-emerald-700">Budget Boost active — advanced insights unlocked.</p>
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-16 text-muted-foreground">Loading…</div>

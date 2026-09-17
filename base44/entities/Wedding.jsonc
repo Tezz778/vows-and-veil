@@ -58,6 +58,10 @@
       "type": "boolean",
       "default": false
     },
+    "budget_upgraded": {
+      "type": "boolean",
+      "default": false
+    },
     "access_expires_date": {
       "type": "string",
       "format": "date"

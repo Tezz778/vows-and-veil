@@ -65,8 +65,13 @@ export default async function(req: Request): Promise<Response> {
         const weddings = await db.entities.Wedding.filter({ created_by_id: grantUserId }, '-created_date', 1);
         const wedding = weddings?.[0];
         if (wedding) {
-          await db.entities.Wedding.update(wedding.id, { selected_tier: purchase.productId, has_paid: true });
-          console.log("stripe-webhook: granted tier", { weddingId: wedding.id, tier: purchase.productId });
+          if (purchase.productId === "budget_upgrade") {
+            await db.entities.Wedding.update(wedding.id, { budget_upgraded: true });
+            console.log("stripe-webhook: granted budget upgrade", { weddingId: wedding.id });
+          } else {
+            await db.entities.Wedding.update(wedding.id, { selected_tier: purchase.productId, has_paid: true });
+            console.log("stripe-webhook: granted tier", { weddingId: wedding.id, tier: purchase.productId });
+          }
         } else {
           console.warn("stripe-webhook: no wedding for user", { grantUserId });
         }
