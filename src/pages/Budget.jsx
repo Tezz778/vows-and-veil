@@ -39,7 +39,7 @@ export default function Budget() {
   }, [items]);
 
   if (!wedding) return null;
-  if (!hasFeature(tier, 'budget')) return <FeatureGate tierLabel="Multiday" />;
+  if (!hasFeature(tier, 'budget')) return <FeatureGate feature="budget" tierLabel="Multiday" />;
 
   const purchaseUpgrade = async () => {
     setUpgrading(true);

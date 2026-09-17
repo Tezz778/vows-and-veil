@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
+import FeatureGate from '@/components/FeatureGate';
+import { hasFeature } from '@/lib/wedding';
 import { Image } from '@/components/ui/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +15,7 @@ import { Plus, Trash2, Pencil, Palette } from 'lucide-react';
 const CATEGORIES = ['decor', 'attire', 'florals', 'venue', 'stationery', 'other'];
 
 export default function MoodBoard() {
-  const { wedding } = useOutletContext();
+  const { wedding, tier } = useOutletContext();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -30,6 +32,7 @@ export default function MoodBoard() {
 
   useEffect(() => { load(); }, [wedding]);
 
+  if (!hasFeature(tier, 'moodboard')) return <FeatureGate feature="moodboard" tierLabel="Single Day" />;
   if (!wedding) return null;
 
   const openAdd = () => { setEditing(null); setDialogOpen(true); };

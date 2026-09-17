@@ -1,9 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
 import FeatureGate from '@/components/FeatureGate';
-import { hasFeature } from '@/lib/wedding';
+import { hasFeature, isFreeTier, TIMELINE_FREE_CAP } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,6 +39,8 @@ export default function Timeline() {
 
   const isMultiday = wedding?.wedding_type !== 'single_day';
   const days = DEFAULT_DAYS[wedding?.wedding_type] || DEFAULT_DAYS.single_day;
+  const freeTier = isFreeTier(tier);
+  const atCap = freeTier && events.length >= TIMELINE_FREE_CAP;
 
   const load = async () => {
     if (!wedding) return;
@@ -79,25 +81,40 @@ export default function Timeline() {
         subtitle="Arrange your day-of moments into a clear, paced schedule."
       >
         <div className="flex items-center gap-2">
-          <Button onClick={() => setOptOpen(true)} variant="outline">
-            <Sparkles className="w-4 h-4 mr-1" /> Optimize
-          </Button>
-          <Button onClick={openAdd} className="bg-primary hover:bg-primary/90">
-            <Plus className="w-4 h-4 mr-1" /> Add event
+          {!freeTier && (
+            <Button onClick={() => setOptOpen(true)} variant="outline">
+              <Sparkles className="w-4 h-4 mr-1" /> Optimize
+            </Button>
+          )}
+          <Button onClick={openAdd} disabled={atCap} className="bg-primary hover:bg-primary/90">
+            <Plus className="w-4 h-4 mr-1" /> {atCap ? `${TIMELINE_FREE_CAP} of ${TIMELINE_FREE_CAP} events` : 'Add event'}
           </Button>
         </div>
       </PageHeader>
 
-      {/* Pacing note */}
-      <div className="elegant-card p-4 mb-6 flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
-          <PnIcon className="w-4 h-4 text-accent-foreground" />
+      {/* Pacing note — locked for free tier */}
+      {!freeTier && (
+        <div className="elegant-card p-4 mb-6 flex items-start gap-3">
+          <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+            <PnIcon className="w-4 h-4 text-accent-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">Vendor-aware pacing</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{pn.text}</p>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-medium text-foreground">Vendor-aware pacing</p>
-          <p className="text-sm text-muted-foreground mt-0.5">{pn.text}</p>
+      )}
+      {freeTier && atCap && (
+        <div className="elegant-card p-5 mb-6 flex items-center justify-between gap-4 bg-accent/40">
+          <div>
+            <p className="serif-heading text-lg text-foreground">You've built {TIMELINE_FREE_CAP} of {TIMELINE_FREE_CAP} events</p>
+            <p className="text-sm text-muted-foreground mt-0.5">Unlock your full wedding day timeline.</p>
+          </div>
+          <Button asChild className="bg-primary hover:bg-primary/90 shrink-0">
+            <Link to="/pricing">View plans</Link>
+          </Button>
         </div>
-      </div>
+      )}
 
       {/* Day tabs */}
       {isMultiday && (

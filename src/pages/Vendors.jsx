@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
+import FeatureGate from '@/components/FeatureGate';
+import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +26,7 @@ const STATUS_TONE = {
 const money = (n) => (Number(n || 0)).toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 export default function Vendors() {
-  const { wedding } = useOutletContext();
+  const { wedding, tier } = useOutletContext();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -41,6 +43,7 @@ export default function Vendors() {
 
   useEffect(() => { load(); }, [wedding]);
 
+  if (!hasFeature(tier, 'vendors')) return <FeatureGate feature="vendors" tierLabel="Single Day" />;
   if (!wedding) return null;
 
   const confirmed = vendors.filter((v) => v.booking_status === 'confirmed').length;

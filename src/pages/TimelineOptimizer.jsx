@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
+import FeatureGate from '@/components/FeatureGate';
+import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,7 +12,7 @@ import { Sparkles, Clock, Wand2, Check } from 'lucide-react';
 const VENUE_TYPES = ['indoor', 'outdoor', 'mixed', 'religious', 'banquet_hall'];
 
 export default function TimelineOptimizer() {
-  const { wedding } = useOutletContext();
+  const { wedding, tier } = useOutletContext();
   const [guestCount, setGuestCount] = useState(wedding?.guest_count || 100);
   const [ceremonyTime, setCeremonyTime] = useState('16:00');
   const [venueType, setVenueType] = useState('indoor');
@@ -19,6 +21,7 @@ export default function TimelineOptimizer() {
   const [importing, setImporting] = useState(false);
   const [imported, setImported] = useState(false);
 
+  if (!hasFeature(tier, 'optimizer')) return <FeatureGate feature="optimizer" tierLabel="Single Day" />;
   if (!wedding) return null;
 
   const generate = async () => {

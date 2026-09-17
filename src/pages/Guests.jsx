@@ -45,7 +45,7 @@ export default function Guests() {
 
   useEffect(() => { load(); }, [wedding]);
   if (!wedding) return null;
-  if (!hasFeature(tier, 'guests')) return <FeatureGate tierLabel="Multiday" />;
+  if (!hasFeature(tier, 'guests')) return <FeatureGate feature="guests" tierLabel="Multiday" />;
 
   const unseated = guests.filter((g) => !g.table_name);
 

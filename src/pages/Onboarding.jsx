@@ -56,7 +56,7 @@ export default function Onboarding() {
       const payload = {
         ...form,
         guest_count: Number(form.guest_count) || 0,
-        selected_tier: form.wedding_type,
+        selected_tier: 'free',
         access_expires_date: computeAccessExpiry(form.wedding_date),
       };
       await base44.entities.Wedding.create(payload);

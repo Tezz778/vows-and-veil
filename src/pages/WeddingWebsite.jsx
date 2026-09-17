@@ -35,7 +35,7 @@ export default function WeddingWebsite() {
   }, [wedding]);
 
   if (!wedding) return null;
-  if (!hasFeature(tier, 'guests')) return <FeatureGate tierLabel="Multiday" />;
+  if (!hasFeature(tier, 'guests')) return <FeatureGate feature="guests" tierLabel="Multiday" />;
 
   const slug = wedding.site_slug;
   const origin = typeof window !== 'undefined' ? window.location.origin : '';

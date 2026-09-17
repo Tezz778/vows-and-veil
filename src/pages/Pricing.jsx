@@ -22,7 +22,7 @@ const FEATURE_LABELS = {
   travel: 'Destination Travel Suite',
 };
 
-const TIER_RANK = { single_day: 0, multiday: 1, destination: 2 };
+const TIER_RANK = { free: -1, single_day: 0, multiday: 1, destination: 2 };
 
 const TIERS = [
   { key: 'destination', icon: Crown, badge: 'Full Package', features: TIER_FEATURES.destination },

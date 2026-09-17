@@ -31,7 +31,7 @@ export default function Reminders() {
   };
   useEffect(() => { load(); }, [wedding]);
   if (!wedding) return null;
-  if (!hasFeature(tier, 'reminders')) return <FeatureGate tierLabel="Multiday" />;
+  if (!hasFeature(tier, 'reminders')) return <FeatureGate feature="reminders" tierLabel="Multiday" />;
 
   const toggle = async (it) => {
     const done = !it.done;

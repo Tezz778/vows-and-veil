@@ -23,7 +23,7 @@ export default function TravelSuite() {
   const [active, setActive] = useState('hotels');
 
   if (!wedding) return null;
-  if (!hasFeature(tier, 'travel')) return <FeatureGate tierLabel="Destination" />;
+  if (!hasFeature(tier, 'travel')) return <FeatureGate feature="travel" tierLabel="Destination" />;
 
   return (
     <div>

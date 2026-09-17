@@ -49,10 +49,12 @@
     "selected_tier": {
       "type": "string",
       "enum": [
+        "free",
         "single_day",
         "multiday",
         "destination"
-      ]
+      ],
+      "default": "free"
     },
     "has_paid": {
       "type": "boolean",
@@ -65,6 +67,13 @@
     "access_expires_date": {
       "type": "string",
       "format": "date"
+    },
+    "phone_number": {
+      "type": "string"
+    },
+    "phone_verified": {
+      "type": "boolean",
+      "default": false
     },
     "style_notes": {
       "type": "string"

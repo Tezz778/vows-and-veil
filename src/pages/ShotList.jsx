@@ -29,7 +29,7 @@ export default function ShotList() {
   };
   useEffect(() => { load(); }, [wedding]);
   if (!wedding) return null;
-  if (!hasFeature(tier, 'shotlist')) return <FeatureGate tierLabel="Multiday" />;
+  if (!hasFeature(tier, 'shotlist')) return <FeatureGate feature="shotlist" tierLabel="Multiday" />;
 
   const toggle = async (it) => {
     const done = !it.done;

@@ -1,0 +1,44 @@
+{
+  "name": "DeviceFingerprint",
+  "type": "object",
+  "properties": {
+    "fingerprint_hash": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "wedding_id": {
+      "type": "string"
+    },
+    "flagged": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "fingerprint_hash"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
+import FeatureGate from '@/components/FeatureGate';
+import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -16,7 +18,7 @@ const CATEGORY_COLORS = {
 };
 
 export default function Ideas() {
-  const { wedding } = useOutletContext();
+  const { wedding, tier } = useOutletContext();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -35,6 +37,8 @@ export default function Ideas() {
     if (wedding) setContext(wedding.style_notes || '');
     load();
   }, [wedding]);
+
+  if (!hasFeature(tier, 'ideas')) return <FeatureGate feature="ideas" tierLabel="Single Day" />;
 
   if (!wedding) return null;
 

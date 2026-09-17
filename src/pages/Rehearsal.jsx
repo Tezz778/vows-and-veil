@@ -10,7 +10,7 @@ import RehearsalBudget from '@/components/rehearsal/RehearsalBudget';
 export default function Rehearsal() {
   const { wedding, tier } = useOutletContext();
   if (!wedding) return null;
-  if (!hasFeature(tier, 'rehearsal')) return <FeatureGate tierLabel="Multiday" />;
+  if (!hasFeature(tier, 'rehearsal')) return <FeatureGate feature="rehearsal" tierLabel="Multiday" />;
 
   return (
     <div>

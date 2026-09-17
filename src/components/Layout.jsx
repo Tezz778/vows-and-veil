@@ -1,7 +1,7 @@
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl } from '@/lib/wedding';
+import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl, isFreeTier } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
   Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
@@ -167,7 +167,7 @@ export default function Layout() {
                 return (
                   <Link
                     key={item.path}
-                    to={locked ? '/pricing' : item.path}
+                    to={locked && !isFreeTier(tier) ? '/pricing' : item.path}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors ${
                       active
                         ? 'bg-primary text-primary-foreground shadow-sm'
