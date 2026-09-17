@@ -89,6 +89,20 @@
         }
       }
     },
+    "inspiration_photos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "site_slug": {
       "type": "string"
     },

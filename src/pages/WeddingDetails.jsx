@@ -7,11 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, Save, Palette, Link2 } from 'lucide-react';
+import InspirationPhotos from '@/components/InspirationPhotos';
 
 export default function WeddingDetails() {
   const { wedding, setWedding } = useOutletContext();
   const [colors, setColors] = useState([]);
   const [inspirations, setInspirations] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [styleNotes, setStyleNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -20,6 +22,7 @@ export default function WeddingDetails() {
     if (wedding) {
       setColors(wedding.wedding_colors || []);
       setInspirations(wedding.pinterest_inspirations || []);
+      setPhotos(wedding.inspiration_photos || []);
       setStyleNotes(wedding.style_notes || '');
     }
   }, [wedding]);
@@ -44,9 +47,10 @@ export default function WeddingDetails() {
       const updated = await base44.entities.Wedding.update(wedding.id, {
         wedding_colors: colors,
         pinterest_inspirations: inspirations.filter((ins) => ins.url.trim()),
+        inspiration_photos: photos,
         style_notes: styleNotes.trim(),
       });
-      setWedding({ ...wedding, wedding_colors: colors, pinterest_inspirations: inspirations.filter((ins) => ins.url.trim()), style_notes: styleNotes.trim() });
+      setWedding({ ...wedding, wedding_colors: colors, pinterest_inspirations: inspirations.filter((ins) => ins.url.trim()), inspiration_photos: photos, style_notes: styleNotes.trim() });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e) {
@@ -166,6 +170,11 @@ export default function WeddingDetails() {
             <Plus className="w-4 h-4 mr-1" /> Add inspiration link
           </Button>
         </div>
+      </div>
+
+      {/* Inspiration Photos */}
+      <div className="mt-6">
+        <InspirationPhotos photos={photos} onChange={setPhotos} />
       </div>
 
       {/* Style Notes */}
