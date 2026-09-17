@@ -1,11 +1,11 @@
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { hasFeature, TIER_LABELS, daysUntil, formatDate } from '@/lib/wedding';
+import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
   Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
-  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane
+  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +14,7 @@ const NAV_SECTIONS = [
     label: null,
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, path: '/', feature: null },
+      { label: 'Wedding Details', icon: Palette, path: '/details', feature: null },
     ],
   },
   {
@@ -29,7 +30,7 @@ const NAV_SECTIONS = [
       { label: 'Vows', icon: Heart, path: '/vows', feature: 'vows' },
       { label: 'Speeches', icon: Mic, path: '/speeches', feature: 'speeches' },
       { label: 'Moment Ideas', icon: Sparkles, path: '/ideas', feature: 'ideas' },
-      { label: 'Mood Board', icon: Palette, path: '/moodboard', feature: 'moodboard' },
+      { label: 'Mood Board', icon: ImageIcon, path: '/moodboard', feature: 'moodboard' },
     ],
   },
   {
@@ -87,6 +88,25 @@ export default function Layout() {
   const tier = wedding?.selected_tier || wedding?.wedding_type || 'single_day';
   const dLeft = daysUntil(wedding?.wedding_date);
 
+  // Apply wedding colors to the theme
+  const themeStyle = {};
+  if (wedding?.wedding_colors?.length) {
+    const [h, s, l] = hexToHsl(wedding.wedding_colors[0]) || [346, 44, 30];
+    themeStyle['--primary'] = `${h} ${s}% ${l}%`;
+    themeStyle['--primary-foreground'] = l > 55 ? '20 18% 12%' : '40 40% 99%';
+    themeStyle['--ring'] = `${h} ${s}% ${l}%`;
+    themeStyle['--sidebar-primary'] = `${h} ${s}% ${l}%`;
+    themeStyle['--sidebar-primary-foreground'] = l > 55 ? '20 18% 12%' : '40 40% 99%';
+    themeStyle['--sidebar-ring'] = `${h} ${s}% ${l}%`;
+    if (wedding.wedding_colors[1]) {
+      const [h2, s2, l2] = hexToHsl(wedding.wedding_colors[1]) || [340, 35, 93];
+      themeStyle['--accent'] = `${h2} ${s2}% ${Math.min(l2, 93)}%`;
+      themeStyle['--accent-foreground'] = `${h2} ${s2}% ${Math.max(l2 - 25, 15)}%`;
+      themeStyle['--sidebar-accent'] = `${h2} ${s2}% ${Math.min(l2, 93)}%`;
+      themeStyle['--sidebar-accent-foreground'] = `${h2} ${s2}% ${Math.max(l2 - 25, 15)}%`;
+    }
+  }
+
   if (wedding === undefined) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
@@ -101,7 +121,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex" style={themeStyle}>
       <aside
         className={`fixed lg:sticky top-0 z-40 h-screen w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'

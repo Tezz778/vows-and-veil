@@ -22,6 +22,7 @@ import WeddingWebsite from '@/pages/WeddingWebsite';
 import WeddingSite from '@/pages/WeddingSite';
 import Vendors from '@/pages/Vendors';
 import MoodBoard from '@/pages/MoodBoard';
+import WeddingDetails from '@/pages/WeddingDetails';
 import Rehearsal from '@/pages/Rehearsal';
 import Speeches from '@/pages/Speeches';
 import TimelineOptimizer from '@/pages/TimelineOptimizer';
@@ -75,6 +76,7 @@ const AuthenticatedApp = () => {
           <Route path="/website" element={<WeddingWebsite />} />
           <Route path="/vendors" element={<Vendors />} />
           <Route path="/moodboard" element={<MoodBoard />} />
+          <Route path="/details" element={<WeddingDetails />} />
           <Route path="/rehearsal" element={<Rehearsal />} />
           <Route path="/speeches" element={<Speeches />} />
           <Route path="/optimizer" element={<TimelineOptimizer />} />

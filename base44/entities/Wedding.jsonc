@@ -65,6 +65,26 @@
     "style_notes": {
       "type": "string"
     },
+    "wedding_colors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pinterest_inspirations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "site_slug": {
       "type": "string"
     },
