@@ -7,7 +7,7 @@ const VALUES = [
   { icon: Calendar, title: "Timeline scheduling", desc: "Build a minute-by-minute timeline and optimize it with AI." },
   { icon: Wallet, title: "Budget tracking", desc: "Track estimates, deposits, and balances across every category." },
   { icon: Users, title: "Guest management", desc: "Manage RSVPs, meal choices, and seating charts with ease." },
-  { icon: Heart, title: "AI vow companion", desc: "Write heartfelt vows with guided prompts and AI structuring." },
+  { icon: Heart, title: "Vow writing tool", desc: "Guided questions and AI assistance to help you write vows in your own voice." },
   { icon: Palette, title: "Mood board", desc: "Collect colors, inspiration photos, and style notes in one place." },
   { icon: Sparkles, title: "Wedding website", desc: "Share your day with guests through a beautiful public site." },
 ];

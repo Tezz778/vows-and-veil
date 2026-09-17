@@ -11,7 +11,7 @@ import {
 const FEATURES = [
   { icon: Calendar, title: "Timeline Builder", desc: "Craft a minute-by-minute timeline and optimize it with AI." },
   { icon: Wallet, title: "Budget Tracker", desc: "Track estimates, deposits, and balances across every category." },
-  { icon: Heart, title: "AI Vow Companion", desc: "Write heartfelt vows with guided prompts and AI structuring." },
+  { icon: Heart, title: "Vow Writing Tool", desc: "Guided questions and AI assistance to help you write vows in your own voice." },
   { icon: Palette, title: "Mood Board", desc: "Collect colors, inspiration photos, and style notes in one place." },
   { icon: Users, title: "Guests & Seating", desc: "Manage RSVPs, meal choices, and drag-and-drop seating charts." },
   { icon: Sparkles, title: "Moment Ideas", desc: "Get AI-generated wedding moment ideas delivered monthly." },
@@ -54,7 +54,7 @@ export default function Landing() {
               Every detail of your day, in one elegant place.
             </h1>
             <p className="text-lg text-muted-foreground mb-8 max-w-md">
-              Timeline scheduling, budget tracking, guest management, AI vows,
+              Timeline scheduling, budget tracking, guest management, a vow writing tool,
               and a mood board — built for couples who want it all without the chaos.
             </p>
             <div className="flex flex-wrap gap-3">

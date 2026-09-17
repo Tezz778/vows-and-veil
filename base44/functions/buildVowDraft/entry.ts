@@ -9,25 +9,47 @@ export default async function(req) {
     const answers = body.answers || {};
     const partner1 = String(body.partner1_name || 'Partner 1');
     const partner2 = String(body.partner2_name || 'Partner 2');
+    const currentDraft = String(body.draft_text || '').trim();
 
     const answersText = Object.entries(answers)
+      .filter(([, a]) => a && String(a).trim())
       .map(([q, a]) => `Q: ${q}\nA: ${a}`)
       .join('\n\n');
 
-    const prompt = `You are a thoughtful vow-writing companion. You do NOT write finished vows.
-Using the couple's reflective answers below, organize them into a STRUCTURED DRAFT OUTLINE
-that the couple will personalize themselves. Group related memories and feelings into sections
-(e.g., "How we began", "What I admire", "A promise for the future"). For each section, include
-the relevant raw material from their answers in their own words, plus a gentle prompt reminding
-them to shape it into their voice. Keep it as an outline/scaffold, not polished prose.
+    const prompt = `You are a vow-writing coach, not a ghostwriter. The couple has answered
+reflection questions and may have started writing their own vows. They are stuck and want
+help finding their words — NOT someone to write the vows for them.
+
+Based on their answers and what they've written so far, provide practical writing help:
+
+1. **Angles to try** — 2-3 specific approaches or themes they could explore based on their
+   answers (e.g., "Leaning into the humor of that first meeting" or "The quiet way they
+   show care"). One line each.
+
+2. **Starting points** — 3-4 sentence beginnings or phrasing fragments they could adapt
+   (e.g., "I still remember the way you…" or "You probably don't know this, but…").
+   These are fragments to spark their own writing, NOT finished lines.
+
+3. **A prompt to keep going** — One question that helps them dig deeper into a memory or
+   feeling they've already touched on.
+
+Rules:
+- Do NOT write vows, paragraphs, or full sentences they would say at the altar.
+- Do NOT produce a structured draft or outline of their vows.
+- Keep every suggestion short — a phrase, not a sentence.
+- Speak directly to the writer as "you" and keep the tone warm and encouraging.
+- If they haven't written anything yet, focus on helping them begin.
 
 Partner 1: ${partner1}
 Partner 2: ${partner2}
 
-Answers:
-${answersText || '(no answers yet — provide a gentle starting scaffold with the section headers and prompts to reflect)'}
+Their answers to reflection questions:
+${answersText || '(no answers yet)'}
 
-Return the structured draft as plain text with clear section headers.`;
+What they've written so far:
+${currentDraft || '(nothing yet — they are just starting)'}
+
+Return your response as plain text with the three sections labeled clearly.`;
 
     const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt

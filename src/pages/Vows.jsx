@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Heart, Save, Loader2 } from 'lucide-react';
+import { Sparkles, Heart, Save, Loader2, Lightbulb, X } from 'lucide-react';
 
 const QUESTIONS = [
   'How did the two of you meet? What stood out about that first encounter?',
@@ -28,6 +28,7 @@ export default function Vows() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [draftText, setDraftText] = useState('');
+  const [helpText, setHelpText] = useState('');
 
   const load = async () => {
     if (!wedding) return;
@@ -66,26 +67,24 @@ export default function Vows() {
     } finally { setSaving(false); }
   };
 
-  const generateDraft = async () => {
+  const getHelp = async () => {
     setGenerating(true);
+    setHelpText('');
     try {
       const res = await base44.functions.invoke('buildVowDraft', {
-        partner1_name: p1, partner2_name: p2, answers
+        partner1_name: p1, partner2_name: p2, answers, draft_text: draftText
       });
       const text = res?.data?.draft_text || res?.draft_text || '';
-      setDraftText(text);
-      if (draft) {
-        await base44.entities.VowDraft.update(draft.id, { draft_text: text });
-      }
+      setHelpText(text);
     } catch (e) {
-      alert('Could not generate draft: ' + (e.message || 'error'));
+      alert('Could not get suggestions: ' + (e.message || 'error'));
     } finally { setGenerating(false); }
   };
 
   return (
     <div>
       <PageHeader eyebrow="From the heart" title="Vow Writing Companion"
-        subtitle="Guided questions to surface your story — you write the vows, we help organize them."
+        subtitle="Guided questions and AI assistance — you write the vows, we help when you're stuck."
       >
         <Button onClick={saveAnswers} variant="outline" disabled={saving}>
           {saving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />} Save
@@ -120,26 +119,42 @@ export default function Vows() {
           </div>
         </div>
 
-        {/* Draft */}
+        {/* Writing area + AI help */}
         <div>
           <div className="elegant-card p-5 sticky top-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="serif-heading text-xl text-foreground">Your structured draft</h2>
-              <Button onClick={generateDraft} disabled={generating} size="sm" className="bg-primary hover:bg-primary/90">
-                {generating ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1" />}
-                {generating ? 'Organizing…' : 'Organize draft'}
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="serif-heading text-xl text-foreground">Your vows</h2>
+              <Button onClick={getHelp} disabled={generating} size="sm" variant="outline">
+                {generating ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Lightbulb className="w-4 h-4 mr-1" />}
+                {generating ? 'Thinking…' : 'Get writing help'}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              We organize your answers into a scaffold of sections — you shape it into your own voice. This is a starting point, not finished vows.
+            <p className="text-xs text-muted-foreground mb-4">
+              Write your vows in your own words. Stuck? Tap "Get writing help" for angles,
+              starting points, and prompts — never finished lines.
             </p>
-            {draftText ? (
-              <Textarea rows={20} value={draftText} onChange={(e) => setDraftText(e.target.value)} className="font-body leading-relaxed" />
-            ) : (
-              <div className="text-center py-16 border border-dashed border-border rounded-xl">
-                <Sparkles className="w-8 h-8 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Answer a few questions, then tap “Organize draft”.</p>
-                <p className="text-xs text-muted-foreground/70 mt-1">You can edit the result freely.</p>
+            <Textarea
+              rows={18}
+              value={draftText}
+              onChange={(e) => setDraftText(e.target.value)}
+              placeholder="Start writing your vows here… Take your time. There's no wrong way to begin."
+              className="font-body leading-relaxed"
+            />
+
+            {helpText && (
+              <div className="mt-4 p-4 rounded-xl bg-accent/40 border border-border/60 relative">
+                <button
+                  onClick={() => setHelpText('')}
+                  className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+                  aria-label="Dismiss suggestions"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+                <div className="flex items-center gap-2 mb-2.5">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-medium text-foreground">Writing suggestions</h3>
+                </div>
+                <p className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed pr-6">{helpText}</p>
               </div>
             )}
           </div>
