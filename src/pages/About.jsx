@@ -41,8 +41,8 @@ export default function About() {
             <p>
               Vows & Veil is an all-in-one digital wedding assistant built for engaged
               couples who want to plan their celebration with intention — not chaos. We
-              bring timeline scheduling, budget tracking, guest management, AI-powered
-              vow writing, mood boards, and a shareable wedding website into a single,
+              bring timeline scheduling, budget tracking, guest management, a guided
+              vow writing tool, mood boards, and a shareable wedding website into a single,
               elegant workspace. Instead of juggling spreadsheets, sticky notes, and a
               dozen browser tabs, couples can keep every detail of their day in one
               beautifully designed place that grows with them from engagement to "I do."
@@ -51,10 +51,11 @@ export default function About() {
               We built Vows & Veil for couples at every stage of planning — whether you're
               organizing an intimate single-day ceremony, a multiday weekend celebration,
               or a destination wedding with travel logistics and itineraries. Our tiered
-              plans scale to fit your needs, and our AI tools help with the moments that
-              matter most: structuring your vows, generating speech ideas, optimizing your
-              timeline, and surfacing creative wedding moment ideas throughout your
-              engagement. Every feature is designed to feel calm, deliberate, and
+              plans scale to fit your needs, and our tools help with the moments that
+              matter most: writing your vows with guided assistance, generating speech
+              ideas, optimizing your timeline, and surfacing creative wedding moment
+              ideas throughout your engagement. Every feature is designed to feel calm,
+              deliberate, and
               genuinely helpful — never overwhelming.
             </p>
             <p>
