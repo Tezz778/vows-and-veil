@@ -42,11 +42,18 @@ export default function Pricing() {
     if (!wedding) return;
     setSelecting(key);
     try {
-      await base44.entities.Wedding.update(wedding.id, { selected_tier: key });
-      setWedding({ ...wedding, selected_tier: key });
+      const res = await base44.functions.invoke('create-checkout', { productId: key });
+      const redirectUrl = res?.data?.redirectUrl;
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        alert('Could not start checkout. Please try again.');
+        setSelecting(null);
+      }
     } catch (e) {
-      alert('Could not update plan: ' + (e.message || 'error'));
-    } finally { setSelecting(null); }
+      alert('Could not start checkout: ' + (e.message || 'error'));
+      setSelecting(null);
+    }
   };
 
   return (
@@ -56,7 +63,7 @@ export default function Pricing() {
       />
 
       <p className="text-xs text-muted-foreground mb-8 text-center">
-        Prices shown for reference. Your selected tier unlocks features across the app.
+        One-time purchase — secure checkout powered by Base44 Payments. Your tier unlocks instantly after payment.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -93,14 +100,14 @@ export default function Pricing() {
               </ul>
               <Button
                 onClick={() => select(t.key)}
-                disabled={!canSelect || selecting === t.key || isCurrent}
-                variant={isCurrent ? 'outline' : 'default'}
-                className={`w-full ${!isCurrent && canSelect ? 'bg-primary hover:bg-primary/90' : ''}`}
+                disabled={!canSelect || selecting === t.key || (isCurrent && wedding?.has_paid)}
+                variant={isCurrent && wedding?.has_paid ? 'outline' : 'default'}
+                className={`w-full ${!(isCurrent && wedding?.has_paid) && canSelect ? 'bg-primary hover:bg-primary/90' : ''}`}
               >
                 {!canSelect ? `Not enough for a ${TIER_LABELS[requiredKey]} wedding`
-                  : isCurrent ? 'Current plan'
-                  : selecting === t.key ? 'Updating…'
-                  : `Choose ${TIER_LABELS[t.key]}`}
+                  : isCurrent && wedding?.has_paid ? 'Current plan'
+                  : selecting === t.key ? 'Redirecting to checkout…'
+                  : `Buy ${TIER_LABELS[t.key]} — $${TIER_PRICES[t.key]}`}
               </Button>
             </div>
           );
