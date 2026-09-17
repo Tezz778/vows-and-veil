@@ -42,7 +42,7 @@ export default function Pricing() {
     if (!wedding) return;
     setSelecting(key);
     try {
-      const res = await base44.functions.invoke('create-checkout', { productId: key });
+      const res = await base44.functions.invoke('create-stripe-checkout', { productId: key });
       const redirectUrl = res?.data?.redirectUrl;
       if (redirectUrl) {
         window.location.href = redirectUrl;
