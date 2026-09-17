@@ -1,0 +1,44 @@
+{
+  "description": "Every month, generates fresh wedding moment ideas based on each couple's current wedding theme and style, saves them as MomentIdea entities, and emails the couple to review them on their dashboard.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 1 * *",
+      "one_time_date": null,
+      "timezone": "America/Indianapolis",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Monthly Moment Ideas Generator",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "monthly_moment_ideas",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "generate_ideas": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "generateMonthlyMomentIdeas"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Generate & save monthly ideas",
+            "description": "Creates MomentIdea records and emails couples"
+          }
+        }
+      }
+    ]
+  }
+}
