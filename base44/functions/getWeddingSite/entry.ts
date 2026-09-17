@@ -22,7 +22,9 @@ export default async function(req) {
       site_hero_image: w.site_hero_image,
       site_story: w.site_story,
       site_photos: w.site_photos,
-      site_sections: w.site_sections
+      site_sections: w.site_sections,
+      site_registry: w.site_registry,
+      site_meal_options: w.site_meal_options
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
