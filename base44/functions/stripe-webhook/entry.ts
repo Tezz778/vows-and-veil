@@ -83,6 +83,34 @@ export default async function(req: Request): Promise<Response> {
       });
 
       console.log("stripe-webhook: fulfilled purchase", { purchaseId: purchase.id, checkoutId });
+    } else if (event.type === "charge.refunded") {
+      const charge = event.data.object;
+      const paymentIntent = charge.payment_intent;
+
+      // Find the purchase by the payment intent we stored on fulfillment.
+      const purchases = await db.entities.Base44Purchase.filter({ orderId: paymentIntent });
+      const purchase = purchases?.[0];
+
+      if (!purchase) {
+        console.warn("stripe-webhook: no purchase for refunded charge", { paymentIntent });
+        return new Response("OK", { status: 200 });
+      }
+
+      // Revoke paid access on the buyer's Wedding.
+      const grantUserId = purchase.appUserId;
+      if (grantUserId) {
+        const weddings = await db.entities.Wedding.filter({ created_by_id: grantUserId }, '-created_date', 1);
+        const wedding = weddings?.[0];
+        if (wedding) {
+          await db.entities.Wedding.update(wedding.id, { has_paid: false });
+          console.log("stripe-webhook: revoked access after refund", { weddingId: wedding.id });
+        } else {
+          console.warn("stripe-webhook: no wedding to revoke", { grantUserId });
+        }
+      }
+
+      await db.entities.Base44Purchase.update(purchase.id, { status: "refunded" });
+      console.log("stripe-webhook: marked purchase refunded", { purchaseId: purchase.id });
     } else {
       console.log("stripe-webhook: ignoring event", event.type);
     }
