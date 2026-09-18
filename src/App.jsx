@@ -60,18 +60,28 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* Public — Authentication */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/site/:slug" element={<WeddingSite />} />
-      <Route path="/speech/:token" element={<SpeechWrite />} />
-      <Route path="/ThankYou" element={<ThankYou />} />
+
+      {/* Public — Marketing */}
       <Route path="/landing" element={<Landing />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
+
+      {/* Public — Shared access & payment return */}
+      <Route path="/site/:slug" element={<WeddingSite />} />
+      <Route path="/speech/:token" element={<SpeechWrite />} />
+      {/* PascalCase required: both checkout functions hardcode this exact path as the return URL */}
+      <Route path="/ThankYou" element={<ThankYou />} />
+
+      {/* Protected — Pre-dashboard onboarding (no Layout/sidebar) */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route path="/onboarding" element={<Onboarding />} />
+
+        {/* Protected — App pages (shared Layout with sidebar) */}
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/timeline" element={<Timeline />} />
@@ -93,6 +103,7 @@ const AuthenticatedApp = () => {
           <Route path="/email" element={<GmailCompose />} />
         </Route>
       </Route>
+
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
