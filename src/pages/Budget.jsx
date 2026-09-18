@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
 import FeatureGate from '@/components/FeatureGate';
+import StripeBadge from '@/components/StripeBadge';
 import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -98,6 +99,7 @@ export default function Budget() {
               {upgrading ? 'Redirecting…' : `Boost — $${BUDGET_UPGRADE_PRICE}`}
             </Button>
           </div>
+          <StripeBadge className="mt-3 justify-start" />
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Check, Heart } from 'lucide-react';
+import StripeBadge from '@/components/StripeBadge';
 
 export default function ThankYou() {
   return (
@@ -19,7 +20,10 @@ export default function ThankYou() {
         >
           Go to dashboard
         </Link>
-        <p className="mt-8 text-xs text-muted-foreground/60 flex items-center justify-center gap-1.5">
+        <div className="mt-8">
+          <StripeBadge />
+        </div>
+        <p className="mt-6 text-xs text-muted-foreground/60 flex items-center justify-center gap-1.5">
           Made with <Heart className="w-3 h-3 text-primary" /> on Vows & Veil
         </p>
       </div>

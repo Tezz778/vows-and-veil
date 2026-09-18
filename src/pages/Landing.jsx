@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LandingSignUp from "@/components/landing/LandingSignUp";
+import StripeBadge from "@/components/StripeBadge";
 import { TIER_PRICES, TIER_LABELS, TIER_DESCRIPTIONS, TIER_FEATURES } from "@/lib/wedding";
 import {
   Calendar, Wallet, Heart, Palette, Users, Sparkles,
@@ -168,6 +169,9 @@ export default function Landing() {
                 </a>
               </div>
             ))}
+          </div>
+          <div className="mt-8">
+            <StripeBadge />
           </div>
         </div>
       </section>

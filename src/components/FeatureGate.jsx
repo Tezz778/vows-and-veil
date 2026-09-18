@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Lock, Gem, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FEATURE_INFO } from '@/lib/wedding';
+import StripeBadge from '@/components/StripeBadge';
 
 export default function FeatureGate({ tierLabel, feature }) {
   const info = feature ? FEATURE_INFO[feature] : null;
@@ -35,6 +36,9 @@ export default function FeatureGate({ tierLabel, feature }) {
               <Button asChild className="bg-primary hover:bg-primary/90">
                 <Link to="/pricing"><Gem className="w-4 h-4 mr-2" /> View plans</Link>
               </Button>
+              <div className="mt-4">
+                <StripeBadge />
+              </div>
             </div>
           </div>
         </div>
@@ -54,6 +58,9 @@ export default function FeatureGate({ tierLabel, feature }) {
       <Button asChild className="bg-primary hover:bg-primary/90">
         <Link to="/pricing"><Gem className="w-4 h-4 mr-2" /> View plans</Link>
       </Button>
+      <div className="mt-5">
+        <StripeBadge />
+      </div>
     </div>
   );
 }

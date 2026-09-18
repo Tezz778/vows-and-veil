@@ -5,6 +5,7 @@ import PageHeader from '@/components/PageHeader';
 import { TIER_PRICES, TIER_LABELS, TIER_DESCRIPTIONS, TIER_FEATURES } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Check, Sparkles, Crown, Gem } from 'lucide-react';
+import StripeBadge from '@/components/StripeBadge';
 
 const FEATURE_LABELS = {
   timeline: 'Timeline builder',
@@ -62,9 +63,12 @@ export default function Pricing() {
         subtitle="One-time purchase — pick the tier that fits your celebration. Upgrade anytime."
       />
 
-      <p className="text-xs text-muted-foreground mb-8 text-center">
-        One-time purchase — secure checkout powered by Base44 Payments. Your tier unlocks instantly after payment.
-      </p>
+      <div className="mb-8 text-center">
+        <p className="text-xs text-muted-foreground mb-2">
+          One-time purchase — your tier unlocks instantly after payment.
+        </p>
+        <StripeBadge />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {TIERS.map((t) => {
@@ -119,6 +123,10 @@ export default function Pricing() {
           <Sparkles className="w-4 h-4 inline mr-1.5 text-primary" />
           Charm pricing keeps things feeling deliberate, not padded. Your access window follows your wedding date — and recalculates if your date ever changes.
         </p>
+      </div>
+
+      <div className="mt-6">
+        <StripeBadge />
       </div>
     </div>
   );
