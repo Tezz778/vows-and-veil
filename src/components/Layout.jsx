@@ -5,7 +5,8 @@ import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl, isFreeTier } 
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
   Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
-  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon, Mail
+  Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon, Mail,
+  User, Settings as SettingsIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -55,6 +56,8 @@ const NAV_SECTIONS = [
   {
     label: null,
     items: [
+      { label: 'Profile', icon: User, path: '/profile', feature: null },
+      { label: 'Settings', icon: SettingsIcon, path: '/settings', feature: null },
       { label: 'Plan & Tiers', icon: Gem, path: '/pricing', feature: null },
     ],
   },

@@ -37,6 +37,10 @@ import ThankYou from '@/pages/ThankYou';
 import Landing from '@/pages/Landing';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
+import Profile from '@/pages/Profile';
+import Settings from '@/pages/Settings';
+import { useEffect } from 'react';
+import { applyTheme, getThemePreference } from '@/lib/theme';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -101,6 +105,8 @@ const AuthenticatedApp = () => {
           <Route path="/optimizer" element={<TimelineOptimizer />} />
           <Route path="/travel" element={<TravelSuite />} />
           <Route path="/email" element={<GmailCompose />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>
 
@@ -111,6 +117,9 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  useEffect(() => {
+    applyTheme(getThemePreference());
+  }, []);
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

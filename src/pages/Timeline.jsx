@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Plus, Trash2, Clock, Camera, Video, Users, Pencil, Sparkles, Loader2 } from 'lucide-react';
+import { formatTimePref } from '@/lib/settings';
 
 const DEFAULT_DAYS = {
   single_day: [{ n: 1, label: 'Wedding Day' }],
@@ -154,7 +155,7 @@ export default function Timeline() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 text-sm">
                         <Clock className="w-3.5 h-3.5 text-primary" />
-                        <span className="font-medium text-foreground">{ev.start_time}</span>
+                        <span className="font-medium text-foreground">{formatTimePref(ev.start_time, wedding?.time_format)}</span>
                         <span className="text-muted-foreground">· {ev.duration_minutes} min</span>
                       </div>
                       <h3 className="serif-heading text-lg text-foreground mt-1">{ev.title}</h3>
@@ -334,7 +335,7 @@ function OptimizeDialog({ open, onOpenChange, wedding, dayNumber, dayLabel, onAp
             {suggestions.map((s, i) => (
               <div key={i} className="flex items-start gap-3 rounded-xl border border-border/70 p-3">
                 <div className="text-right shrink-0">
-                  <p className="text-sm font-medium text-primary">{s.start_time}</p>
+                  <p className="text-sm font-medium text-primary">{formatTimePref(s.start_time, wedding?.time_format)}</p>
                   <p className="text-xs text-muted-foreground">{s.duration_minutes}m</p>
                 </div>
                 <div>
