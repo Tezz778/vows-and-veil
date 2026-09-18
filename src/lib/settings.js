@@ -8,7 +8,10 @@ import { base44 } from '@/api/base44Client';
  */
 export function formatTimePref(timeStr, format = '12h') {
   if (!timeStr) return '';
-  const [h, m] = timeStr.split(':').map(Number);
+  const match = String(timeStr).match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return timeStr;
+  const h = Number(match[1]);
+  const m = Number(match[2]);
   if (format === '24h') {
     return `${String(h).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}`;
   }

@@ -6,8 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Plus, Trash2, Pencil, MapPin, Clock } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { formatTimePref } from '@/lib/settings';
 
 export default function GuestItinerary({ weddingId }) {
+  const { wedding } = useOutletContext();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -67,7 +70,7 @@ export default function GuestItinerary({ weddingId }) {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground uppercase tracking-wider">{it.time || 'TBD'}</span>
+                          <span className="text-xs text-muted-foreground uppercase tracking-wider">{formatTimePref(it.time, wedding?.time_format) || 'TBD'}</span>
                         </div>
                         <h4 className="serif-heading text-lg text-foreground">{it.title}</h4>
                         {it.location && <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5"><MapPin className="w-3.5 h-3.5" /> {it.location}</p>}

@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { MapPin, Clock, UtensilsCrossed, Plus, Pencil, Trash2 } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { formatTimePref } from '@/lib/settings';
 
 const DEFAULT_MOMENTS = [
   { title: 'Rehearsal Walkthrough', start_time: '16:00', duration_minutes: 60, notes: 'Ceremony run-through at the venue' },
@@ -15,6 +17,7 @@ const DEFAULT_MOMENTS = [
 ];
 
 export default function RehearsalSchedule({ weddingId }) {
+  const { wedding } = useOutletContext();
   const [rehearsal, setRehearsal] = useState(null);
   const [moments, setMoments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,7 +131,7 @@ export default function RehearsalSchedule({ weddingId }) {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-sm">
                       <Clock className="w-3 h-3 text-primary" />
-                      <span className="font-medium text-foreground">{m.start_time}</span>
+                      <span className="font-medium text-foreground">{formatTimePref(m.start_time, wedding?.time_format)}</span>
                       <span className="text-muted-foreground">· {m.duration_minutes}m</span>
                     </div>
                     <p className="text-sm font-medium text-foreground mt-0.5">{m.title}</p>
