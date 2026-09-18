@@ -175,6 +175,41 @@
     "site_meal_options": {
       "type": "string"
     },
+    "profile_photo": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "time_format": {
+      "type": "string",
+      "enum": [
+        "12h",
+        "24h"
+      ],
+      "default": "12h"
+    },
+    "theme_preference": {
+      "type": "string",
+      "enum": [
+        "light",
+        "dark",
+        "system"
+      ],
+      "default": "system"
+    },
+    "notif_email_reminders": {
+      "type": "boolean",
+      "default": true
+    },
+    "notif_countdown_alerts": {
+      "type": "boolean",
+      "default": true
+    },
+    "notif_rsvp_activity": {
+      "type": "boolean",
+      "default": true
+    },
     "description": {
       "type": "string"
     }
