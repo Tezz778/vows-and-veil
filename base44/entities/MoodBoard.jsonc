@@ -28,6 +28,9 @@
         "other"
       ],
       "default": "decor"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [

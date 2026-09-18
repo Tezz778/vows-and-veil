@@ -19,6 +19,9 @@
         "replied"
       ],
       "default": "new"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [

@@ -93,6 +93,9 @@
     },
     "rehearsal_table": {
       "type": "string"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [

@@ -26,6 +26,9 @@
     "due_date": {
       "type": "string",
       "format": "date"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [

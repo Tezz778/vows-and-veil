@@ -11,6 +11,9 @@
     "capacity": {
       "type": "number",
       "default": 8
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [

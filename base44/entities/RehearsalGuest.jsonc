@@ -19,6 +19,9 @@
         "no"
       ],
       "default": "pending"
+    },
+    "description": {
+      "type": "string"
     }
   },
   "required": [
