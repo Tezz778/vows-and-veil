@@ -30,7 +30,10 @@
         "generate_ideas": {
           "call": "invoke_backend_function",
           "with": {
-            "function_name": "generateMonthlyMomentIdeas"
+            "function_name": "generateMonthlyMomentIdeas",
+            "args": {
+              "scheduler_secret": "REPLACE_WITH_SCHEDULER_SECRET_VALUE"
+            }
           },
           "then": "end",
           "x-base44": {
