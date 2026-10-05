@@ -3,6 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Trash2, ExternalLink } from 'lucide-react';
 
+function isSafeUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch { return false; }
+}
+
 export default function SiteRegistryEditor({ wedding, setWedding }) {
   const items = Array.isArray(wedding.site_registry) ? wedding.site_registry : [];
 
@@ -19,6 +27,10 @@ export default function SiteRegistryEditor({ wedding, setWedding }) {
   const remove = (i) => save(items.filter((_, idx) => idx !== i));
 
   const commit = (i, field, value) => {
+    if (field === 'url' && value && !isSafeUrl(value)) {
+      alert('Only http:// and https:// links are allowed.');
+      return;
+    }
     save(items.map((it, idx) => (idx === i ? { ...it, [field]: value } : it)));
   };
 

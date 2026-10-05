@@ -16,6 +16,17 @@
       "type": "string",
       "format": "date-time"
     },
+    "ip_address": {
+      "type": "string"
+    },
+    "attempts": {
+      "type": "number",
+      "default": 0
+    },
+    "consumed": {
+      "type": "boolean",
+      "default": false
+    },
     "description": {
       "type": "string"
     }

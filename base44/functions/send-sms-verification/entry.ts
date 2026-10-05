@@ -1,5 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
+import { getClientIp } from '../../shared/security.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -26,9 +27,23 @@ export default async function(req: Request): Promise<Response> {
     }
 
     const base44 = createClientFromRequest(req);
+    const clientIp = getClientIp(req);
 
-    // Rate limit: check if a code was sent in the last 60 seconds
-    const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+    // Per-IP rate limit: max 5 sends per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentIpRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      ip_address: clientIp,
+    }, '-created_date', 10);
+
+    const recentIpCount = (recentIpRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+
+    if (recentIpCount >= 5) {
+      return Response.json({ error: 'Too many verification requests from your address. Please try again later.' }, { status: 429 });
+    }
+
+    // Per-number cooldown: 60 seconds between sends to the same number
     const recent = await base44.asServiceRole.entities.SmsVerification.filter({
       phone_number: normalized,
     }, '-created_date', 1);
@@ -40,6 +55,12 @@ export default async function(req: Request): Promise<Response> {
       }
     }
 
+    // Invalidate all previous unverified codes for this phone number
+    await base44.asServiceRole.entities.SmsVerification.updateMany(
+      { phone_number: normalized, verified: false },
+      { $set: { consumed: true } }
+    );
+
     // Generate 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
@@ -49,7 +70,10 @@ export default async function(req: Request): Promise<Response> {
       phone_number: normalized,
       code,
       verified: false,
+      consumed: false,
+      attempts: 0,
       expires_at: expiresAt,
+      ip_address: clientIp,
     });
 
     // Send via Twilio
@@ -71,6 +95,11 @@ export default async function(req: Request): Promise<Response> {
     if (!twilioResponse.ok) {
       const errText = await twilioResponse.text();
       console.error('Twilio error:', errText);
+      // Mark the code as consumed since we couldn't send it
+      await base44.asServiceRole.entities.SmsVerification.updateMany(
+        { phone_number: normalized, code },
+        { $set: { consumed: true } }
+      );
       return Response.json({ error: 'Could not send SMS' }, { status: 500 });
     }
 

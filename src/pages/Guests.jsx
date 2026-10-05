@@ -349,8 +349,13 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
         meal_choice: meal.trim(), invitation_status: invStatus, invite_method: invMethod,
         invite_sent_date: invDate || null, follow_up_sent: followUp,
       };
-      if (editing) await base44.entities.Guest.update(editing.id, payload);
-      else await base44.entities.Guest.create(payload);
+      if (editing) {
+        if (!editing.rsvp_token) payload.rsvp_token = crypto.randomUUID();
+        await base44.entities.Guest.update(editing.id, payload);
+      } else {
+        payload.rsvp_token = crypto.randomUUID();
+        await base44.entities.Guest.create(payload);
+      }
       onSaved();
     } catch (e) { alert('Could not save: ' + (e.message || 'error')); }
     finally { setSaving(false); }

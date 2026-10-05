@@ -4,6 +4,33 @@ export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
 
+    // Guard: block non-admin authenticated users; rate-limit anonymous/scheduler calls
+    let isAnonymous = false;
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        if (user.role !== 'admin') {
+          return Response.json({ error: 'Forbidden' }, { status: 403 });
+        }
+        // Admin — allowed without rate limit
+      } else {
+        isAnonymous = true;
+      }
+    } catch {
+      isAnonymous = true;
+    }
+
+    // Rate limit: min 6 hours between runs for anonymous/scheduler calls
+    if (isAnonymous) {
+      const recentIdeas = await base44.asServiceRole.entities.MomentIdea.list('-created_date', 1);
+      if (recentIdeas && recentIdeas.length > 0) {
+        const lastRun = new Date(recentIdeas[0].created_date);
+        if (Date.now() - lastRun.getTime() < 6 * 60 * 60 * 1000) {
+          return Response.json({ error: 'Rate limited — already run recently' }, { status: 429 });
+        }
+      }
+    }
+
     // List all weddings (service role — workflow context has no user session)
     const weddings = await base44.asServiceRole.entities.Wedding.list('-created_date', 200);
 

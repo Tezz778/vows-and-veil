@@ -45,6 +45,10 @@
       ],
       "default": "not_started"
     },
+    "last_generated_date": {
+      "type": "string",
+      "format": "date-time"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000

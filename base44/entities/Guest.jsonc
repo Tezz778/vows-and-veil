@@ -94,6 +94,9 @@
     "rehearsal_table": {
       "type": "string"
     },
+    "rsvp_token": {
+      "type": "string"
+    },
     "description": {
       "type": "string"
     }

@@ -10,6 +10,14 @@ import { Image } from '@/components/ui/image';
 
 const DEFAULT_MEAL_OPTIONS = ['Beef', 'Chicken', 'Fish', 'Vegetarian', 'Vegan'];
 
+function safeHref(url) {
+  if (!url || typeof url !== 'string') return null;
+  try {
+    const parsed = new URL(url.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? url.trim() : null;
+  } catch { return null; }
+}
+
 function parseMealOptions(raw) {
   if (!raw || typeof raw !== 'string') return DEFAULT_MEAL_OPTIONS;
   const opts = raw.split('\n').map((s) => s.trim()).filter(Boolean);
@@ -21,6 +29,12 @@ export default function WeddingSite() {
   const [wedding, setWedding] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [guestToken, setGuestToken] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setGuestToken(params.get('guest') || '');
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -167,12 +181,12 @@ export default function WeddingSite() {
                       <p className="serif-heading text-lg text-foreground">{r.store_name || 'Registry'}</p>
                       {r.description && <p className="text-sm text-muted-foreground mt-0.5">{r.description}</p>}
                     </div>
-                    {r.url && (
-                      <a href={r.url} target="_blank" rel="noopener noreferrer"
+                    {(() => { const safe = safeHref(r.url); return safe ? (
+                      <a href={safe} target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline shrink-0">
                         Visit <ExternalLink className="w-3.5 h-3.5" />
                       </a>
-                    )}
+                    ) : null; })()}
                   </div>
                 ) : null
               ))}
@@ -183,7 +197,7 @@ export default function WeddingSite() {
 
       {/* RSVP */}
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <RSVPForm slug={slug} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
+        <RSVPForm slug={slug} guestToken={guestToken} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
       </section>
 
       <footer className="text-center pb-10 text-xs text-muted-foreground/70">
@@ -239,7 +253,7 @@ function Detail({ label, value }) {
   );
 }
 
-function RSVPForm({ slug, isDestination, mealOptions }) {
+function RSVPForm({ slug, guestToken, isDestination, mealOptions }) {
   const [name, setName] = useState('');
   const [rsvp, setRsvp] = useState('');
   const [plus, setPlus] = useState(0);
@@ -263,6 +277,7 @@ function RSVPForm({ slug, isDestination, mealOptions }) {
         plus_ones: Number(plus) || 0, contact: contact.trim(),
         travel_needed: travel, accommodation: accom.trim(), arrival_date: arrival || null,
         meal_choice: meal, meal_notes: mealNotes.trim(),
+        guest_token: guestToken || '',
       });
       const data = res?.data ?? res;
       if (data?.error) setError(data.error);

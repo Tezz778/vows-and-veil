@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { getClientIp } from '../../shared/security.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -12,9 +13,23 @@ export default async function(req: Request): Promise<Response> {
     }
 
     const base44 = createClientFromRequest(req);
+    const clientIp = getClientIp(req);
+
+    // Per-IP rate limit: max 10 checks per hour (tracked via SmsVerification records from this IP)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentIpRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      ip_address: clientIp,
+    }, '-created_date', 15);
+
+    const recentIpCount = (recentIpRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+
+    if (recentIpCount >= 10) {
+      return Response.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
 
     // Query all free-tier weddings matching date + venue_name + venue_location
-    // Service role bypasses RLS so we can see all users' weddings
     const matches = await base44.asServiceRole.entities.Wedding.filter({
       selected_tier: 'free',
       wedding_date: weddingDate,

@@ -53,6 +53,12 @@ export default async function(req) {
     }
 
     if (action === 'generate') {
+      // Rate limit: min 60 seconds between generations per speech token
+      const lastGen = speech.last_generated_date ? new Date(speech.last_generated_date) : null;
+      if (lastGen && Date.now() - lastGen.getTime() < 60000) {
+        return Response.json({ error: 'Please wait a moment before generating again.' }, { status: 429 });
+      }
+
       const prompts = body.prompts || speech.prompts || {};
       const speaker = speech.speaker_name;
       const role = speech.role;
@@ -86,6 +92,7 @@ Return only the speech text, ready to read aloud.`;
         draft_text: draftText,
         prompts,
         share_status: 'in_progress',
+        last_generated_date: new Date().toISOString(),
       });
 
       return Response.json({ draft_text: draftText, share_status: 'in_progress' });

@@ -14,31 +14,53 @@ export default async function(req: Request): Promise<Response> {
 
     const base44 = createClientFromRequest(req);
 
-    // Find the most recent unverified code for this phone number
+    // Find the most recent non-consumed, non-verified code for this phone number
     const records = await base44.asServiceRole.entities.SmsVerification.filter({
       phone_number: normalized,
       verified: false,
-    }, '-created_date', 5);
+      consumed: false,
+    }, '-created_date', 1);
 
     if (!records || records.length === 0) {
-      return Response.json({ verified: false, error: 'No pending verification found' });
+      return Response.json({ verified: false, error: 'No pending verification found. Please request a new code.' });
     }
 
-    // Find a matching, non-expired code
+    const record = records[0];
     const now = Date.now();
-    const match = records.find((r) => {
-      if (r.code !== code) return false;
-      const expires = new Date(r.expires_at || r.created_date).getTime();
-      return expires > now;
-    });
+    const expires = new Date(record.expires_at || record.created_date).getTime();
 
-    if (!match) {
-      return Response.json({ verified: false, error: 'Invalid or expired code' });
+    // Check if expired
+    if (expires <= now) {
+      await base44.asServiceRole.entities.SmsVerification.update(record.id, { consumed: true });
+      return Response.json({ verified: false, error: 'Code expired. Please request a new one.' });
     }
 
-    // Mark as verified
-    await base44.asServiceRole.entities.SmsVerification.update(match.id, {
+    // Check if locked out due to too many attempts
+    if ((record.attempts || 0) >= 5) {
+      await base44.asServiceRole.entities.SmsVerification.update(record.id, { consumed: true });
+      return Response.json({ verified: false, error: 'Too many failed attempts. Please request a new code.' });
+    }
+
+    // Check if code matches
+    if (record.code !== code) {
+      const newAttempts = (record.attempts || 0) + 1;
+      const shouldLockout = newAttempts >= 5;
+      await base44.asServiceRole.entities.SmsVerification.update(record.id, {
+        attempts: newAttempts,
+        consumed: shouldLockout,
+      });
+      return Response.json({
+        verified: false,
+        error: shouldLockout
+          ? 'Too many failed attempts. Please request a new code.'
+          : 'Invalid code',
+      });
+    }
+
+    // Code matches — mark as verified and consumed (prevents replay)
+    await base44.asServiceRole.entities.SmsVerification.update(record.id, {
       verified: true,
+      consumed: true,
     });
 
     return Response.json({ verified: true });
