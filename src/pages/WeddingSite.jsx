@@ -197,7 +197,7 @@ export default function WeddingSite() {
 
       {/* RSVP */}
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <RSVPForm slug={slug} guestToken={guestToken} rsvpSecret={wedding.site_rsvp_secret || ''} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
+        <RSVPForm slug={slug} guestToken={guestToken} rsvpToken={wedding.rsvp_token || ''} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
       </section>
 
       <footer className="text-center pb-10 text-xs text-muted-foreground/70">
@@ -253,7 +253,7 @@ function Detail({ label, value }) {
   );
 }
 
-function RSVPForm({ slug, guestToken, rsvpSecret, isDestination, mealOptions }) {
+function RSVPForm({ slug, guestToken, rsvpToken, isDestination, mealOptions }) {
   const [name, setName] = useState('');
   const [rsvp, setRsvp] = useState('');
   const [plus, setPlus] = useState(0);
@@ -266,6 +266,7 @@ function RSVPForm({ slug, guestToken, rsvpSecret, isDestination, mealOptions }) 
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [website, setWebsite] = useState('');
 
   const submit = async () => {
     if (!name.trim()) { setError('Please enter your name'); return; }
@@ -278,7 +279,8 @@ function RSVPForm({ slug, guestToken, rsvpSecret, isDestination, mealOptions }) 
         travel_needed: travel, accommodation: accom.trim(), arrival_date: arrival || null,
         meal_choice: meal, meal_notes: mealNotes.trim(),
         guest_token: guestToken || '',
-        rsvp_secret: rsvpSecret || '',
+        rsvp_token: rsvpToken || '',
+        website: website,
       });
       const data = res?.data ?? res;
       if (data?.error) setError(data.error);
@@ -381,6 +383,12 @@ function RSVPForm({ slug, guestToken, rsvpSecret, isDestination, mealOptions }) 
             )}
           </>
         )}
+
+        {/* Honeypot — hidden from humans, bots fill it */}
+        <div className="hidden" aria-hidden="true">
+          <Label htmlFor="rsvp-website">Website (leave blank)</Label>
+          <Input id="rsvp-website" value={website} onChange={(e) => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" />
+        </div>
 
         {error && <p className="text-sm text-destructive text-center">{error}</p>}
 

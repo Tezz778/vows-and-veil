@@ -1,12 +1,19 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
-import { getClientIp } from '../../shared/security.ts';
+import { secrets } from 'base44:runtime';
+import { getClientIp, validateAppOrigin } from '../../shared/security.ts';
 
 // Public endpoint called during the signup flow (before the user has an account).
 // Left open intentionally — adding auth would break registration. Protected by
-// per-IP rate limiting that counts THIS function's own activity (not records
-// from a different endpoint, which the previous implementation did).
+// origin validation (requests must come from the app's own frontend) plus
+// per-IP rate limiting that counts THIS function's own activity.
 export default async function(req: Request): Promise<Response> {
   try {
+    // Verify the request originates from the app's own frontend
+    const appUrl = secrets.get('WIX_CHECKOUT_APP_URL');
+    if (!validateAppOrigin(req, appUrl)) {
+      return Response.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
+
     const body = await req.json();
     const weddingDate = body?.wedding_date;
     const venueName = body?.venue_name;

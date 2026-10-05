@@ -1,18 +1,32 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
-import { getClientIp } from '../../shared/security.ts';
+import { secrets } from 'base44:runtime';
+import { getClientIp, validateAppOrigin, verifyRsvpToken } from '../../shared/security.ts';
 
 // Public endpoint: guests submit RSVPs from the public wedding site without
 // logging in. Auth is not required. The token path verifies a stored guest token
-// and is safe. The no-token path requires the wedding's RSVP secret (returned
-// by getWeddingSite) to prove the submission came from the actual site page,
-// plus per-wedding AND per-IP rate limiting.
+// and is safe. The no-token path requires a short-lived signed RSVP token
+// (issued by getWeddingSite, never the raw secret) plus per-wedding AND per-IP
+// rate limiting and a honeypot field to prevent automated guest-list poisoning.
 export default async function(req) {
   try {
+    // Verify the request originates from the app's own frontend
+    const appUrl = secrets.get('WIX_CHECKOUT_APP_URL');
+    if (!validateAppOrigin(req, appUrl)) {
+      return Response.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => ({}));
     const slug = String(body.slug || '').trim().toLowerCase();
     const name = String(body.name || '').trim();
     const guestToken = String(body.guest_token || '').trim();
-    const rsvpSecret = String(body.rsvp_secret || '').trim();
+    const rsvpToken = String(body.rsvp_token || '').trim();
+
+    // Honeypot: if the hidden "website" field is filled, silently accept
+    // without creating a record — bots fill hidden fields, humans don't.
+    const honeypot = String(body.website || '').trim();
+    if (honeypot) {
+      return Response.json({ ok: true, guest_id: 'hp', synced: false });
+    }
 
     if (!slug) return Response.json({ error: 'Missing slug' }, { status: 400 });
     if (!name) return Response.json({ error: 'Please enter your name' }, { status: 400 });
@@ -58,10 +72,13 @@ export default async function(req) {
       return Response.json({ ok: true, guest_id: guest.id, synced: true });
     }
 
-    // No-token path: require the wedding's RSVP secret to prove the submission
-    // came from the actual wedding site page (not a direct API call).
-    if (!w.site_rsvp_secret || rsvpSecret !== w.site_rsvp_secret) {
-      return Response.json({ error: 'Invalid RSVP submission' }, { status: 403 });
+    // No-token path: verify the short-lived signed RSVP token issued by getWeddingSite.
+    // The token is signed with the wedding's site_rsvp_secret (never returned to the
+    // client) and expires after 2 hours. This proves the submission came from the
+    // actual wedding site page — an attacker who calls getWeddingSite gets only a
+    // time-limited token, not the reusable static secret.
+    if (!rsvpToken || !w.site_rsvp_secret || !(await verifyRsvpToken(rsvpToken, w.site_rsvp_secret))) {
+      return Response.json({ error: 'Invalid RSVP submission. Please refresh the page and try again.' }, { status: 403 });
     }
 
     // No-token path: apply rate limiting before creating a new guest.

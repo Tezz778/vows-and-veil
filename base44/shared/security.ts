@@ -80,7 +80,7 @@ export function validateAppOrigin(req: Request, appUrl: string | undefined | nul
   if (origin) return isAllowedOrigin(origin);
   const referer = req.headers.get('referer');
   if (referer) return isAllowedOrigin(referer);
-  return true; // No Origin/Referer — allow (rate limits handle this)
+  return false; // No Origin/Referer — reject (direct API calls bypass origin checks)
 }
 
 export function safeUrl(url: string | undefined | null): string | null {
@@ -94,4 +94,48 @@ export function safeUrl(url: string | undefined | null): string | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Generate a short-lived signed RSVP token for a wedding.
+ * The token is signed with the wedding's site_rsvp_secret (never returned to
+ * the client) and expires after 2 hours. submitRSVP verifies the signature
+ * and expiry, proving the submission originated from getWeddingSite — not a
+ * direct API call with a stolen static secret.
+ */
+export async function generateRsvpToken(weddingId: string, secret: string): Promise<string> {
+  if (!secret) return '';
+  const expiry = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
+  const payload = `${weddingId}:${expiry}`;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+  const sigHex = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${btoa(payload)}.${sigHex}`;
+}
+
+/**
+ * Verify a short-lived signed RSVP token.
+ * Returns true only if the token is validly signed with the given secret and
+ * has not expired.
+ */
+export async function verifyRsvpToken(token: string, secret: string): Promise<boolean> {
+  if (!token || !secret) return false;
+  try {
+    const [payloadB64, sigHex] = token.split('.');
+    if (!payloadB64 || !sigHex) return false;
+    const payload = atob(payloadB64);
+    const [, expiryStr] = payload.split(':');
+    const expiry = parseInt(expiryStr, 10);
+    if (isNaN(expiry) || Date.now() > expiry) return false;
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    );
+    const expectedSig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const expectedHex = Array.from(new Uint8Array(expectedSig)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return expectedHex === sigHex;
+  } catch { return false; }
 }

@@ -15,7 +15,7 @@
 // (order.checkoutId === checkoutSession.id). Skipping this write makes fulfillment impossible.
 
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.31";
-import { getClientIp } from "../../shared/security.ts";
+import { getClientIp, validateAppOrigin } from "../../shared/security.ts";
 
 const CONSTRUCT_URL = "https://www.wixapis.com/payments/platform/v1/checkout-sessions/construct";
 
@@ -54,6 +54,11 @@ Deno.serve(async (req: Request) => {
       // caller-controlled Origin (open redirect). Reconnecting payments repopulates the secret.
       console.error("create-checkout: no app URL (X-Base44-App-Url header and WIX_CHECKOUT_APP_URL both empty)");
       return new Response(JSON.stringify({ error: "Payments not configured" }), { status: 500 });
+    }
+    // Verify the request originates from the app's own frontend (defense-in-depth
+    // alongside the server-side price resolution and signature-verified webhook).
+    if (!validateAppOrigin(req, appUrl)) {
+      return new Response(JSON.stringify({ error: "Invalid request origin" }), { status: 403 });
     }
     const base44 = createClientFromRequest(req);
 
