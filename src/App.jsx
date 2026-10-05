@@ -33,6 +33,7 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
+import OAuthConsent from '@/pages/OAuthConsent';
 import ThankYou from '@/pages/ThankYou';
 import Landing from '@/pages/Landing';
 import About from '@/pages/About';
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
       <Route path="/contact" element={<Contact />} />
 
       {/* Public — Shared access & payment return */}
+      <Route path="/oauth/consent" element={<OAuthConsent />} />
       <Route path="/site/:slug" element={<WeddingSite />} />
       <Route path="/speech/:token" element={<SpeechWrite />} />
       {/* PascalCase required: both checkout functions hardcode this exact path as the return URL */}
