@@ -72,6 +72,14 @@ const BOTTOM_TABS = [
   { label: 'Settings', icon: SettingsIcon, path: '/settings' },
 ];
 
+const TAB_GROUPS = {
+  '/': ['/', '/details', '/moodboard', '/vows', '/speeches', '/ideas'],
+  '/timeline': ['/timeline', '/optimizer'],
+  '/guests': ['/guests', '/rehearsal', '/travel', '/website', '/email'],
+  '/budget': ['/budget', '/vendors', '/shotlist', '/reminders'],
+  '/settings': ['/settings', '/profile', '/pricing'],
+};
+
 const ROOT_PATHS = ['/', '/timeline', '/guests', '/budget', '/settings'];
 
 export default function Layout() {
@@ -243,7 +251,7 @@ export default function Layout() {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-background/95 backdrop-blur border-t border-border safe-area-bottom">
         <div className="flex items-stretch justify-around">
           {BOTTOM_TABS.map((tab) => {
-            const active = location.pathname === tab.path;
+            const active = (TAB_GROUPS[tab.path] || []).includes(location.pathname);
             const Icon = tab.icon;
             return (
               <Link

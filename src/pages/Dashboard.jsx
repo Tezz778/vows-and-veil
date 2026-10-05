@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { daysUntil, formatDate, hasFeature, TIER_LABELS } from '@/lib/wedding';
@@ -13,24 +13,27 @@ import {
 
 export default function Dashboard() {
   const { wedding } = useOutletContext();
-  const [reminders, setReminders] = useState([]);
-  const [timelineCount, setTimelineCount] = useState(0);
-
-  const load = useCallback(async () => {
-    if (!wedding) return;
-    try {
-      const [rems, events] = await Promise.all([
-        base44.entities.ReminderTask.filter({ wedding_id: wedding.id, done: false }, 'due_date', 5),
-        base44.entities.TimelineEvent.filter({ wedding_id: wedding.id }, 'order', 100),
-      ]);
-      setReminders(rems || []);
-      setTimelineCount((events || []).length);
-    } catch {}
-  }, [wedding]);
-
-  useEffect(() => { load(); }, [load]);
+  const queryClient = useQueryClient();
+  const { data: reminders = [] } = useQuery({
+    queryKey: ['dashboardReminders', wedding?.id],
+    queryFn: () => base44.entities.ReminderTask.filter({ wedding_id: wedding.id, done: false }, 'due_date', 5),
+    enabled: !!wedding,
+  });
+  const { data: timelineEvents = [] } = useQuery({
+    queryKey: ['dashboardTimeline', wedding?.id],
+    queryFn: () => base44.entities.TimelineEvent.filter({ wedding_id: wedding.id }, 'order', 100),
+    enabled: !!wedding,
+  });
 
   if (!wedding) return null;
+  const timelineCount = timelineEvents.length;
+
+  const load = async () => {
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ['dashboardReminders', wedding.id] }),
+      queryClient.refetchQueries({ queryKey: ['dashboardTimeline', wedding.id] }),
+    ]);
+  };
   const dLeft = daysUntil(wedding.wedding_date);
   const tier = wedding.selected_tier || wedding.wedding_type;
 

@@ -90,6 +90,11 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  button, a, [role='button'] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
   }

@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
@@ -32,8 +33,12 @@ const DEFAULT_DAYS = {
 
 export default function Timeline() {
   const { wedding, tier } = useOutletContext();
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: events = [], isLoading: loading, refetch } = useQuery({
+    queryKey: ['timelineEvents', wedding?.id],
+    queryFn: () => base44.entities.TimelineEvent.filter({ wedding_id: wedding.id }, 'order', 200),
+    enabled: !!wedding,
+  });
   const [activeDay, setActiveDay] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -44,17 +49,6 @@ export default function Timeline() {
   const freeTier = isFreeTier(tier);
   const atCap = freeTier && events.length >= TIMELINE_FREE_CAP;
 
-  const load = async () => {
-    if (!wedding) return;
-    setLoading(true);
-    try {
-      const list = await base44.entities.TimelineEvent.filter({ wedding_id: wedding.id }, 'order', 200);
-      setEvents(list || []);
-    } catch {} finally { setLoading(false); }
-  };
-
-  useEffect(() => { load(); }, [wedding]);
-
   const dayEvents = useMemo(
     () => events.filter((e) => Number(e.day_number) === Number(activeDay)).sort((a, b) => (a.start_time || '').localeCompare(b.start_time || '')),
     [events, activeDay]
@@ -62,6 +56,9 @@ export default function Timeline() {
 
   if (!wedding) return null;
   if (!hasFeature(tier, 'timeline')) return <FeatureGate tierLabel="Multiday" />;
+
+  const load = async () => { await refetch(); };
+  const reload = async () => { await queryClient.invalidateQueries({ queryKey: ['timelineEvents', wedding.id] }); };
 
   const pacingNote = () => {
     const s = wedding.photographer_status;
@@ -164,10 +161,10 @@ export default function Timeline() {
                       {ev.notes && <p className="text-sm text-muted-foreground mt-1">{ev.notes}</p>}
                     </div>
                     <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => openEdit(ev)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground">
+                      <button onClick={() => openEdit(ev)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => base44.entities.TimelineEvent.delete(ev.id).then(load)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive">
+                      <button onClick={() => base44.entities.TimelineEvent.delete(ev.id).then(reload)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -182,12 +179,12 @@ export default function Timeline() {
       <EventDialog
         open={dialogOpen} onOpenChange={setDialogOpen}
         wedding={wedding} dayNumber={activeDay} dayLabel={days.find((d) => d.n === activeDay)?.label || ''}
-        editing={editing} onSaved={load}
+        editing={editing} onSaved={reload}
       />
       <OptimizeDialog
         open={optOpen} onOpenChange={setOptOpen}
         wedding={wedding} dayNumber={activeDay} dayLabel={days.find((d) => d.n === activeDay)?.label || ''}
-        onApplied={load}
+        onApplied={reload}
       />
     </div>
     </PullToRefresh>

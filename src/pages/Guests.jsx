@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
@@ -23,31 +24,30 @@ const RSVP_COLORS = {
 
 export default function Guests() {
   const { wedding, tier } = useOutletContext();
-  const [guests, setGuests] = useState([]);
-  const [tables, setTables] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: guests = [], isLoading: guestsLoading, refetch: refetchGuests } = useQuery({
+    queryKey: ['guests', wedding?.id],
+    queryFn: () => base44.entities.Guest.filter({ wedding_id: wedding.id }, 'name', 500),
+    enabled: !!wedding,
+  });
+  const { data: tables = [], isLoading: tablesLoading, refetch: refetchTables } = useQuery({
+    queryKey: ['seatingTables', wedding?.id],
+    queryFn: () => base44.entities.SeatingTable.filter({ wedding_id: wedding.id }, 'name', 100),
+    enabled: !!wedding,
+  });
+  const loading = guestsLoading || tablesLoading;
   const [guestDialog, setGuestDialog] = useState(false);
   const [editingGuest, setEditingGuest] = useState(null);
   const [tableDialog, setTableDialog] = useState(false);
 
   const isDestination = hasFeature(tier, 'travel');
 
-  const load = async () => {
-    if (!wedding) return;
-    setLoading(true);
-    try {
-      const [g, t] = await Promise.all([
-        base44.entities.Guest.filter({ wedding_id: wedding.id }, 'name', 500),
-        base44.entities.SeatingTable.filter({ wedding_id: wedding.id }, 'name', 100),
-      ]);
-      setGuests(g || []);
-      setTables(t || []);
-    } catch {} finally { setLoading(false); }
-  };
-
-  useEffect(() => { load(); }, [wedding]);
   if (!wedding) return null;
   if (!hasFeature(tier, 'guests')) return <FeatureGate feature="guests" tierLabel="Multiday" />;
+
+  const load = async () => {
+    await Promise.all([refetchGuests(), refetchTables()]);
+  };
 
   const unseated = guests.filter((g) => !g.table_name);
 
@@ -55,22 +55,22 @@ export default function Guests() {
     const { draggableId, destination } = result;
     if (!destination) return;
     const tableName = destination.droppableId === 'pool' ? '' : destination.droppableId;
-    setGuests((prev) => prev.map((g) => (g.id === draggableId ? { ...g, table_name: tableName } : g)));
+    queryClient.setQueryData(['guests', wedding.id], (prev) => prev.map((g) => (g.id === draggableId ? { ...g, table_name: tableName } : g)));
     try {
       await base44.entities.Guest.update(draggableId, { table_name: tableName });
-    } catch { load(); }
+    } catch { queryClient.invalidateQueries({ queryKey: ['guests', wedding.id] }); }
   };
 
   const removeGuest = async (id) => {
+    queryClient.setQueryData(['guests', wedding.id], (prev) => prev.filter((g) => g.id !== id));
     await base44.entities.Guest.delete(id);
-    setGuests((prev) => prev.filter((g) => g.id !== id));
   };
   const removeTable = async (id) => {
     const t = tables.find((x) => x.id === id);
     if (!t) return;
+    queryClient.setQueryData(['seatingTables', wedding.id], (prev) => prev.filter((x) => x.id !== id));
+    queryClient.setQueryData(['guests', wedding.id], (prev) => prev.map((g) => (g.table_name === t.name ? { ...g, table_name: '' } : g)));
     await base44.entities.SeatingTable.delete(id);
-    setTables((prev) => prev.filter((x) => x.id !== id));
-    setGuests((prev) => prev.map((g) => (g.table_name === t.name ? { ...g, table_name: '' } : g)));
     await base44.entities.Guest.updateMany({ wedding_id: wedding.id, table_name: t.name }, { $set: { table_name: '' } }).catch(() => {});
   };
 
@@ -104,7 +104,7 @@ export default function Guests() {
     if (!updates.length) return;
     try {
       await base44.entities.Guest.bulkUpdate(updates);
-      load();
+      queryClient.invalidateQueries({ queryKey: ['guests', wedding.id] });
     } catch {}
   };
 
@@ -243,7 +243,7 @@ export default function Guests() {
                                 <p className="serif-heading text-base text-foreground">{t.name}</p>
                                 <p className="text-xs text-muted-foreground">{seated.length}/{t.capacity} seated</p>
                               </div>
-                              <button onClick={() => removeTable(t.id)} className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive">
+                              <button onClick={() => removeTable(t.id)} className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
@@ -255,7 +255,7 @@ export default function Guests() {
                                       className="bg-secondary/60 rounded-lg p-2 flex items-center gap-2 text-sm group">
                                       <GripVertical className="w-3.5 h-3.5 text-muted-foreground/40" />
                                       <span className="flex-1 truncate">{g.name}</span>
-                                      <button onClick={() => removeGuest(g.id)} className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-0.5 text-muted-foreground hover:text-destructive">
+                                      <button onClick={() => removeGuest(g.id)} className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-0.5 text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
                                         <Trash2 className="w-3 h-3" />
                                       </button>
                                     </div>
@@ -278,9 +278,9 @@ export default function Guests() {
       )}
 
       <GuestDialog open={guestDialog} onOpenChange={setGuestDialog} wedding={wedding}
-        editing={editingGuest} isDestination={isDestination} onSaved={() => { setGuestDialog(false); load(); }} />
+        editing={editingGuest} isDestination={isDestination} onSaved={() => { setGuestDialog(false); queryClient.invalidateQueries({ queryKey: ['guests', wedding.id] }); }} />
       <TableDialog open={tableDialog} onOpenChange={setTableDialog} wedding={wedding}
-        onSaved={() => { setTableDialog(false); load(); }} />
+        onSaved={() => { setTableDialog(false); queryClient.invalidateQueries({ queryKey: ['seatingTables', wedding.id] }); }} />
     </div>
     </PullToRefresh>
   );

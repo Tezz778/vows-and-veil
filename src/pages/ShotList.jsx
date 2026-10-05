@@ -114,7 +114,7 @@ export default function ShotList() {
                       {it.done && <Check className="w-3 h-3" />}
                     </button>
                     <span className={`flex-1 text-sm ${it.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{it.description}</span>
-                    <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
+                    <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all min-h-[44px] min-w-[44px] flex items-center justify-center">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
