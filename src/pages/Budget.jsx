@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, DollarSign, Check, Sparkles, Zap } from 'lucide-react';
 
 const CATEGORIES = ['Venue', 'Catering', 'Photography', 'Videography', 'Florals', 'Attire', 'Music', 'Stationery', 'Transport', 'Other'];
@@ -250,9 +251,7 @@ function ItemDialog({ open, onOpenChange, wedding, editing, onSaved }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="c">Category</Label>
-              <select id="c" value={cat} onChange={(e) => setCat(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-              </select>
+              <ActionSheet id="c" value={cat} onChange={setCat} options={CATEGORIES.map((c) => ({ value: c, label: c }))} className="mt-1.5" />
             </div>
             <div><Label htmlFor="v">Vendor</Label><Input id="v" value={vendor} onChange={(e) => setVendor(e.target.value)} className="mt-1.5" /></div>
           </div>

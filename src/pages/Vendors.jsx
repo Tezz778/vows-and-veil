@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, Briefcase } from 'lucide-react';
 
 const CATEGORIES = ['venue', 'catering', 'photography', 'videography', 'florist', 'music', 'stationery', 'beauty', 'attire', 'transport', 'officiant', 'other'];
@@ -189,9 +190,7 @@ function VendorDialog({ open, onOpenChange, wedding, editing, onSaved }) {
             <div><Label htmlFor="vn">Vendor name</Label><Input id="vn" value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" /></div>
             <div>
               <Label htmlFor="vc">Category</Label>
-              <select id="vc" value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>)}
-              </select>
+              <ActionSheet id="vc" value={category} onChange={setCategory} options={CATEGORIES.map((c) => ({ value: c, label: c.replace(/_/g, ' ') }))} className="mt-1.5" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -200,9 +199,7 @@ function VendorDialog({ open, onOpenChange, wedding, editing, onSaved }) {
           </div>
           <div>
             <Label htmlFor="bs">Booking status</Label>
-            <select id="bs" value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-              {STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
-            </select>
+            <ActionSheet id="bs" value={status} onChange={setStatus} options={STATUSES.map((s) => ({ value: s, label: s.replace(/_/g, ' ') }))} className="mt-1.5" />
           </div>
           <div className="rounded-xl border border-border p-3 space-y-3 bg-secondary/30">
             <p className="text-xs font-medium text-foreground uppercase tracking-wider">Payments</p>

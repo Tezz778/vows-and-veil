@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, Gift } from 'lucide-react';
 
 const STATUSES = [
@@ -120,9 +121,7 @@ function BagDialog({ open, onOpenChange, weddingId, editing, onSaved }) {
           <div><Label htmlFor="wr">Room number</Label><Input id="wr" placeholder="e.g. 214" value={room} onChange={(e) => setRoom(e.target.value)} className="mt-1.5" /></div>
           <div><Label htmlFor="wc">Contents</Label><Textarea id="wc" rows={2} placeholder="What's in the bag…" value={contents} onChange={(e) => setContents(e.target.value)} className="mt-1.5" /></div>
           <div><Label htmlFor="ws">Status</Label>
-            <select id="ws" value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1.5 flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm">
-              {STATUSES.map((s) => <option key={s.v} value={s.v}>{s.label}</option>)}
-            </select>
+            <ActionSheet id="ws" value={status} onChange={setStatus} options={STATUSES.map((s) => ({ value: s.v, label: s.label }))} className="mt-1.5" />
           </div>
           <div><Label htmlFor="wn">Notes</Label><Input id="wn" value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1.5" /></div>
         </div>

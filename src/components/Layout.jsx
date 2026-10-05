@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl, isFreeTier } from '@/lib/wedding';
 import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
-  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe,
+  Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe, ArrowLeft,
   Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon, Mail,
   User, Settings as SettingsIcon
 } from 'lucide-react';
@@ -134,7 +134,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex overscroll-none select-none" style={themeStyle}>
+    <div className="min-h-screen bg-background flex overscroll-none" style={themeStyle}>
       <aside
         className={`fixed lg:sticky top-0 z-40 h-screen w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -181,7 +181,7 @@ export default function Layout() {
                   <Link
                     key={item.path}
                     to={locked && !isFreeTier(tier) ? '/pricing' : item.path}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors min-h-[44px] ${
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors min-h-[44px] select-none ${
                       active
                         ? 'bg-primary text-primary-foreground shadow-sm'
                         : locked
@@ -200,7 +200,7 @@ export default function Layout() {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border">
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full justify-start text-muted-foreground hover:text-foreground min-h-[44px]">
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full justify-start text-muted-foreground hover:text-foreground min-h-[44px] select-none">
             <LogOut className="w-4 h-4 mr-2" /> Sign out
           </Button>
         </div>
@@ -212,9 +212,15 @@ export default function Layout() {
 
       <div className="flex-1 min-w-0 flex flex-col overscroll-y-contain">
         <header className="lg:hidden sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between safe-area-top">
-          <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 min-h-[44px] flex items-center">
-            <Menu className="w-5 h-5" />
-          </button>
+          {location.pathname === '/' ? (
+            <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
+              <Menu className="w-5 h-5" />
+            </button>
+          ) : (
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
           <span className="serif-heading text-lg text-primary">Vows & Veil</span>
           <div className="w-9" />
         </header>
@@ -241,7 +247,7 @@ export default function Layout() {
               <Link
                 key={tab.path}
                 to={tab.path}
-                className={`flex flex-col items-center justify-center gap-0.5 min-h-[44px] flex-1 py-2 text-[10px] transition-colors ${
+                className={`flex flex-col items-center justify-center gap-0.5 min-h-[44px] flex-1 py-2 text-[10px] transition-colors select-none ${
                   active ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >

@@ -120,7 +120,14 @@ const AuthenticatedApp = () => {
 
 function App() {
   useEffect(() => {
-    applyTheme(getThemePreference());
+    const pref = getThemePreference();
+    applyTheme(pref);
+    if (pref === 'system' && typeof window !== 'undefined') {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const handler = () => applyTheme('system');
+      mq.addEventListener('change', handler);
+      return () => mq.removeEventListener('change', handler);
+    }
   }, []);
   return (
     <AuthProvider>

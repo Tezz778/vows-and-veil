@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, ClipboardCheck, Check } from 'lucide-react';
 
 const CATEGORIES = [
@@ -151,9 +152,7 @@ function PackingDialog({ open, onOpenChange, weddingId, editing, onSaved }) {
         <div className="space-y-4 py-2">
           <div><Label htmlFor="pt">Item</Label><Input id="pt" placeholder="e.g. Passport" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" /></div>
           <div><Label htmlFor="pc">Category</Label>
-            <select id="pc" value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1.5 flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm">
-              {CATEGORIES.map((c) => <option key={c.v} value={c.v}>{c.label}</option>)}
-            </select>
+            <ActionSheet id="pc" value={category} onChange={setCategory} options={CATEGORIES.map((c) => ({ value: c.v, label: c.label }))} className="mt-1.5" />
           </div>
           <div><Label htmlFor="pn">Notes</Label><Textarea id="pn" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1.5" /></div>
         </div>
