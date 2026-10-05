@@ -106,6 +106,25 @@
     "name"
   ],
   "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "data.plan_tier": "multiday"
+          }
+        },
+        {
+          "user_condition": {
+            "data.plan_tier": "destination"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
     "read": {
       "$and": [
         {
@@ -115,12 +134,12 @@
           "$or": [
             {
               "user_condition": {
-                "plan_tier": "multiday"
+                "data.plan_tier": "multiday"
               }
             },
             {
               "user_condition": {
-                "plan_tier": "destination"
+                "data.plan_tier": "destination"
               }
             },
             {
@@ -129,25 +148,6 @@
               }
             }
           ]
-        }
-      ]
-    },
-    "create": {
-      "$or": [
-        {
-          "user_condition": {
-            "plan_tier": "multiday"
-          }
-        },
-        {
-          "user_condition": {
-            "plan_tier": "destination"
-          }
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
         }
       ]
     },
@@ -160,12 +160,12 @@
           "$or": [
             {
               "user_condition": {
-                "plan_tier": "multiday"
+                "data.plan_tier": "multiday"
               }
             },
             {
               "user_condition": {
-                "plan_tier": "destination"
+                "data.plan_tier": "destination"
               }
             },
             {
@@ -186,12 +186,12 @@
           "$or": [
             {
               "user_condition": {
-                "plan_tier": "multiday"
+                "data.plan_tier": "multiday"
               }
             },
             {
               "user_condition": {
-                "plan_tier": "destination"
+                "data.plan_tier": "destination"
               }
             },
             {
