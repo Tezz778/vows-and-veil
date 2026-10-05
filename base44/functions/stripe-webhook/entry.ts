@@ -70,6 +70,12 @@ export default async function(req: Request): Promise<Response> {
             console.log("stripe-webhook: granted budget upgrade", { weddingId: wedding.id });
           } else {
             await db.entities.Wedding.update(wedding.id, { selected_tier: purchase.productId, has_paid: true });
+            // Set plan_tier on the User so RLS tier-gating rules enforce paid features.
+            try {
+              await db.entities.User.update(grantUserId, { plan_tier: purchase.productId });
+            } catch (e) {
+              console.error("stripe-webhook: could not set plan_tier on user", { grantUserId, e });
+            }
             console.log("stripe-webhook: granted tier", { weddingId: wedding.id, tier: purchase.productId });
           }
         } else {
@@ -108,6 +114,12 @@ export default async function(req: Request): Promise<Response> {
         const wedding = weddings?.[0];
         if (wedding) {
           await db.entities.Wedding.update(wedding.id, { has_paid: false });
+          // Reset plan_tier to free so RLS tier-gating revokes paid entity access.
+          try {
+            await db.entities.User.update(grantUserId, { plan_tier: "free" });
+          } catch (e) {
+            console.error("stripe-webhook: could not reset plan_tier on user", { grantUserId, e });
+          }
           console.log("stripe-webhook: revoked access after refund", { weddingId: wedding.id });
         } else {
           console.warn("stripe-webhook: no wedding to revoke", { grantUserId });

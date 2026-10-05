@@ -123,24 +123,17 @@ export default function Register() {
       const result = await base44.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
-        await base44.entities.Wedding.create({
+        // Server-side wedding creation: phone_verified and plan_tier are set
+        // by the backend function, not trusted from the client.
+        const fingerprint = generateDeviceFingerprint();
+        await base44.functions.invoke("complete-signup", {
           couple_names: coupleNames,
           wedding_date: weddingDate,
           venue_name: venueName,
           venue_location: venueLocation,
-          wedding_type: "single_day",
-          selected_tier: "free",
           phone_number: phoneNumber,
-          phone_verified: true,
+          fingerprint_hash: fingerprint,
         });
-        try {
-          const fingerprint = generateDeviceFingerprint();
-          await base44.functions.invoke("track-device-fingerprint", {
-            fingerprint_hash: fingerprint,
-          });
-        } catch (fpErr) {
-          console.error("Fingerprint tracking failed:", fpErr);
-        }
         window.location.href = safeReturnTo();
       }
     } catch (err) {

@@ -55,13 +55,101 @@
   ],
   "rls": {
     "read": {
-      "created_by_id": "{{user.id}}"
+      "$and": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "plan_tier": "multiday"
+              }
+            },
+            {
+              "user_condition": {
+                "plan_tier": "destination"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "plan_tier": "multiday"
+          }
+        },
+        {
+          "user_condition": {
+            "plan_tier": "destination"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     },
     "update": {
-      "created_by_id": "{{user.id}}"
+      "$and": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "plan_tier": "multiday"
+              }
+            },
+            {
+              "user_condition": {
+                "plan_tier": "destination"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      ]
     },
     "delete": {
-      "created_by_id": "{{user.id}}"
+      "$and": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "plan_tier": "multiday"
+              }
+            },
+            {
+              "user_condition": {
+                "plan_tier": "destination"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            }
+          ]
+        }
+      ]
     }
   }
 }

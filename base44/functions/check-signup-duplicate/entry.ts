@@ -1,6 +1,10 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { getClientIp } from '../../shared/security.ts';
 
+// Public endpoint called during the signup flow (before the user has an account).
+// Left open intentionally — adding auth would break registration. Protected by
+// per-IP rate limiting that counts THIS function's own activity (not records
+// from a different endpoint, which the previous implementation did).
 export default async function(req: Request): Promise<Response> {
   try {
     const body = await req.json();
@@ -15,21 +19,34 @@ export default async function(req: Request): Promise<Response> {
     const base44 = createClientFromRequest(req);
     const clientIp = getClientIp(req);
 
-    // Per-IP rate limit: max 10 checks per hour (tracked via SmsVerification records from this IP)
+    // Per-IP rate limit: max 10 checks per hour, tracked via dedicated rate-limit
+    // records (code: 'DUPLICATE_CHECK') written by THIS function — not SmsVerification
+    // records from send-sms-verification, which this function never creates.
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    const recentIpRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+    const recentChecks = await base44.asServiceRole.entities.SmsVerification.filter({
       ip_address: clientIp,
+      code: 'DUPLICATE_CHECK',
     }, '-created_date', 15);
 
-    const recentIpCount = (recentIpRecords || []).filter(
+    const recentCount = (recentChecks || []).filter(
       (r) => new Date(r.created_date) > oneHourAgo
     ).length;
 
-    if (recentIpCount >= 10) {
+    if (recentCount >= 10) {
       return Response.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
-    // Query all free-tier weddings matching date + venue_name + venue_location
+    // Record this check so subsequent calls from the same IP are counted.
+    await base44.asServiceRole.entities.SmsVerification.create({
+      phone_number: '__ratecheck__',
+      code: 'DUPLICATE_CHECK',
+      verified: false,
+      consumed: true,
+      ip_address: clientIp,
+      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    });
+
+    // Query free-tier weddings matching date + venue_name + venue_location
     const matches = await base44.asServiceRole.entities.Wedding.filter({
       selected_tier: 'free',
       wedding_date: weddingDate,

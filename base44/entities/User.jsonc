@@ -7,6 +7,17 @@
         "admin",
         "user"
       ]
+    },
+    "plan_tier": {
+      "type": "string",
+      "description": "The user's current paid plan tier, set server-side by the signup and payment webhooks. Used by RLS rules to enforce tier-gated entity access.",
+      "enum": [
+        "free",
+        "single_day",
+        "multiday",
+        "destination"
+      ],
+      "default": "free"
     }
   },
   "required": [

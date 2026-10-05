@@ -1,5 +1,9 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
+import { getClientIp } from '../../shared/security.ts';
 
+// Public endpoint: the Contact page is reachable by signed-out visitors, so
+// auth is not required. Protected by per-IP rate limiting (5 messages/hour) to
+// prevent inbox flooding.
 export default async function(req) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -14,6 +18,32 @@ export default async function(req) {
       return Response.json({ error: 'Please enter a message (at least 10 characters)' }, { status: 400 });
 
     const base44 = createClientFromRequest(req);
+    const clientIp = getClientIp(req);
+
+    // Per-IP rate limit: max 5 contact emails per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentChecks = await base44.asServiceRole.entities.SmsVerification.filter({
+      ip_address: clientIp,
+      code: 'CONTACT_EMAIL',
+    }, '-created_date', 10);
+
+    const recentCount = (recentChecks || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+
+    if (recentCount >= 5) {
+      return Response.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
+    }
+
+    // Record this send for rate limiting
+    await base44.asServiceRole.entities.SmsVerification.create({
+      phone_number: '__ratelimit__',
+      code: 'CONTACT_EMAIL',
+      verified: false,
+      consumed: true,
+      ip_address: clientIp,
+      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    });
 
     // Resolve the app owner / first admin to receive the message
     const admins = await base44.asServiceRole.entities.User.filter({ role: 'admin' }, '-created_date', 1);

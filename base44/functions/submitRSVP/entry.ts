@@ -1,5 +1,10 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
+import { getClientIp } from '../../shared/security.ts';
 
+// Public endpoint: guests submit RSVPs from the public wedding site without
+// logging in. Auth is not required. The token path verifies a stored guest token
+// and is safe. The no-token path is protected by per-wedding AND per-IP rate
+// limiting to prevent flooding a couple's guest list.
 export default async function(req) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -17,17 +22,6 @@ export default async function(req) {
     const list = await base44.asServiceRole.entities.Wedding.filter({ site_slug: slug }, '-created_date', 1);
     const w = list && list[0];
     if (!w) return Response.json({ error: 'Wedding not found' }, { status: 404 });
-
-    // Rate limit: max 20 new RSVP submissions per wedding per hour
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    const weddingGuests = await base44.asServiceRole.entities.Guest.filter({ wedding_id: w.id }, '-created_date', 50);
-    const recentCount = (weddingGuests || []).filter(
-      (g) => new Date(g.created_date) > oneHourAgo
-    ).length;
-
-    if (recentCount >= 20) {
-      return Response.json({ error: 'Too many RSVP submissions for this wedding. Please try again later.' }, { status: 429 });
-    }
 
     const plus_ones = Math.max(0, Math.min(10, Number(body.plus_ones) || 0));
     const rsvpPayload = {
@@ -59,6 +53,42 @@ export default async function(req) {
 
       return Response.json({ ok: true, guest_id: guest.id, synced: true });
     }
+
+    // No-token path: apply rate limiting before creating a new guest.
+    // Per-wedding: max 5 new RSVPs per hour. Per-IP: max 10 per hour.
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const clientIp = getClientIp(req);
+
+    const weddingGuests = await base44.asServiceRole.entities.Guest.filter({ wedding_id: w.id }, '-created_date', 50);
+    const recentWeddingCount = (weddingGuests || []).filter(
+      (g) => new Date(g.created_date) > oneHourAgo
+    ).length;
+
+    if (recentWeddingCount >= 5) {
+      return Response.json({ error: 'Too many RSVP submissions for this wedding. Please try again later.' }, { status: 429 });
+    }
+
+    const recentIpRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      ip_address: clientIp,
+      code: 'RSVP_SUBMIT',
+    }, '-created_date', 15);
+    const recentIpCount = (recentIpRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+
+    if (recentIpCount >= 10) {
+      return Response.json({ error: 'Too many RSVP submissions from your address. Please try again later.' }, { status: 429 });
+    }
+
+    // Record this submission for IP-based rate limiting
+    await base44.asServiceRole.entities.SmsVerification.create({
+      phone_number: '__ratelimit__',
+      code: 'RSVP_SUBMIT',
+      verified: false,
+      consumed: true,
+      ip_address: clientIp,
+      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    });
 
     // No token: only create a new guest record — never overwrite an existing guest by name
     const newGuest = await base44.asServiceRole.entities.Guest.create({

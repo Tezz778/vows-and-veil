@@ -155,7 +155,14 @@ async function handleOrderApproved(db: any, eventData: any): Promise<Response> {
     if (wedding) {
       await db.entities.Wedding.update(wedding.id, { selected_tier: purchase.productId, has_paid: true });
       console.log("payments-webhook: granted tier", { weddingId: wedding.id, tier: purchase.productId });
-    } else {
+    }
+    // Set plan_tier on the User so RLS tier-gating rules enforce paid features.
+    try {
+      await db.entities.User.update(grantUserId, { plan_tier: purchase.productId });
+    } catch (e) {
+      console.error("payments-webhook: could not set plan_tier on user", { grantUserId, e });
+    }
+    if (!wedding) {
       console.warn("payments-webhook: no wedding for user", { grantUserId });
     }
   } else {
@@ -218,6 +225,12 @@ async function handleSubscriptionEnded(db: any, eventData: any): Promise<Respons
     const wedding = weddings?.[0];
     if (wedding) {
       await db.entities.Wedding.update(wedding.id, { has_paid: false });
+    }
+    // Reset plan_tier to free so RLS tier-gating revokes paid entity access.
+    try {
+      await db.entities.User.update(purchase.appUserId, { plan_tier: "free" });
+    } catch (e) {
+      console.error("payments-webhook: could not reset plan_tier on user", { userId: purchase.appUserId, e });
     }
   }
   // ===== END APP-SPECIFIC =====
