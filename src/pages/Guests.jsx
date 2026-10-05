@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
+import PullToRefresh from '@/components/PullToRefresh';
 import FeatureGate from '@/components/FeatureGate';
 import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
@@ -108,6 +109,7 @@ export default function Guests() {
   };
 
   return (
+    <PullToRefresh onRefresh={load}>
     <div>
       <PageHeader eyebrow="Your people" title="Guests & Seating"
         subtitle="Manage your guest list and arrange tables with drag-and-drop."
@@ -280,6 +282,7 @@ export default function Guests() {
       <TableDialog open={tableDialog} onOpenChange={setTableDialog} wedding={wedding}
         onSaved={() => { setTableDialog(false); load(); }} />
     </div>
+    </PullToRefresh>
   );
 }
 

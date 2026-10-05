@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Bell, Check, Clock, AlertCircle } from 'lucide-react';
 
 export default function Reminders() {
@@ -158,10 +159,9 @@ function ReminderDialog({ open, onOpenChange, wedding, vendors, onSaved }) {
           {vendors.length > 0 && (
             <div>
               <Label htmlFor="v">Link to vendor (optional)</Label>
-              <select id="v" value={vendorName} onChange={(e) => setVendorName(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                <option value="">— None —</option>
-                {vendors.map((v) => <option key={v.id} value={v.name}>{v.name}</option>)}
-              </select>
+              <ActionSheet id="v" value={vendorName} onChange={setVendorName}
+                options={[{ value: '', label: '— None —' }, ...vendors.map((v) => ({ value: v.name, label: v.name }))]}
+                className="mt-1.5" />
             </div>
           )}
         </div>

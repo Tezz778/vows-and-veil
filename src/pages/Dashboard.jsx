@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { daysUntil, formatDate, hasFeature, TIER_LABELS } from '@/lib/wedding';
 import PageHeader from '@/components/PageHeader';
+import PullToRefresh from '@/components/PullToRefresh';
 import BudgetChart from '@/components/BudgetChart';
 import VendorDirectory from '@/components/VendorDirectory';
 import {
@@ -15,19 +16,19 @@ export default function Dashboard() {
   const [reminders, setReminders] = useState([]);
   const [timelineCount, setTimelineCount] = useState(0);
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     if (!wedding) return;
-    (async () => {
-      try {
-        const [rems, events] = await Promise.all([
-          base44.entities.ReminderTask.filter({ wedding_id: wedding.id, done: false }, 'due_date', 5),
-          base44.entities.TimelineEvent.filter({ wedding_id: wedding.id }, 'order', 100),
-        ]);
-        setReminders(rems || []);
-        setTimelineCount((events || []).length);
-      } catch {}
-    })();
+    try {
+      const [rems, events] = await Promise.all([
+        base44.entities.ReminderTask.filter({ wedding_id: wedding.id, done: false }, 'due_date', 5),
+        base44.entities.TimelineEvent.filter({ wedding_id: wedding.id }, 'order', 100),
+      ]);
+      setReminders(rems || []);
+      setTimelineCount((events || []).length);
+    } catch {}
   }, [wedding]);
+
+  useEffect(() => { load(); }, [load]);
 
   if (!wedding) return null;
   const dLeft = daysUntil(wedding.wedding_date);
@@ -50,6 +51,7 @@ export default function Dashboard() {
   ].filter((c) => hasFeature(tier, c.feature));
 
   return (
+    <PullToRefresh onRefresh={load}>
     <div>
       <PageHeader
         eyebrow="Welcome"
@@ -150,5 +152,6 @@ export default function Dashboard() {
 
       {hasFeature(tier, 'budget') && <BudgetChart wedding={wedding} />}
     </div>
+    </PullToRefresh>
   );
 }

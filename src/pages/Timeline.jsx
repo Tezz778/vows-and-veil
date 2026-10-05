@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/PageHeader';
+import PullToRefresh from '@/components/PullToRefresh';
 import FeatureGate from '@/components/FeatureGate';
 import { hasFeature, isFreeTier, TIMELINE_FREE_CAP } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
@@ -77,6 +78,7 @@ export default function Timeline() {
   const openEdit = (ev) => { setEditing(ev); setDialogOpen(true); };
 
   return (
+    <PullToRefresh onRefresh={load}>
     <div>
       <PageHeader eyebrow="The Schedule" title="Timeline Builder"
         subtitle="Arrange your day-of moments into a clear, paced schedule."
@@ -188,6 +190,7 @@ export default function Timeline() {
         onApplied={load}
       />
     </div>
+    </PullToRefresh>
   );
 }
 

@@ -72,6 +72,8 @@ const BOTTOM_TABS = [
   { label: 'Settings', icon: SettingsIcon, path: '/settings' },
 ];
 
+const ROOT_PATHS = ['/', '/timeline', '/guests', '/budget', '/settings'];
+
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -212,7 +214,7 @@ export default function Layout() {
 
       <div className="flex-1 min-w-0 flex flex-col overscroll-y-contain">
         <header className="lg:hidden sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between safe-area-top">
-          {location.pathname === '/' ? (
+          {ROOT_PATHS.includes(location.pathname) ? (
             <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
               <Menu className="w-5 h-5" />
             </button>

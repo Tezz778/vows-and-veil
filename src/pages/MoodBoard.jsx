@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, Palette } from 'lucide-react';
 
 const CATEGORIES = ['decor', 'attire', 'florals', 'venue', 'stationery', 'other'];
@@ -144,9 +145,7 @@ function MoodDialog({ open, onOpenChange, wedding, editing, onSaved }) {
           <div><Label htmlFor="t">Title</Label><Input id="t" placeholder="e.g. Blush tablescape" value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1.5" /></div>
           <div>
             <Label htmlFor="cat">Category</Label>
-            <select id="cat" value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
+            <ActionSheet id="cat" value={category} onChange={setCategory} options={CATEGORIES.map((c) => ({ value: c, label: c }))} className="mt-1.5" />
           </div>
           <div><Label htmlFor="img">Image URL</Label><Input id="img" placeholder="https://…" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="mt-1.5" /></div>
           {imageUrl && <Image src={imageUrl} fittingType="fill" className="block w-full h-40 rounded-lg" />}
