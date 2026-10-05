@@ -161,10 +161,10 @@ export default function Timeline() {
                       {ev.notes && <p className="text-sm text-muted-foreground mt-1">{ev.notes}</p>}
                     </div>
                     <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => openEdit(ev)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center">
+                      <button onClick={() => openEdit(ev)} aria-label="Edit event" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => base44.entities.TimelineEvent.delete(ev.id).then(reload)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
+                      <button onClick={() => base44.entities.TimelineEvent.delete(ev.id).then(reload)} aria-label="Delete event" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>

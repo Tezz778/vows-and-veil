@@ -138,8 +138,8 @@ export default function RehearsalSchedule({ weddingId }) {
                     {m.notes && <p className="text-xs text-muted-foreground mt-0.5">{m.notes}</p>}
                   </div>
                   <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => { setEditing(m); setDialogOpen(true); }} className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => deleteMoment(m)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => { setEditing(m); setDialogOpen(true); }} aria-label="Edit moment" className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => deleteMoment(m)} aria-label="Delete moment" className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </li>
               ))}

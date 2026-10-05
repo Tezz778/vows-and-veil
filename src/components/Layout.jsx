@@ -1,5 +1,5 @@
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl, isFreeTier } from '@/lib/wedding';
@@ -107,6 +107,16 @@ export default function Layout() {
   }, [navigate]);
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
+  // Track last visited sub-route per tab group for smart tab restoration.
+  // Updated during render so the destination is current on this render, not the next.
+  const lastVisitedRef = useRef({});
+  const currentGroupRoot = Object.keys(TAB_GROUPS).find((root) =>
+    TAB_GROUPS[root].includes(location.pathname)
+  );
+  if (currentGroupRoot && location.pathname !== currentGroupRoot) {
+    lastVisitedRef.current[currentGroupRoot] = location.pathname;
+  }
 
   const tier = wedding?.selected_tier || wedding?.wedding_type || 'single_day';
   const dLeft = daysUntil(wedding?.wedding_date);
@@ -223,11 +233,11 @@ export default function Layout() {
       <div className="flex-1 min-w-0 flex flex-col overscroll-y-contain">
         <header className="lg:hidden sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between safe-area-top">
           {ROOT_PATHS.includes(location.pathname) ? (
-            <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
+            <button onClick={() => setMobileOpen(true)} aria-label="Open menu" className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
               <Menu className="w-5 h-5" />
             </button>
           ) : (
-            <button onClick={() => navigate(-1)} className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
+            <button onClick={() => navigate(-1)} aria-label="Go back" className="p-2 -ml-2 min-h-[44px] flex items-center select-none">
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
@@ -253,11 +263,12 @@ export default function Layout() {
           {BOTTOM_TABS.map((tab) => {
             const active = (TAB_GROUPS[tab.path] || []).includes(location.pathname);
             const Icon = tab.icon;
+            const destination = active ? tab.path : (lastVisitedRef.current[tab.path] || tab.path);
             return (
               <Link
                 key={tab.path}
-                to={tab.path}
-                replace={active}
+                to={destination}
+                aria-label={tab.label}
                 className={`flex flex-col items-center justify-center gap-0.5 min-h-[44px] flex-1 py-2 text-[10px] transition-colors select-none ${
                   active ? 'text-primary' : 'text-muted-foreground'
                 }`}

@@ -8,39 +8,39 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Layout from '@/components/Layout';
-import Onboarding from '@/pages/Onboarding';
-import Dashboard from '@/pages/Dashboard';
-import Timeline from '@/pages/Timeline';
-import Vows from '@/pages/Vows';
-import Ideas from '@/pages/Ideas';
-import Guests from '@/pages/Guests';
-import Budget from '@/pages/Budget';
-import ShotList from '@/pages/ShotList';
-import Reminders from '@/pages/Reminders';
-import Pricing from '@/pages/Pricing';
-import WeddingWebsite from '@/pages/WeddingWebsite';
-import WeddingSite from '@/pages/WeddingSite';
-import Vendors from '@/pages/Vendors';
-import MoodBoard from '@/pages/MoodBoard';
-import WeddingDetails from '@/pages/WeddingDetails';
-import Rehearsal from '@/pages/Rehearsal';
-import Speeches from '@/pages/Speeches';
-import SpeechWrite from '@/pages/SpeechWrite';
-import TimelineOptimizer from '@/pages/TimelineOptimizer';
-import TravelSuite from '@/pages/TravelSuite';
-import GmailCompose from '@/pages/GmailCompose';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword';
-import OAuthConsent from '@/pages/OAuthConsent';
-import ThankYou from '@/pages/ThankYou';
-import Landing from '@/pages/Landing';
-import About from '@/pages/About';
-import Contact from '@/pages/Contact';
-import Profile from '@/pages/Profile';
-import Settings from '@/pages/Settings';
-import { useEffect } from 'react';
+const Onboarding = lazy(() => import('@/pages/Onboarding'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Timeline = lazy(() => import('@/pages/Timeline'));
+const Vows = lazy(() => import('@/pages/Vows'));
+const Ideas = lazy(() => import('@/pages/Ideas'));
+const Guests = lazy(() => import('@/pages/Guests'));
+const Budget = lazy(() => import('@/pages/Budget'));
+const ShotList = lazy(() => import('@/pages/ShotList'));
+const Reminders = lazy(() => import('@/pages/Reminders'));
+const Pricing = lazy(() => import('@/pages/Pricing'));
+const WeddingWebsite = lazy(() => import('@/pages/WeddingWebsite'));
+const WeddingSite = lazy(() => import('@/pages/WeddingSite'));
+const Vendors = lazy(() => import('@/pages/Vendors'));
+const MoodBoard = lazy(() => import('@/pages/MoodBoard'));
+const WeddingDetails = lazy(() => import('@/pages/WeddingDetails'));
+const Rehearsal = lazy(() => import('@/pages/Rehearsal'));
+const Speeches = lazy(() => import('@/pages/Speeches'));
+const SpeechWrite = lazy(() => import('@/pages/SpeechWrite'));
+const TimelineOptimizer = lazy(() => import('@/pages/TimelineOptimizer'));
+const TravelSuite = lazy(() => import('@/pages/TravelSuite'));
+const GmailCompose = lazy(() => import('@/pages/GmailCompose'));
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const OAuthConsent = lazy(() => import('@/pages/OAuthConsent'));
+const ThankYou = lazy(() => import('@/pages/ThankYou'));
+const Landing = lazy(() => import('@/pages/Landing'));
+const About = lazy(() => import('@/pages/About'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const Settings = lazy(() => import('@/pages/Settings'));
+import { useEffect, lazy, Suspense } from 'react';
 import { applyTheme, getThemePreference } from '@/lib/theme';
 
 const AuthenticatedApp = () => {
@@ -64,6 +64,7 @@ const AuthenticatedApp = () => {
   }
 
   return (
+    <Suspense fallback={<div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin" /></div>}>
     <Routes>
       {/* Public — Authentication */}
       <Route path="/login" element={<Login />} />
@@ -114,6 +115,7 @@ const AuthenticatedApp = () => {
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </Suspense>
   );
 };
 

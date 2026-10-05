@@ -80,7 +80,7 @@ export default function PageTour({ tourKey, steps, onComplete }) {
       {tipPos && (
         <div className="absolute bg-background rounded-xl shadow-2xl border border-border p-5 w-80 transition-all duration-300"
           style={{ top: tipPos.top, left: tipPos.left }}>
-          <button onClick={complete} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
+          <button onClick={complete} aria-label="Close tour" className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
             <X className="w-4 h-4" />
           </button>
           <p className="text-[10px] tracking-[0.2em] uppercase text-primary mb-1.5">Step {step + 1} of {steps.length}</p>

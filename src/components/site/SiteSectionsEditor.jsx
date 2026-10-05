@@ -46,7 +46,7 @@ export default function SiteSectionsEditor({ wedding, setWedding }) {
         <div key={i} className="rounded-xl border border-border p-4 mb-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Section {i + 1}</span>
-            <button onClick={() => remove(i)} className="text-muted-foreground hover:text-destructive">
+            <button onClick={() => remove(i)} aria-label="Remove section" className="text-muted-foreground hover:text-destructive">
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
@@ -73,7 +73,7 @@ export default function SiteSectionsEditor({ wedding, setWedding }) {
                 <Image src={s.image} alt={s.title || 'Section image'} fittingType="fill" className="w-full h-full" />
               </div>
               <button onClick={() => removeImage(i)}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
+                aria-label="Remove section image" className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
                 <X className="w-4 h-4" />
               </button>
             </div>

@@ -105,7 +105,7 @@ export default function Ideas() {
                 <span className={`text-[10px] tracking-widest uppercase px-2 py-0.5 rounded-full ${CATEGORY_COLORS[idea.category] || CATEGORY_COLORS.other}`}>
                   {CATEGORY_LABELS[idea.category] || 'Other'}
                 </span>
-                <button onClick={() => remove(idea.id)} className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
+                <button onClick={() => remove(idea.id)} aria-label="Delete idea" className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>

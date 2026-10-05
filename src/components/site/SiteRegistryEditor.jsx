@@ -45,7 +45,7 @@ export default function SiteRegistryEditor({ wedding, setWedding }) {
         <div key={i} className="rounded-xl border border-border p-4 mb-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Registry {i + 1}</span>
-            <button onClick={() => remove(i)} className="text-muted-foreground hover:text-destructive">
+            <button onClick={() => remove(i)} aria-label="Remove registry entry" className="text-muted-foreground hover:text-destructive">
               <Trash2 className="w-4 h-4" />
             </button>
           </div>

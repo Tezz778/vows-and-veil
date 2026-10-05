@@ -105,7 +105,7 @@ export default function WeddingDetails() {
                   placeholder="#RRGGBB"
                 />
                 {i === 0 && <span className="text-[10px] tracking-wider uppercase text-primary font-medium whitespace-nowrap">Primary</span>}
-                <button onClick={() => removeColor(i)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive transition-colors">
+                <button onClick={() => removeColor(i)} aria-label="Remove color" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -148,7 +148,7 @@ export default function WeddingDetails() {
                     placeholder="https://pinterest.com/pin/…"
                     className="flex-1 text-sm"
                   />
-                  <button onClick={() => removeInspiration(i)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive transition-colors shrink-0">
+                  <button onClick={() => removeInspiration(i)} aria-label="Remove inspiration link" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive transition-colors shrink-0">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>

@@ -96,7 +96,7 @@ export default function PackingDocs({ weddingId }) {
                 {c.items.map((it) => (
                   <li key={it.id} className="flex items-start justify-between gap-3 rounded-lg border border-border/60 p-3 group">
                     <label className="flex items-start gap-3 cursor-pointer flex-1">
-                      <button onClick={() => toggle(it)} className={`w-5 h-5 rounded-md border shrink-0 mt-0.5 flex items-center justify-center ${
+                      <button onClick={() => toggle(it)} aria-label="Toggle item packed" className={`w-5 h-5 rounded-md border shrink-0 mt-0.5 flex items-center justify-center ${
                         it.done ? 'bg-primary border-primary' : 'border-input'
                       }`}>{it.done && <Check className="w-3.5 h-3.5 text-primary-foreground" />}</button>
                       <div className="min-w-0">
@@ -105,8 +105,8 @@ export default function PackingDocs({ weddingId }) {
                       </div>
                     </label>
                     <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setEditing(it); setDialogOpen(true); }} className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => remove(it)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => { setEditing(it); setDialogOpen(true); }} aria-label="Edit item" className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => remove(it)} aria-label="Delete item" className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </li>
                 ))}

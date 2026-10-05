@@ -108,13 +108,13 @@ export default function ShotList() {
                 {g.items.map((it) => (
                   <div key={it.id} className="elegant-card p-3 flex items-center gap-3 group">
                     <button onClick={() => toggle(it)}
-                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      aria-label="Toggle shot complete" className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
                         it.done ? 'bg-primary border-primary text-primary-foreground' : 'border-border hover:border-primary'
                       }`}>
                       {it.done && <Check className="w-3 h-3" />}
                     </button>
                     <span className={`flex-1 text-sm ${it.done ? 'line-through text-muted-foreground' : 'text-foreground'}`}>{it.description}</span>
-                    <button onClick={() => remove(it.id)} className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all min-h-[44px] min-w-[44px] flex items-center justify-center">
+                    <button onClick={() => remove(it.id)} aria-label="Delete shot" className="p-1 rounded-lg opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-destructive transition-all min-h-[44px] min-w-[44px] flex items-center justify-center">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>

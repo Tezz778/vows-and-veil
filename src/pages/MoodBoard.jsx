@@ -78,8 +78,8 @@ export default function MoodBoard() {
                       <p className="text-[11px] text-muted-foreground uppercase tracking-wider">{m.category}</p>
                     </div>
                     <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => openEdit(m)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => base44.entities.MoodBoard.delete(m.id).then(load)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => openEdit(m)} aria-label="Edit inspiration" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => base44.entities.MoodBoard.delete(m.id).then(load)} aria-label="Delete inspiration" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
                   {colors.length > 0 && (

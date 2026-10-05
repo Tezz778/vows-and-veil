@@ -243,7 +243,7 @@ export default function Guests() {
                                 <p className="serif-heading text-base text-foreground">{t.name}</p>
                                 <p className="text-xs text-muted-foreground">{seated.length}/{t.capacity} seated</p>
                               </div>
-                              <button onClick={() => removeTable(t.id)} className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
+                              <button onClick={() => removeTable(t.id)} aria-label="Delete table" className="p-1 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
@@ -255,7 +255,7 @@ export default function Guests() {
                                       className="bg-secondary/60 rounded-lg p-2 flex items-center gap-2 text-sm group">
                                       <GripVertical className="w-3.5 h-3.5 text-muted-foreground/40" />
                                       <span className="flex-1 truncate">{g.name}</span>
-                                      <button onClick={() => removeGuest(g.id)} className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-0.5 text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
+                                      <button onClick={() => removeGuest(g.id)} aria-label="Remove guest from table" className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-0.5 text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center">
                                         <Trash2 className="w-3 h-3" />
                                       </button>
                                     </div>

@@ -57,8 +57,8 @@ export default function RehearsalToasts({ weddingId }) {
                 </div>
               </div>
               <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                <button onClick={() => { setEditing(t); setDialogOpen(true); }} className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                <button onClick={() => remove(t)} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                <button onClick={() => { setEditing(t); setDialogOpen(true); }} aria-label="Edit speaker" className="p-1 rounded hover:bg-secondary text-muted-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                <button onClick={() => remove(t)} aria-label="Delete speaker" className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
               </div>
             </li>
           ))}

@@ -95,8 +95,8 @@ export default function Vendors() {
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{v.category}</p>
                 </div>
                 <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => openEdit(v)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => base44.entities.Vendor.delete(v.id).then(load)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => openEdit(v)} aria-label="Edit vendor" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => base44.entities.Vendor.delete(v.id).then(load)} aria-label="Delete vendor" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
               <div className="mt-3 space-y-1 text-sm">

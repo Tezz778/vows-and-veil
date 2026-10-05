@@ -97,7 +97,7 @@ export default function SiteHeroEditor({ wedding, setWedding }) {
             <Image src={hero} alt="Hero" fittingType="fill" className="w-full h-full" />
           </div>
           <button onClick={removeHero}
-            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
+            aria-label="Remove hero photo" className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
             <X className="w-4 h-4" />
           </button>
         </div>

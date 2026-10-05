@@ -134,8 +134,8 @@ export default function Budget() {
                     {it.vendor_name && <p className="text-xs text-muted-foreground mt-0.5">{it.vendor_name}</p>}
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => { setEditing(it); setDialog(true); }} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => remove(it.id)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => { setEditing(it); setDialog(true); }} aria-label="Edit budget item" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => remove(it.id)} aria-label="Delete budget item" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-xs">
@@ -178,8 +178,8 @@ export default function Budget() {
                     <td className="px-4 py-3 text-right text-emerald-700">${(Number(it.paid_amount) || 0).toLocaleString()}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setEditing(it); setDialog(true); }} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => remove(it.id)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { setEditing(it); setDialog(true); }} aria-label="Edit budget item" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => remove(it.id)} aria-label="Delete budget item" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive min-h-[44px] min-w-[44px] flex items-center justify-center"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>

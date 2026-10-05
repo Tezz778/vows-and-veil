@@ -44,7 +44,7 @@ export default function SiteGalleryEditor({ wedding, setWedding }) {
               <Image src={p.url} alt={p.caption || ''} fittingType="fill" className="w-full h-full" />
             </div>
             <button onClick={() => remove(i)}
-              className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
+              aria-label="Remove photo" className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
               <X className="w-3.5 h-3.5" />
             </button>
             <Input

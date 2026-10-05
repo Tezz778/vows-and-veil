@@ -105,8 +105,8 @@ export default function Speeches() {
                     <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{roleLabel}{s.relationship ? ` · ${s.relationship}` : ''}</p>
                   </div>
                   <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => openEdit(s)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => base44.entities.Speech.delete(s.id).then(load)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => openEdit(s)} aria-label="Edit speech" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => base44.entities.Speech.delete(s.id).then(load)} aria-label="Delete speech" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
                 {s.draft_text ? (
@@ -126,10 +126,10 @@ export default function Speeches() {
                       </span>
                       <span className="text-xs text-muted-foreground truncate max-w-[140px] sm:max-w-[200px]">/speech/{s.share_token?.slice(0, 12)}…</span>
                       <div className="flex items-center gap-1 ml-auto">
-                        <button onClick={() => copyLink(s)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground" title="Copy link">
+                        <button onClick={() => copyLink(s)} aria-label="Copy share link" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground" title="Copy link">
                           {copiedId === s.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                         </button>
-                        <button onClick={() => revokeShareLink(s)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive" title="Revoke link">
+                        <button onClick={() => revokeShareLink(s)} aria-label="Revoke share link" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive" title="Revoke link">
                           <Ban className="w-3.5 h-3.5" />
                         </button>
                       </div>

@@ -65,8 +65,8 @@ export default function WelcomeBags({ weddingId }) {
                   {it.room_number && <p className="text-sm text-muted-foreground">Room {it.room_number}</p>}
                 </div>
                 <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => { setEditing(it); setDialogOpen(true); }} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => remove(it)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => { setEditing(it); setDialogOpen(true); }} aria-label="Edit welcome bag" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => remove(it)} aria-label="Delete welcome bag" className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
               {it.contents && <p className="text-sm text-muted-foreground mt-2">{it.contents}</p>}
