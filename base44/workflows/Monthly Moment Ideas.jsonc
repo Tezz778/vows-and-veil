@@ -32,7 +32,7 @@
           "with": {
             "function_name": "generateMonthlyMomentIdeas",
             "args": {
-              "scheduler_secret": "REPLACE_WITH_SCHEDULER_SECRET_VALUE"
+              "scheduler_secret": "This-isgoingtowork"
             }
           },
           "then": "end",
