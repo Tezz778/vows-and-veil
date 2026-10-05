@@ -15,6 +15,7 @@
 // (order.checkoutId === checkoutSession.id). Skipping this write makes fulfillment impossible.
 
 import { createClientFromRequest } from "npm:@base44/sdk@0.8.31";
+import { getClientIp } from "../../shared/security.ts";
 
 const CONSTRUCT_URL = "https://www.wixapis.com/payments/platform/v1/checkout-sessions/construct";
 
@@ -55,6 +56,29 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Payments not configured" }), { status: 500 });
     }
     const base44 = createClientFromRequest(req);
+
+    // Per-IP rate limit: max 10 checkout sessions per hour (prevents unlimited
+    // pending purchase rows / checkout sessions from anonymous callers)
+    const clientIp = getClientIp(req);
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentCheckoutRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      ip_address: clientIp,
+      code: 'CREATE_CHECKOUT',
+    }, '-created_date', 12);
+    const recentCheckoutCount = (recentCheckoutRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+    if (recentCheckoutCount >= 10) {
+      return new Response(JSON.stringify({ error: "Too many checkout requests. Please try again later." }), { status: 429 });
+    }
+    await base44.asServiceRole.entities.SmsVerification.create({
+      phone_number: '__ratelimit__',
+      code: 'CREATE_CHECKOUT',
+      verified: false,
+      consumed: true,
+      ip_address: clientIp,
+      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    });
 
     // Capture the buyer's app-user id IF signed in — but never REQUIRE it. This is the
     // fulfillment target the webhook grants to; when absent (anonymous buyer) the webhook grants

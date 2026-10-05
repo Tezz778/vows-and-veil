@@ -35,6 +35,18 @@ export default async function(req) {
       return Response.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
     }
 
+    // Global rate limit: max 20 contact emails per hour across ALL IPs
+    // (prevents distributed IP rotation flooding the admin inbox)
+    const allContactRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      code: 'CONTACT_EMAIL',
+    }, '-created_date', 25);
+    const globalCount = (allContactRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+    if (globalCount >= 20) {
+      return Response.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
+    }
+
     // Record this send for rate limiting
     await base44.asServiceRole.entities.SmsVerification.create({
       phone_number: '__ratelimit__',

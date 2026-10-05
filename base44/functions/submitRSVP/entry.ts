@@ -80,6 +80,18 @@ export default async function(req) {
       return Response.json({ error: 'Too many RSVP submissions from your address. Please try again later.' }, { status: 429 });
     }
 
+    // Global rate limit: max 50 RSVP submissions per hour across ALL weddings/IPs
+    // (prevents distributed flooding of multiple couples' guest lists)
+    const allRsvpRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      code: 'RSVP_SUBMIT',
+    }, '-created_date', 55);
+    const globalRsvpCount = (allRsvpRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+    if (globalRsvpCount >= 50) {
+      return Response.json({ error: 'Too many RSVP submissions. Please try again later.' }, { status: 429 });
+    }
+
     // Record this submission for IP-based rate limiting
     await base44.asServiceRole.entities.SmsVerification.create({
       phone_number: '__ratelimit__',

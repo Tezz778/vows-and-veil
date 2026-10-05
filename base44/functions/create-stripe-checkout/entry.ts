@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
 import Stripe from 'npm:stripe@17.7.0';
+import { getClientIp } from '../../shared/security.ts';
 
 // Server-side price map — never trust the client. Amounts in cents (Stripe's unit).
 const PRODUCTS = {
@@ -31,13 +32,39 @@ export default async function(req: Request): Promise<Response> {
 
     const base44 = createClientFromRequest(req);
 
-    // Capture buyer's app-user id IF signed in — never require it (checkout is public).
-    let appUser = null;
+    // This function is only called from the authenticated Pricing and Budget pages
+    // (both behind ProtectedRoute). Require a logged-in user — anonymous callers get 401.
+    let appUser;
     try {
       appUser = await base44.auth.me();
     } catch (_) {
       appUser = null;
     }
+    if (!appUser) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Per-IP rate limit: max 10 checkout sessions per hour
+    const clientIp = getClientIp(req);
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const recentCheckoutRecords = await base44.asServiceRole.entities.SmsVerification.filter({
+      ip_address: clientIp,
+      code: 'STRIPE_CHECKOUT',
+    }, '-created_date', 12);
+    const recentCheckoutCount = (recentCheckoutRecords || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo
+    ).length;
+    if (recentCheckoutCount >= 10) {
+      return Response.json({ error: "Too many checkout requests. Please try again later." }, { status: 429 });
+    }
+    await base44.asServiceRole.entities.SmsVerification.create({
+      phone_number: '__ratelimit__',
+      code: 'STRIPE_CHECKOUT',
+      verified: false,
+      consumed: true,
+      ip_address: clientIp,
+      expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    });
 
     const body = await req.json().catch(() => ({}));
     const productId = String(body.productId ?? "");

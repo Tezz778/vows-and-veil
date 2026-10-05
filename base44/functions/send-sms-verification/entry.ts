@@ -43,6 +43,16 @@ export default async function(req: Request): Promise<Response> {
       return Response.json({ error: 'Too many verification requests from your address. Please try again later.' }, { status: 429 });
     }
 
+    // Global rate limit: max 30 SMS sends per hour across ALL IPs/numbers
+    // (prevents distributed abuse that runs up Twilio SMS costs)
+    const allRecentSends = await base44.asServiceRole.entities.SmsVerification.list('-created_date', 50);
+    const globalSmsCount = (allRecentSends || []).filter(
+      (r) => new Date(r.created_date) > oneHourAgo && r.phone_number && r.phone_number !== '__ratelimit__'
+    ).length;
+    if (globalSmsCount >= 30) {
+      return Response.json({ error: 'Too many verification requests. Please try again later.' }, { status: 429 });
+    }
+
     // Per-number cooldown: 60 seconds between sends to the same number
     const recent = await base44.asServiceRole.entities.SmsVerification.filter({
       phone_number: normalized,
