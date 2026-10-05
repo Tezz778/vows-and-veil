@@ -7,7 +7,10 @@ export default async function(req) {
     if (!slug) return Response.json({ error: 'Missing slug' }, { status: 400 });
 
     const base44 = createClientFromRequest(req);
-    const list = await base44.asServiceRole.entities.Wedding.filter({ site_slug: slug }, '-created_date', 1);
+    // Use oldest match (created_date ascending) — first-claimed slug wins.
+    // This is defense-in-depth against slug hijacking: even if a second
+    // wedding somehow gets the same slug, the original owner keeps their page.
+    const list = await base44.asServiceRole.entities.Wedding.filter({ site_slug: slug }, 'created_date', 1);
     const w = list && list[0];
     if (!w) return Response.json({ error: 'Wedding not found' }, { status: 404 });
 
@@ -24,7 +27,8 @@ export default async function(req) {
       site_photos: w.site_photos,
       site_sections: w.site_sections,
       site_registry: w.site_registry,
-      site_meal_options: w.site_meal_options
+      site_meal_options: w.site_meal_options,
+      site_rsvp_secret: w.site_rsvp_secret
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

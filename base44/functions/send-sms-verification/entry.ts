@@ -1,9 +1,15 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
-import { getClientIp } from '../../shared/security.ts';
+import { getClientIp, validateAppOrigin } from '../../shared/security.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
+    // Verify the request originates from the app's own frontend
+    const appUrl = secrets.get('WIX_CHECKOUT_APP_URL');
+    if (!validateAppOrigin(req, appUrl)) {
+      return Response.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
+
     const body = await req.json();
     const phoneNumber = body?.phone_number;
 

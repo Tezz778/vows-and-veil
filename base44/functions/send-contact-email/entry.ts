@@ -1,11 +1,18 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
-import { getClientIp } from '../../shared/security.ts';
+import { secrets } from 'base44:runtime';
+import { getClientIp, validateAppOrigin } from '../../shared/security.ts';
 
 // Public endpoint: the Contact page is reachable by signed-out visitors, so
-// auth is not required. Protected by per-IP rate limiting (5 messages/hour) to
-// prevent inbox flooding.
+// auth is not required. Protected by origin validation (requests must come
+// from the app's own frontend) plus per-IP and global rate limiting.
 export default async function(req) {
   try {
+    // Verify the request originates from the app's own frontend
+    const appUrl = secrets.get('WIX_CHECKOUT_APP_URL');
+    if (!validateAppOrigin(req, appUrl)) {
+      return Response.json({ error: 'Invalid request origin' }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => ({}));
     const name = String(body.name || '').trim().slice(0, 120);
     const email = String(body.email || '').trim().slice(0, 200);

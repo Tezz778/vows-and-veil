@@ -197,7 +197,7 @@ export default function WeddingSite() {
 
       {/* RSVP */}
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <RSVPForm slug={slug} guestToken={guestToken} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
+        <RSVPForm slug={slug} guestToken={guestToken} rsvpSecret={wedding.site_rsvp_secret || ''} isDestination={wedding.wedding_type === 'destination'} mealOptions={parseMealOptions(wedding.site_meal_options)} />
       </section>
 
       <footer className="text-center pb-10 text-xs text-muted-foreground/70">
@@ -253,7 +253,7 @@ function Detail({ label, value }) {
   );
 }
 
-function RSVPForm({ slug, guestToken, isDestination, mealOptions }) {
+function RSVPForm({ slug, guestToken, rsvpSecret, isDestination, mealOptions }) {
   const [name, setName] = useState('');
   const [rsvp, setRsvp] = useState('');
   const [plus, setPlus] = useState(0);
@@ -278,6 +278,7 @@ function RSVPForm({ slug, guestToken, isDestination, mealOptions }) {
         travel_needed: travel, accommodation: accom.trim(), arrival_date: arrival || null,
         meal_choice: meal, meal_notes: mealNotes.trim(),
         guest_token: guestToken || '',
+        rsvp_secret: rsvpSecret || '',
       });
       const data = res?.data ?? res;
       if (data?.error) setError(data.error);

@@ -45,8 +45,13 @@ export default function WeddingWebsite() {
     setSaving(true);
     try {
       const newSlug = randomSlug(wedding.couple_names);
-      await base44.entities.Wedding.update(wedding.id, { site_slug: newSlug });
-      setWedding({ ...wedding, site_slug: newSlug });
+      const res = await base44.functions.invoke('set-wedding-slug', { slug: newSlug });
+      const data = res?.data ?? res;
+      if (data?.error) {
+        alert(data.error);
+      } else {
+        setWedding({ ...wedding, site_slug: data.slug || newSlug, site_rsvp_secret: data.rsvp_secret });
+      }
     } catch (e) { alert('Could not generate link: ' + (e.message || 'error')); }
     finally { setSaving(false); }
   };

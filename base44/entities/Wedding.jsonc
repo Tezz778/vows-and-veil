@@ -115,6 +115,9 @@
     "site_slug": {
       "type": "string"
     },
+    "site_rsvp_secret": {
+      "type": "string"
+    },
     "site_message": {
       "type": "string"
     },

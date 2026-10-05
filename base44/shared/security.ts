@@ -42,6 +42,32 @@ export function validateEmailRecipient(to: string): string | null {
  * Return a safe http(s) URL, or null if the URL uses a dangerous scheme
  * (javascript:, data:, etc.) or is unparseable.
  */
+/**
+ * Validate that a request originates from the app's own frontend.
+ * Checks the Origin header (set by browsers for cross-origin POSTs) and
+ * falls back to Referer. If neither header is present, allows the request
+ * (rate limiting handles that case). If a header IS present but doesn't
+ * match the app URL, rejects — this blocks cross-site form submissions.
+ */
+export function validateAppOrigin(req: Request, appUrl: string | undefined | null): boolean {
+  if (!appUrl) return true; // No app URL configured — don't block
+  let expected: string;
+  try {
+    expected = new URL(appUrl).origin;
+  } catch {
+    return true; // Invalid app URL — don't block
+  }
+  const origin = req.headers.get('origin');
+  if (origin) {
+    try { return new URL(origin).origin === expected; } catch { return false; }
+  }
+  const referer = req.headers.get('referer');
+  if (referer) {
+    try { return new URL(referer).origin === expected; } catch { return false; }
+  }
+  return true; // No Origin/Referer — allow (rate limits handle this)
+}
+
 export function safeUrl(url: string | undefined | null): string | null {
   if (!url || typeof url !== "string") return null;
   const trimmed = url.trim();

@@ -3,14 +3,16 @@ import { getClientIp } from '../../shared/security.ts';
 
 // Public endpoint: guests submit RSVPs from the public wedding site without
 // logging in. Auth is not required. The token path verifies a stored guest token
-// and is safe. The no-token path is protected by per-wedding AND per-IP rate
-// limiting to prevent flooding a couple's guest list.
+// and is safe. The no-token path requires the wedding's RSVP secret (returned
+// by getWeddingSite) to prove the submission came from the actual site page,
+// plus per-wedding AND per-IP rate limiting.
 export default async function(req) {
   try {
     const body = await req.json().catch(() => ({}));
     const slug = String(body.slug || '').trim().toLowerCase();
     const name = String(body.name || '').trim();
     const guestToken = String(body.guest_token || '').trim();
+    const rsvpSecret = String(body.rsvp_secret || '').trim();
 
     if (!slug) return Response.json({ error: 'Missing slug' }, { status: 400 });
     if (!name) return Response.json({ error: 'Please enter your name' }, { status: 400 });
@@ -19,7 +21,9 @@ export default async function(req) {
 
     const base44 = createClientFromRequest(req);
 
-    const list = await base44.asServiceRole.entities.Wedding.filter({ site_slug: slug }, '-created_date', 1);
+    // Use oldest match (created_date ascending) — first-claimed slug wins.
+    // Defense-in-depth against slug hijacking.
+    const list = await base44.asServiceRole.entities.Wedding.filter({ site_slug: slug }, 'created_date', 1);
     const w = list && list[0];
     if (!w) return Response.json({ error: 'Wedding not found' }, { status: 404 });
 
@@ -52,6 +56,12 @@ export default async function(req) {
       });
 
       return Response.json({ ok: true, guest_id: guest.id, synced: true });
+    }
+
+    // No-token path: require the wedding's RSVP secret to prove the submission
+    // came from the actual wedding site page (not a direct API call).
+    if (!w.site_rsvp_secret || rsvpSecret !== w.site_rsvp_secret) {
+      return Response.json({ error: 'Invalid RSVP submission' }, { status: 403 });
     }
 
     // No-token path: apply rate limiting before creating a new guest.
