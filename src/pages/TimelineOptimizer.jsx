@@ -7,6 +7,7 @@ import { hasFeature } from '@/lib/wedding';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Sparkles, Clock, Wand2, Check } from 'lucide-react';
 
 const VENUE_TYPES = ['indoor', 'outdoor', 'mixed', 'religious', 'banquet_hall'];
@@ -80,9 +81,7 @@ export default function TimelineOptimizer() {
           </div>
           <div>
             <Label htmlFor="vt">Venue type</Label>
-            <select id="vt" value={venueType} onChange={(e) => setVenueType(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-              {VENUE_TYPES.map((v) => <option key={v} value={v}>{v.replace(/_/g, ' ')}</option>)}
-            </select>
+            <ActionSheet id="vt" value={venueType} onChange={setVenueType} options={VENUE_TYPES.map((v) => ({ value: v, label: v.replace(/_/g, ' ') }))} className="mt-1.5" />
           </div>
         </div>
         <Button onClick={generate} disabled={generating} className="bg-primary hover:bg-primary/90 mt-5">

@@ -249,6 +249,7 @@ export default function Layout() {
               <Link
                 key={tab.path}
                 to={tab.path}
+                replace={active}
                 className={`flex flex-col items-center justify-center gap-0.5 min-h-[44px] flex-1 py-2 text-[10px] transition-colors select-none ${
                   active ? 'text-primary' : 'text-muted-foreground'
                 }`}
