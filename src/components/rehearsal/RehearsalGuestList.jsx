@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Users, X } from 'lucide-react';
 
 export default function RehearsalGuestList({ weddingId }) {
@@ -64,12 +65,8 @@ export default function RehearsalGuestList({ weddingId }) {
                 </label>
                 {g.rehearsal_invited && (
                   <div className="flex items-center gap-2 ml-auto">
-                    <select value={g.rehearsal_rsvp || 'pending'} onChange={(e) => update(g, { rehearsal_rsvp: e.target.value })}
-                      className="h-8 rounded-md border border-input bg-transparent text-sm px-2">
-                      <option value="pending">Pending</option>
-                      <option value="yes">Yes</option>
-                      <option value="no">No</option>
-                    </select>
+                    <ActionSheet value={g.rehearsal_rsvp || 'pending'} onChange={(val) => update(g, { rehearsal_rsvp: val })}
+                      options={[{value:'pending',label:'Pending'},{value:'yes',label:'Yes'},{value:'no',label:'No'}]} />
                     <Input placeholder="Table" value={g.rehearsal_table || ''} onChange={(e) => update(g, { rehearsal_table: e.target.value })}
                       className="h-8 w-28 text-sm" />
                   </div>

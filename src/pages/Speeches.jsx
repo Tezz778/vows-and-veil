@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, Sparkles, Mic, Link2, Copy, Check, Ban } from 'lucide-react';
 
 const ROLES = [
@@ -223,9 +224,7 @@ function SpeechDialog({ open, onOpenChange, wedding, editing, onSaved }) {
             <div><Label htmlFor="sp">Speaker name</Label><Input id="sp" value={speaker} onChange={(e) => setSpeaker(e.target.value)} className="mt-1.5" /></div>
             <div>
               <Label htmlFor="rl">Role</Label>
-              <select id="rl" value={role} onChange={(e) => setRole(e.target.value)} className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
+              <ActionSheet id="rl" value={role} onChange={setRole} options={ROLES} className="mt-1.5" />
             </div>
           </div>
           <div><Label htmlFor="rs">Relationship to the couple</Label><Input id="rs" placeholder="e.g. College roommate of the groom" value={relationship} onChange={(e) => setRelationship(e.target.value)} className="mt-1.5" /></div>

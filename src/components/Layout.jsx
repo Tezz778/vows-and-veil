@@ -1,5 +1,6 @@
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { hasFeature, TIER_LABELS, daysUntil, formatDate, hexToHsl, isFreeTier } from '@/lib/wedding';
 import {
@@ -61,6 +62,14 @@ const NAV_SECTIONS = [
       { label: 'Plan & Tiers', icon: Gem, path: '/pricing', feature: null },
     ],
   },
+];
+
+const BOTTOM_TABS = [
+  { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
+  { label: 'Timeline', icon: Calendar, path: '/timeline' },
+  { label: 'Guests', icon: Users, path: '/guests' },
+  { label: 'Budget', icon: DollarSign, path: '/budget' },
+  { label: 'Settings', icon: SettingsIcon, path: '/settings' },
 ];
 
 export default function Layout() {
@@ -125,7 +134,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex" style={themeStyle}>
+    <div className="min-h-screen bg-background flex overscroll-none select-none" style={themeStyle}>
       <aside
         className={`fixed lg:sticky top-0 z-40 h-screen w-72 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -158,7 +167,7 @@ export default function Layout() {
           </div>
         )}
 
-        <nav className="flex-1 px-4 overflow-y-auto">
+        <nav className="flex-1 px-4 overflow-y-auto overscroll-y-contain">
           {NAV_SECTIONS.map((section, si) => (
             <div key={si} className={si > 0 ? 'mt-5' : ''}>
               {section.label && (
@@ -172,7 +181,7 @@ export default function Layout() {
                   <Link
                     key={item.path}
                     to={locked && !isFreeTier(tier) ? '/pricing' : item.path}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors ${
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm mb-0.5 transition-colors min-h-[44px] ${
                       active
                         ? 'bg-primary text-primary-foreground shadow-sm'
                         : locked
@@ -191,7 +200,7 @@ export default function Layout() {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border">
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full justify-start text-muted-foreground hover:text-foreground">
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full justify-start text-muted-foreground hover:text-foreground min-h-[44px]">
             <LogOut className="w-4 h-4 mr-2" /> Sign out
           </Button>
         </div>
@@ -201,19 +210,48 @@ export default function Layout() {
         <div className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
 
-      <div className="flex-1 min-w-0 flex flex-col">
-        <header className="lg:hidden sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between">
-          <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2">
+      <div className="flex-1 min-w-0 flex flex-col overscroll-y-contain">
+        <header className="lg:hidden sticky top-0 z-20 bg-background/90 backdrop-blur border-b border-border px-5 py-3 flex items-center justify-between safe-area-top">
+          <button onClick={() => setMobileOpen(true)} className="p-2 -ml-2 min-h-[44px] flex items-center">
             <Menu className="w-5 h-5" />
           </button>
           <span className="serif-heading text-lg text-primary">Vows & Veil</span>
           <div className="w-9" />
         </header>
 
-        <main className="flex-1 px-5 sm:px-8 lg:px-14 py-8 lg:py-12 max-w-6xl w-full mx-auto">
-          <Outlet context={{ wedding, setWedding, tier }} />
+        <main className="flex-1 px-5 sm:px-8 lg:px-14 py-8 lg:py-12 max-w-6xl w-full mx-auto pb-28 lg:pb-12 overscroll-y-contain">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+          >
+            <Outlet context={{ wedding, setWedding, tier }} />
+          </motion.div>
         </main>
       </div>
+
+      {/* Mobile bottom tab bar */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-background/95 backdrop-blur border-t border-border safe-area-bottom">
+        <div className="flex items-stretch justify-around">
+          {BOTTOM_TABS.map((tab) => {
+            const active = location.pathname === tab.path;
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.path}
+                to={tab.path}
+                className={`flex flex-col items-center justify-center gap-0.5 min-h-[44px] flex-1 py-2 text-[10px] transition-colors ${
+                  active ? 'text-primary' : 'text-muted-foreground'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span>{tab.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

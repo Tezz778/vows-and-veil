@@ -86,6 +86,8 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   h1, h2, h3, .font-display {
@@ -104,5 +106,17 @@
   }
   .soft-divider {
     @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent;
+  }
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+  .overscroll-y-contain {
+    overscroll-behavior-y: contain;
   }
 }

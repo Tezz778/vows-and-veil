@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import ActionSheet from '@/components/ui/action-sheet';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
   Plus, Trash2, Users, Pencil, Plane, Home, Calendar, GripVertical, Mail
@@ -364,10 +365,9 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="rsvp">RSVP</Label>
-              <select id="rsvp" value={rsvp} onChange={(e) => setRsvp(e.target.value)}
-                className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                <option value="pending">Pending</option><option value="yes">Yes</option><option value="no">No</option>
-              </select>
+              <ActionSheet id="rsvp" value={rsvp} onChange={setRsvp}
+                options={[{value:'pending',label:'Pending'},{value:'yes',label:'Yes'},{value:'no',label:'No'}]}
+                className="mt-1.5" />
             </div>
             <div><Label htmlFor="po">Plus ones</Label><Input id="po" type="number" min="0" value={plus} onChange={(e) => setPlus(e.target.value)} className="mt-1.5" /></div>
           </div>
@@ -383,21 +383,20 @@ function GuestDialog({ open, onOpenChange, wedding, editing, isDestination, onSa
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="ist">Status</Label>
-                <select id="ist" value={invStatus} onChange={(e) => setInvStatus(e.target.value)}
-                  className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                  <option value="not_sent">Not sent</option>
-                  <option value="save_the_date">Save-the-date sent</option>
-                  <option value="invite_sent">Invite sent</option>
-                  <option value="rsvp_received">RSVP received</option>
-                </select>
+                <ActionSheet id="ist" value={invStatus} onChange={setInvStatus}
+                  options={[
+                    {value:'not_sent',label:'Not sent'},
+                    {value:'save_the_date',label:'Save-the-date sent'},
+                    {value:'invite_sent',label:'Invite sent'},
+                    {value:'rsvp_received',label:'RSVP received'},
+                  ]}
+                  className="mt-1.5" />
               </div>
               <div>
                 <Label htmlFor="im">Method</Label>
-                <select id="im" value={invMethod} onChange={(e) => setInvMethod(e.target.value)}
-                  className="mt-1.5 w-full h-9 rounded-md border border-input bg-background px-3 text-sm">
-                  <option value="digital">Digital</option>
-                  <option value="mail">Mailed</option>
-                </select>
+                <ActionSheet id="im" value={invMethod} onChange={setInvMethod}
+                  options={[{value:'digital',label:'Digital'},{value:'mail',label:'Mailed'}]}
+                  className="mt-1.5" />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
