@@ -1,33 +1,25 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { secrets } from 'base44:runtime';
 
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    const body = await req.json().catch(() => ({}));
 
-    // Guard: block non-admin authenticated users; rate-limit anonymous/scheduler calls
-    let isAnonymous = false;
+    // Guard: admin users always allowed. Non-admin callers must supply
+    // the SCHEDULER_SECRET shared secret (passed by the workflow scheduler).
+    let isAdmin = false;
     try {
       const user = await base44.auth.me();
-      if (user) {
-        if (user.role !== 'admin') {
-          return Response.json({ error: 'Forbidden' }, { status: 403 });
-        }
-        // Admin — allowed without rate limit
-      } else {
-        isAnonymous = true;
+      if (user && user.role === 'admin') {
+        isAdmin = true;
       }
-    } catch {
-      isAnonymous = true;
-    }
+    } catch { /* not authenticated */ }
 
-    // Rate limit: min 6 hours between runs for anonymous/scheduler calls
-    if (isAnonymous) {
-      const recentIdeas = await base44.asServiceRole.entities.MomentIdea.list('-created_date', 1);
-      if (recentIdeas && recentIdeas.length > 0) {
-        const lastRun = new Date(recentIdeas[0].created_date);
-        if (Date.now() - lastRun.getTime() < 6 * 60 * 60 * 1000) {
-          return Response.json({ error: 'Rate limited — already run recently' }, { status: 429 });
-        }
+    if (!isAdmin) {
+      const schedulerSecret = secrets.get('SCHEDULER_SECRET');
+      if (!schedulerSecret || body.scheduler_secret !== schedulerSecret) {
+        return Response.json({ error: 'Forbidden' }, { status: 403 });
       }
     }
 

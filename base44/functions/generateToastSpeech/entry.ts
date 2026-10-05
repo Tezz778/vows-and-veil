@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { hasFeature } from '../../shared/security.ts';
 
 const ROLE_LABELS = {
   best_man: 'best man',
@@ -18,6 +19,13 @@ export default async function(req) {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json().catch(() => ({}));
+
+    // Server-side tier check: speeches requires multiday+
+    const weddings = await base44.asServiceRole.entities.Wedding.filter({ created_by_id: user.id }, '-created_date', 1);
+    if (!weddings || weddings.length === 0) return Response.json({ error: 'Wedding not found' }, { status: 404 });
+    if (!hasFeature(weddings[0].selected_tier || 'free', 'speeches')) {
+      return Response.json({ error: 'Upgrade required' }, { status: 403 });
+    }
     const role = String(body.role || 'other');
     const speakerName = String(body.speaker_name || '').slice(0, 120);
     const coupleNames = String(body.couple_names || '').slice(0, 120);

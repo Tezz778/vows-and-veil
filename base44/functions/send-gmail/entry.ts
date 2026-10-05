@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
+import { validateEmailRecipient } from '../../shared/security.ts';
 
 const CONNECTOR_ID = '6aac3e7dda961b837ebe5200';
 
@@ -54,10 +55,10 @@ export default async function(req) {
 
     // Send email
     if (action === 'send') {
-      const to = String(body.to || '').trim();
+      const to = validateEmailRecipient(String(body.to || ''));
       const subject = String(body.subject || '').trim();
       const emailBody = String(body.body || '');
-      if (!to) return Response.json({ error: 'Recipient is required' }, { status: 400 });
+      if (!to) return Response.json({ error: 'A valid recipient email is required' }, { status: 400 });
       if (!subject) return Response.json({ error: 'Subject is required' }, { status: 400 });
 
       const rawEmail = buildRawEmail(to, subject, emailBody);
