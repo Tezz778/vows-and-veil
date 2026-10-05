@@ -50,21 +50,36 @@ export function validateEmailRecipient(to: string): string | null {
  * match the app URL, rejects — this blocks cross-site form submissions.
  */
 export function validateAppOrigin(req: Request, appUrl: string | undefined | null): boolean {
-  if (!appUrl) return true; // No app URL configured — don't block
-  let expected: string;
-  try {
-    expected = new URL(appUrl).origin;
-  } catch {
-    return true; // Invalid app URL — don't block
-  }
+  // Collect all valid expected origins:
+  // 1. The platform-injected X-Base44-App-Url header (current environment's URL)
+  // 2. The configured appUrl (WIX_CHECKOUT_APP_URL — production URL)
+  const headerAppUrl = req.headers.get('x-base44-app-url');
+  const candidates = [headerAppUrl, appUrl].filter(Boolean) as string[];
+  if (candidates.length === 0) return true; // No app URL configured — don't block
+
+  const expectedOrigins = candidates
+    .map((u) => { try { return new URL(u).origin; } catch { return null; } })
+    .filter((o): o is string => o !== null);
+  if (expectedOrigins.length === 0) return true; // All URLs invalid — don't block
+
+  const isAllowedOrigin = (originStr: string): boolean => {
+    try {
+      const parsed = new URL(originStr);
+      // Accept if it matches a configured expected origin
+      if (expectedOrigins.includes(parsed.origin)) return true;
+      // Accept any *.base44.app origin — the preview sandbox, production, and
+      // other Base44 environments all run on this domain. These functions are
+      // already public (callable by anyone); origin validation is defense-in-depth
+      // against CSRF from non-Base44 sites, and rate limiting handles the rest.
+      if (parsed.hostname.endsWith('.base44.app')) return true;
+      return false;
+    } catch { return false; }
+  };
+
   const origin = req.headers.get('origin');
-  if (origin) {
-    try { return new URL(origin).origin === expected; } catch { return false; }
-  }
+  if (origin) return isAllowedOrigin(origin);
   const referer = req.headers.get('referer');
-  if (referer) {
-    try { return new URL(referer).origin === expected; } catch { return false; }
-  }
+  if (referer) return isAllowedOrigin(referer);
   return true; // No Origin/Referer — allow (rate limits handle this)
 }
 
