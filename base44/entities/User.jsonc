@@ -18,6 +18,14 @@
         "destination"
       ],
       "default": "free"
+    },
+    "team_wedding_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Wedding IDs this user has been invited to collaborate on as a team member. Set by the accept-team-invite function. Used by RLS rules to grant team members access to shared wedding data.",
+      "default": []
     }
   },
   "required": [
