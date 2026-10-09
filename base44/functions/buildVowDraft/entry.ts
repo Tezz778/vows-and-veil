@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
-import { hasFeature } from '../../shared/security.ts';
+import { userHasFeature } from '../../shared/security.ts';
 
 export default async function(req) {
   try {
@@ -8,10 +8,9 @@ export default async function(req) {
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json().catch(() => ({}));
 
-    // Server-side tier check: vows requires free, multiday, or destination
-    const weddings = await base44.asServiceRole.entities.Wedding.filter({ created_by_id: user.id }, '-created_date', 1);
-    if (!weddings || weddings.length === 0) return Response.json({ error: 'Wedding not found' }, { status: 404 });
-    if (!hasFeature(weddings[0].selected_tier || 'free', 'vows')) {
+    // Server-side tier check: read from the User's plan_tier (server-owned),
+    // NOT the client-writable Wedding.selected_tier field.
+    if (!userHasFeature(user, 'vows')) {
       return Response.json({ error: 'Upgrade required' }, { status: 403 });
     }
     const answers = body.answers || {};

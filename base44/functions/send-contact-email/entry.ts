@@ -80,7 +80,7 @@ export default async function(req) {
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: admin.email,
       subject: `New contact form message from ${name}`,
-      body: [
+      text: [
         `You received a new message from the Vows & Veil contact form.`,
         ``,
         `Name: ${name}`,

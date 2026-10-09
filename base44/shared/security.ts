@@ -25,6 +25,15 @@ export function hasFeature(tier: string, feature: string): boolean {
 }
 
 /**
+ * Check whether the authenticated user's server-owned plan_tier grants access
+ * to a feature. Use this instead of reading Wedding.selected_tier (which is
+ * client-writable and can be self-set to bypass the paywall).
+ */
+export function userHasFeature(user: { plan_tier?: string } | null | undefined, feature: string): boolean {
+  return hasFeature(user?.plan_tier || 'free', feature);
+}
+
+/**
  * Validate an email recipient to prevent header injection.
  * Strips CR/LF and verifies basic email format. Returns the cleaned
  * address string, or null if invalid.
@@ -69,10 +78,11 @@ export function validateAppOrigin(req: Request, appUrl: string | undefined | nul
       const parsed = new URL(originStr);
       // Accept if it matches a configured expected origin
       if (expectedOrigins.includes(parsed.origin)) return true;
-      // Accept any *.base44.app origin — the preview sandbox, production, and
-      // other Base44 environments all run on this domain. These functions are
-      // already public (callable by anyone); origin validation is defense-in-depth
-      // against CSRF from non-Base44 sites, and rate limiting handles the rest.
+      // Accept *.base44.app origins (preview sandbox, other Base44 environments).
+      // Exact-origin pinning for sensitive endpoints is enforced by
+      // verifyTurnstileToken, which validates the Cloudflare-returned hostname
+      // against the app's own origins — a token minted for another tenant's
+      // app cannot be replayed here. This origin check is defense-in-depth.
       if (parsed.hostname.endsWith('.base44.app')) return true;
       return false;
     } catch { return false; }
