@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Calendar, Heart, Sparkles, Users, DollarSign,
   Camera, Bell, Gem, LogOut, Menu, X, Lock, Globe, ArrowLeft,
   Briefcase, Palette, UtensilsCrossed, Mic, Wand2, Plane, Image as ImageIcon, Mail,
-  User, Settings as SettingsIcon
+  User, Settings as SettingsIcon, Armchair, UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -17,6 +17,7 @@ const NAV_SECTIONS = [
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, path: '/', feature: null },
       { label: 'Wedding Details', icon: Palette, path: '/details', feature: null },
+      { label: 'Wedding Team', icon: UserPlus, path: '/team', feature: null },
     ],
   },
   {
@@ -39,6 +40,7 @@ const NAV_SECTIONS = [
     label: 'Guests & Travel',
     items: [
       { label: 'Guests & Seating', icon: Users, path: '/guests', feature: 'guests' },
+      { label: 'Seating Chart', icon: Armchair, path: '/seating', feature: 'guests' },
       { label: 'Rehearsal Dinner', icon: UtensilsCrossed, path: '/rehearsal', feature: 'rehearsal' },
       { label: 'Travel Suite', icon: Plane, path: '/travel', feature: 'travel' },
       { label: 'Wedding Website', icon: Globe, path: '/website', feature: 'guests' },
@@ -73,9 +75,9 @@ const BOTTOM_TABS = [
 ];
 
 const TAB_GROUPS = {
-  '/': ['/', '/details', '/moodboard', '/vows', '/speeches', '/ideas'],
+  '/': ['/', '/details', '/team', '/moodboard', '/vows', '/speeches', '/ideas'],
   '/timeline': ['/timeline', '/optimizer'],
-  '/guests': ['/guests', '/rehearsal', '/travel', '/website', '/email'],
+  '/guests': ['/guests', '/seating', '/rehearsal', '/travel', '/website', '/email'],
   '/budget': ['/budget', '/vendors', '/shotlist', '/reminders'],
   '/settings': ['/settings', '/profile', '/pricing'],
 };
