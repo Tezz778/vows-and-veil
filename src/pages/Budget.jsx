@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import ActionSheet from '@/components/ui/action-sheet';
 import { Plus, Trash2, Pencil, DollarSign, Check, Sparkles, Zap } from 'lucide-react';
+import UpcomingPayments from '@/components/budget/UpcomingPayments';
+import GuestCountWhatIf from '@/components/budget/GuestCountWhatIf';
 
 const CATEGORIES = ['Venue', 'Catering', 'Photography', 'Videography', 'Florals', 'Attire', 'Music', 'Stationery', 'Transport', 'Other'];
 const BUDGET_UPGRADE_PRICE = 19;
@@ -75,6 +77,11 @@ export default function Budget() {
         <Stat label="Actual" value={totals.actual} tone="amber" />
         <Stat label="Paid" value={totals.paid} tone="emerald" />
         <Stat label="Owed" value={totals.owed} tone="rose" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <UpcomingPayments items={items} />
+        <GuestCountWhatIf items={items} wedding={wedding} />
       </div>
 
       {!wedding.budget_upgraded && (
@@ -213,6 +220,7 @@ function ItemDialog({ open, onOpenChange, wedding, editing, onSaved }) {
   const [actual, setActual] = useState(0);
   const [paid, setPaid] = useState(0);
   const [due, setDue] = useState('');
+  const [perGuest, setPerGuest] = useState(0);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -220,6 +228,7 @@ function ItemDialog({ open, onOpenChange, wedding, editing, onSaved }) {
       setCat(editing?.category || 'Venue'); setVendor(editing?.vendor_name || '');
       setEst(editing?.estimated_amount || 0); setActual(editing?.actual_amount || 0);
       setPaid(editing?.paid_amount || 0); setDue(editing?.due_date || '');
+      setPerGuest(editing?.per_guest_amount || 0);
     }
   }, [open, editing]);
 
@@ -230,6 +239,7 @@ function ItemDialog({ open, onOpenChange, wedding, editing, onSaved }) {
         wedding_id: wedding.id, category: cat, vendor_name: vendor.trim(),
         estimated_amount: Number(est) || 0, actual_amount: Number(actual) || 0,
         paid_amount: Number(paid) || 0, due_date: due || null,
+        per_guest_amount: Number(perGuest) || 0,
       };
       if (editing) await base44.entities.BudgetItem.update(editing.id, payload);
       else await base44.entities.BudgetItem.create(payload);
@@ -256,6 +266,7 @@ function ItemDialog({ open, onOpenChange, wedding, editing, onSaved }) {
             <div><Label htmlFor="p">Paid $</Label><Input id="p" type="number" min="0" value={paid} onChange={(e) => setPaid(e.target.value)} className="mt-1.5" /></div>
           </div>
           <div><Label htmlFor="d">Due date</Label><Input id="d" type="date" value={due} onChange={(e) => setDue(e.target.value)} className="mt-1.5" /></div>
+          <div><Label htmlFor="pg">Per-guest $</Label><Input id="pg" type="number" min="0" value={perGuest} onChange={(e) => setPerGuest(e.target.value)} className="mt-1.5" /></div>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>

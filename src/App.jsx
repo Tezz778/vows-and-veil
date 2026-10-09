@@ -30,6 +30,7 @@ const TimelineOptimizer = lazy(() => import('@/pages/TimelineOptimizer'));
 const TravelSuite = lazy(() => import('@/pages/TravelSuite'));
 const SeatingChart = lazy(() => import('@/pages/SeatingChart'));
 const Team = lazy(() => import('@/pages/Team'));
+const RSVP = lazy(() => import('@/pages/RSVP'));
 const GmailCompose = lazy(() => import('@/pages/GmailCompose'));
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
@@ -111,6 +112,7 @@ const AuthenticatedApp = () => {
           <Route path="/travel" element={<TravelSuite />} />
           <Route path="/seating" element={<SeatingChart />} />
           <Route path="/team" element={<Team />} />
+          <Route path="/rsvp" element={<RSVP />} />
           <Route path="/email" element={<GmailCompose />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />

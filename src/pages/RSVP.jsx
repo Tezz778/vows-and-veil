@@ -49,26 +49,10 @@ export default function RSVP() {
     enabled: !!wedding,
   });
 
-  if (!wedding) return null;
-  if (!hasFeature(tier, 'guests')) return <FeatureGate feature="guests" tierLabel="Multiday" />;
-
-  const mealOptions = (wedding.site_meal_options || '')
+  const mealOptions = (wedding?.site_meal_options || '')
     .split(',')
     .map((m) => m.trim())
     .filter(Boolean);
-
-  const stats = {
-    total: guests.length,
-    pending: guests.filter((g) => g.rsvp_status === 'pending').length,
-    yes: guests.filter((g) => g.rsvp_status === 'yes').length,
-    no: guests.filter((g) => g.rsvp_status === 'no').length,
-  };
-
-  const tierStats = {
-    must_invite: guests.filter((g) => (g.invite_tier || 'should_invite') === 'must_invite').length,
-    should_invite: guests.filter((g) => (g.invite_tier || 'should_invite') === 'should_invite').length,
-    nice_to_have: guests.filter((g) => (g.invite_tier || 'should_invite') === 'nice_to_have').length,
-  };
 
   const filtered = useMemo(() => {
     return guests.filter((g) => {
