@@ -97,6 +97,11 @@
           }
         },
         {
+          "data.wedding_id": {
+            "$in": "{{user.data.team_wedding_ids}}"
+          }
+        },
+        {
           "user_condition": {
             "role": "admin"
           }
@@ -104,95 +109,137 @@
       ]
     },
     "read": {
-      "$and": [
+      "$or": [
         {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "$or": [
+          "$and": [
             {
-              "user_condition": {
-                "data.plan_tier": "single_day"
-              }
+              "created_by_id": "{{user.id}}"
             },
             {
-              "user_condition": {
-                "data.plan_tier": "multiday"
-              }
-            },
-            {
-              "user_condition": {
-                "data.plan_tier": "destination"
-              }
-            },
-            {
-              "user_condition": {
-                "role": "admin"
-              }
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.plan_tier": "single_day"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.plan_tier": "multiday"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.plan_tier": "destination"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "admin"
+                  }
+                }
+              ]
             }
           ]
+        },
+        {
+          "data.wedding_id": {
+            "$in": "{{user.data.team_wedding_ids}}"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     },
     "update": {
-      "$and": [
+      "$or": [
         {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "$or": [
+          "$and": [
             {
-              "user_condition": {
-                "data.plan_tier": "single_day"
-              }
+              "created_by_id": "{{user.id}}"
             },
             {
-              "user_condition": {
-                "data.plan_tier": "multiday"
-              }
-            },
-            {
-              "user_condition": {
-                "data.plan_tier": "destination"
-              }
-            },
-            {
-              "user_condition": {
-                "role": "admin"
-              }
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.plan_tier": "single_day"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.plan_tier": "multiday"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.plan_tier": "destination"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "admin"
+                  }
+                }
+              ]
             }
           ]
+        },
+        {
+          "data.wedding_id": {
+            "$in": "{{user.data.team_wedding_ids}}"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     },
     "delete": {
-      "$and": [
+      "$or": [
         {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "$or": [
+          "$and": [
             {
-              "user_condition": {
-                "data.plan_tier": "single_day"
-              }
+              "created_by_id": "{{user.id}}"
             },
             {
-              "user_condition": {
-                "data.plan_tier": "multiday"
-              }
-            },
-            {
-              "user_condition": {
-                "data.plan_tier": "destination"
-              }
-            },
-            {
-              "user_condition": {
-                "role": "admin"
-              }
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.plan_tier": "single_day"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.plan_tier": "multiday"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.plan_tier": "destination"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "admin"
+                  }
+                }
+              ]
             }
           ]
+        },
+        {
+          "data.wedding_id": {
+            "$in": "{{user.data.team_wedding_ids}}"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
         }
       ]
     }
