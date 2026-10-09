@@ -150,7 +150,19 @@ export async function verifyRsvpToken(token: string, secret: string): Promise<bo
 export async function verifyTurnstileToken(req: Request, token: string | undefined | null): Promise<boolean> {
   const secret = secrets.get('TURNSTILE_SECRET_KEY');
   if (!secret) return false;
-  if (!token || typeof token !== 'string') return false;
+  if (!token || typeof token !== 'string' || token.length === 0 || token.length > 2048) return false;
+
+  // Build the expected-hostname allowlist from server-owned config only.
+  // The hostname returned by siteverify is the real frontend host the widget
+  // rendered on (Cloudflare-verified), so matching it here prevents tokens
+  // minted for a different site from being replayed against these endpoints.
+  const expectedHostnames = new Set<string>();
+  const appUrl = secrets.get('WIX_CHECKOUT_APP_URL');
+  if (appUrl) { try { expectedHostnames.add(new URL(appUrl).hostname); } catch {} }
+  const headerAppUrl = req.headers.get('x-base44-app-url');
+  if (headerAppUrl) { try { expectedHostnames.add(new URL(headerAppUrl).hostname); } catch {} }
+  if (expectedHostnames.size === 0) return false;
+
   const clientIp = getClientIp(req);
   const params = new URLSearchParams({ secret, response: token });
   if (clientIp && clientIp !== 'unknown') params.set('remoteip', clientIp);
@@ -161,7 +173,9 @@ export async function verifyTurnstileToken(req: Request, token: string | undefin
       signal: AbortSignal.timeout(8000),
     });
     const data = await res.json();
-    return data.success === true;
+    if (data.success !== true) return false;
+    if (typeof data.hostname !== 'string' || !expectedHostnames.has(data.hostname)) return false;
+    return true;
   } catch {
     return false;
   }

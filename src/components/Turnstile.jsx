@@ -1,5 +1,9 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef, useState, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+
+// Public Cloudflare Turnstile site key. Safe to expose in the client — it is
+// embedded in the page HTML by design. The matching secret key lives
+// server-side only (TURNSTILE_SECRET_KEY app secret).
+const TURNSTILE_SITE_KEY = "0x4AAAAAAFSS68uagXE82xLg";
 
 let scriptPromise = null;
 function loadTurnstileScript() {
@@ -18,14 +22,13 @@ function loadTurnstileScript() {
 
 // Cloudflare Turnstile widget. Auto-solves in managed mode and exposes a
 // getToken() method (via ref) that resolves with a fresh, single-use token.
-// Call await turnstileRef.current.getToken() right before invoking a
+// Call `await turnstileRef.current.getToken()` right before invoking a
 // protected backend function.
 const Turnstile = forwardRef(function Turnstile({ className }, ref) {
   const containerRef = useRef(null);
   const widgetIdRef = useRef(null);
   const currentTokenRef = useRef("");
   const tokenResolveRef = useRef(null);
-  const [siteKey, setSiteKey] = useState(null);
   const [error, setError] = useState("");
 
   const handleToken = useCallback((token) => {
@@ -64,20 +67,12 @@ const Turnstile = forwardRef(function Turnstile({ className }, ref) {
   }));
 
   useEffect(() => {
-    let cancelled = false;
-    base44.functions.invoke("get-public-config", {})
-      .then((res) => { if (!cancelled) setSiteKey(res.data?.turnstileSiteKey || ""); })
-      .catch(() => { if (!cancelled) setError("Verification unavailable"); });
-    return () => { cancelled = true; };
-  }, []);
-
-  useEffect(() => {
-    if (!siteKey || !containerRef.current) return;
+    if (!containerRef.current) return;
     let cancelled = false;
     loadTurnstileScript().then(() => {
       if (cancelled || !containerRef.current || !window.turnstile) return;
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
-        sitekey: siteKey,
+        sitekey: TURNSTILE_SITE_KEY,
         callback: handleToken,
         "error-callback": () => { currentTokenRef.current = ""; setError("Verification challenge failed"); },
         "expired-callback": () => { currentTokenRef.current = ""; },
@@ -91,10 +86,9 @@ const Turnstile = forwardRef(function Turnstile({ className }, ref) {
         widgetIdRef.current = null;
       }
     };
-  }, [siteKey, handleToken]);
+  }, [handleToken]);
 
   if (error) return <p className="text-xs text-destructive">{error}</p>;
-  if (!siteKey) return <div className="h-[65px]" />;
   return <div ref={containerRef} className={className} />;
 });
 
