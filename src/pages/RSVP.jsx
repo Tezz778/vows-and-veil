@@ -63,6 +63,22 @@ export default function RSVP() {
     });
   }, [guests, filter, tierFilter, search]);
 
+  if (!wedding) return null;
+  if (!hasFeature(tier, 'guests')) return <FeatureGate feature="guests" tierLabel="Multiday" />;
+
+  const stats = {
+    total: guests.length,
+    pending: guests.filter((g) => g.rsvp_status === 'pending').length,
+    yes: guests.filter((g) => g.rsvp_status === 'yes').length,
+    no: guests.filter((g) => g.rsvp_status === 'no').length,
+  };
+
+  const tierStats = {
+    must_invite: guests.filter((g) => (g.invite_tier || 'should_invite') === 'must_invite').length,
+    should_invite: guests.filter((g) => (g.invite_tier || 'should_invite') === 'should_invite').length,
+    nice_to_have: guests.filter((g) => (g.invite_tier || 'should_invite') === 'nice_to_have').length,
+  };
+
   const quickSetRSVP = async (guest, status) => {
     queryClient.setQueryData(['guests', wedding.id], (prev) =>
       prev.map((g) => (g.id === guest.id ? { ...g, rsvp_status: status } : g))
