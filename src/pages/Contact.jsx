@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Loader2, CheckCircle2, MessageCircle } from "lucide-react";
+import Turnstile from "@/components/Turnstile";
 
 export default function Contact() {
   const [name, setName] = useState("");
@@ -14,6 +15,7 @@ export default function Contact() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const turnstileRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,10 +28,12 @@ export default function Contact() {
 
     setLoading(true);
     try {
+      const turnstileToken = await turnstileRef.current?.getToken();
       const res = await base44.functions.invoke("send-contact-email", {
         name: name.trim(),
         email: email.trim(),
         message: message.trim(),
+        turnstile_token: turnstileToken,
       });
       if (res?.data?.ok) {
         setSent(true);
@@ -129,6 +133,7 @@ export default function Contact() {
                   {error}
                 </div>
               )}
+              <Turnstile ref={turnstileRef} className="mb-1" />
               <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
                 {loading ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending...</>

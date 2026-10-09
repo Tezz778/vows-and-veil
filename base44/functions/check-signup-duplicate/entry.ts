@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets } from 'base44:runtime';
-import { getClientIp, validateAppOrigin } from '../../shared/security.ts';
+import { getClientIp, validateAppOrigin, verifyTurnstileToken } from '../../shared/security.ts';
 
 // Public endpoint called during the signup flow (before the user has an account).
 // Left open intentionally — adding auth would break registration. Protected by
@@ -15,6 +15,12 @@ export default async function(req: Request): Promise<Response> {
     }
 
     const body = await req.json();
+
+    // Verify the Cloudflare Turnstile challenge before querying
+    if (!await verifyTurnstileToken(req, body?.turnstile_token)) {
+      return Response.json({ error: 'Please complete the verification' }, { status: 403 });
+    }
+
     const weddingDate = body?.wedding_date;
     const venueName = body?.venue_name;
     const venueLocation = body?.venue_location;

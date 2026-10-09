@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.44';
 import { secrets } from 'base44:runtime';
-import { getClientIp, validateAppOrigin } from '../../shared/security.ts';
+import { getClientIp, validateAppOrigin, verifyTurnstileToken } from '../../shared/security.ts';
 
 export default async function(req: Request): Promise<Response> {
   try {
@@ -11,6 +11,12 @@ export default async function(req: Request): Promise<Response> {
     }
 
     const body = await req.json();
+
+    // Verify the Cloudflare Turnstile challenge before sending SMS
+    if (!await verifyTurnstileToken(req, body?.turnstile_token)) {
+      return Response.json({ error: 'Please complete the verification' }, { status: 403 });
+    }
+
     const phoneNumber = body?.phone_number;
 
     if (!phoneNumber || typeof phoneNumber !== 'string') {

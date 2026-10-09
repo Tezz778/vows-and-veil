@@ -1,3 +1,5 @@
+import { secrets } from 'base44:runtime';
+
 // Shared security helpers for backend functions.
 
 /**
@@ -138,4 +140,29 @@ export async function verifyRsvpToken(token: string, secret: string): Promise<bo
     const expectedHex = Array.from(new Uint8Array(expectedSig)).map(b => b.toString(16).padStart(2, '0')).join('');
     return expectedHex === sigHex;
   } catch { return false; }
+}
+
+/**
+ * Verify a Cloudflare Turnstile token server-side. Fail-closed: returns
+ * false if the secret is unset, the token is missing, or the verification
+ * request errors — so public endpoints reject calls without a valid challenge.
+ */
+export async function verifyTurnstileToken(req: Request, token: string | undefined | null): Promise<boolean> {
+  const secret = secrets.get('TURNSTILE_SECRET_KEY');
+  if (!secret) return false;
+  if (!token || typeof token !== 'string') return false;
+  const clientIp = getClientIp(req);
+  const params = new URLSearchParams({ secret, response: token });
+  if (clientIp && clientIp !== 'unknown') params.set('remoteip', clientIp);
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: params,
+      signal: AbortSignal.timeout(8000),
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
 }

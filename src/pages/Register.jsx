@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
+import Turnstile from "@/components/Turnstile";
 
 function generateDeviceFingerprint() {
   const props = [
@@ -45,9 +46,11 @@ export default function Register() {
   const [duplicateWarning, setDuplicateWarning] = useState(false);
   const [phoneCode, setPhoneCode] = useState("");
   const [otpCode, setOtpCode] = useState("");
+  const turnstileRef = useRef(null);
 
   const sendSmsCode = async () => {
-    await base44.functions.invoke("send-sms-verification", { phone_number: phoneNumber });
+    const turnstileToken = await turnstileRef.current?.getToken();
+    await base44.functions.invoke("send-sms-verification", { phone_number: phoneNumber, turnstile_token: turnstileToken });
   };
 
   const handleDetailsSubmit = async (e) => {
@@ -63,10 +66,12 @@ export default function Register() {
     }
     setLoading(true);
     try {
+      const turnstileToken = await turnstileRef.current?.getToken();
       const dupRes = await base44.functions.invoke("check-signup-duplicate", {
         wedding_date: weddingDate,
         venue_name: venueName,
         venue_location: venueLocation,
+        turnstile_token: turnstileToken,
       });
       if (dupRes.data?.isDuplicate) {
         setDuplicateWarning(true);
@@ -261,6 +266,7 @@ export default function Register() {
             "Verify phone"
           )}
         </Button>
+        <Turnstile ref={turnstileRef} className="mt-4" />
         <p className="text-center text-sm text-muted-foreground mt-4">
           Didn't receive the code?{" "}
           <button onClick={handleResendSms} className="text-primary font-medium hover:underline">
@@ -480,6 +486,7 @@ export default function Register() {
             </div>
           </div>
 
+          <Turnstile ref={turnstileRef} className="mb-1" />
           <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
             {loading ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating account...</>

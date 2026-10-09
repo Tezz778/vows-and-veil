@@ -1,6 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.52';
 import { secrets } from 'base44:runtime';
-import { getClientIp, validateAppOrigin } from '../../shared/security.ts';
+import { getClientIp, validateAppOrigin, verifyTurnstileToken } from '../../shared/security.ts';
 
 // Public endpoint: the Contact page is reachable by signed-out visitors, so
 // auth is not required. Protected by origin validation (requests must come
@@ -14,6 +14,12 @@ export default async function(req) {
     }
 
     const body = await req.json().catch(() => ({}));
+
+    // Verify the Cloudflare Turnstile challenge before sending
+    if (!await verifyTurnstileToken(req, body.turnstile_token)) {
+      return Response.json({ error: 'Please complete the verification' }, { status: 403 });
+    }
+
     const name = String(body.name || '').trim().slice(0, 120);
     const email = String(body.email || '').trim().slice(0, 200);
     const message = String(body.message || '').trim().slice(0, 5000);
