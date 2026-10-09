@@ -27,11 +27,23 @@
       "type": "number",
       "default": 0
     },
+    "plus_one_name": {
+      "type": "string"
+    },
     "meal_choice": {
       "type": "string"
     },
     "meal_notes": {
       "type": "string"
+    },
+    "invite_tier": {
+      "type": "string",
+      "enum": [
+        "must_invite",
+        "should_invite",
+        "nice_to_have"
+      ],
+      "default": "should_invite"
     },
     "travel_needed": {
       "type": "boolean",

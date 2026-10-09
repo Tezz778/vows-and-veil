@@ -23,6 +23,10 @@
       "type": "number",
       "default": 0
     },
+    "per_guest_amount": {
+      "type": "number",
+      "default": 0
+    },
     "due_date": {
       "type": "string",
       "format": "date"
